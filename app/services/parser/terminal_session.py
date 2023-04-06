@@ -1,5 +1,4 @@
 import requests
-import aiohttp
 import logging
 
 
@@ -11,18 +10,16 @@ class TerminalSession:
         self.login_url = url + "/Account/Login"
         self.table_sales_url = url + "/Admin/_TableSales"
         self.active = False
-        self.__session = aiohttp.ClientSession()
+        self.__session = requests.Session()
 
-    async def login(self) -> bool:
+    def login(self) -> bool:
         logging.debug("Try to login")
 
         data = {"Login": self.user_login, "Password": self.user_password}
         timeout = 60
 
         try:
-            response = await self.__session.post(
-                self.login_url, data=data, timeout=timeout
-            )
+            response = self.__session.post(self.login_url, data=data, timeout=timeout)
         except requests.Timeout:
             self.active = False
             logging.error("Login timeout")
@@ -47,9 +44,11 @@ class TerminalSession:
         try:
             response = self.__session.get(self.table_sales_url, timeout=timeout)
         except requests.Timeout:
+            self.active = False
             logging.error("Tables sales get Timeout")
             return None
         except requests.ConnectionError:
+            self.active = False
             logging.error("Table sales ConnectionError")
             return None
 
