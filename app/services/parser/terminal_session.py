@@ -1,56 +1,45 @@
-import requests
+import aiohttp
 import logging
 
 
 class TerminalSession:
     def __init__(self, url: str, login: str, password: str) -> None:
         self.url = url
-        self.user_login = login
-        self.user_password = password
-        self.login_url = url + "/Account/Login"
-        self.table_sales_url = url + "/Admin/_TableSales"
+        self.__login = login
+        self.__password = password
+        self.__login_url = url + "/Account/Login"
+        self.__table_sales_url = url + "/Admin/_TableSales"
+        self.__cookie_jar = aiohttp.CookieJar()
         self.active = False
-        self.__session = requests.Session()
 
-    def login(self) -> bool:
-        logging.debug("Try to login")
+    def is_active(self) -> bool:
+        return self.active
 
-        data = {"Login": self.user_login, "Password": self.user_password}
-        timeout = 60
-
+    async def login(self):
+        logging.debug(f"Login to terminal {self.url}")
         try:
-            response = self.__session.post(self.login_url, data=data, timeout=timeout)
-        except requests.Timeout:
+            async with aiohttp.ClientSession(cookie_jar=self.__cookie_jar) as session:
+                async with session.post(
+                    self.__login_url,
+                    data={"Login": self.__login, "Password": self.__password},
+                ) as resp:
+                    print(resp.status)
+                    resp.raise_for_status()
+                    self.active = True
+        except Exception as e:
+            logging.error(e)
             self.active = False
-            logging.error("Login timeout")
-            return False
-        except requests.ConnectionError:
-            self.active = False
-            logging.error("Login ConnectionError")
-            return False
 
-        if response.url == self.login_url:
-            self.active = False
-            logging.error("Login Failed")
-            return False
-
-        logging.debug("Login successful")
-        self.active = True
-        return True
-
-    def get_table_sales(self) -> str | None:
-        logging.debug("Getting table sales")
-        timeout = 60
+    async def get_table_sales_page(self) -> str:
+        logging.debug(f"Getting table sales page {self.url}")
+        if self.is_active is False:
+            return ""
         try:
-            response = self.__session.get(self.table_sales_url, timeout=timeout)
-        except requests.Timeout:
+            async with aiohttp.ClientSession(cookie_jar=self.__cookie_jar) as session:
+                async with session.get(self.__table_sales_url) as resp:
+                    resp.raise_for_status()
+                    return await resp.text()
+        except Exception as e:
+            logging.error(e)
             self.active = False
-            logging.error("Tables sales get Timeout")
-            return None
-        except requests.ConnectionError:
-            self.active = False
-            logging.error("Table sales ConnectionError")
-            return None
-
-        logging.debug("Getting table sales successful")
-        return response.text
+            return ""
