@@ -31,11 +31,15 @@ class Parser:
 
     def __get_manual_starts_from_page(self, table_sales_page: str) -> list[ManualStart]:
         starts_df = self.__get_starts_datatframe(table_sales_page)
+        if starts_df.empty:
+            return []
         manual_starts = self.__filter_manual_starts(starts_df)
 
         return [self.__parse_row_to_manual_start(row) for row in manual_starts.values]
 
     def __get_starts_datatframe(self, table_sales_page: str) -> pd.DataFrame:
+        if table_sales_page == "":
+            return pd.DataFrame()
         df = pd.read_html(table_sales_page)[0]
         return df
 
@@ -44,7 +48,9 @@ class Parser:
 
     def __parse_row_to_manual_start(self, row: np.ndarray) -> ManualStart:
         return ManualStart(
-            id=self.__get_id(row), date=self.__get_date(row), mode=self.__get_mode(row)
+            id=self.__get_id(row),
+            date=self.__get_date(row),
+            mode=self.__get_mode(row),
         )
 
     def __get_id(self, row) -> str:

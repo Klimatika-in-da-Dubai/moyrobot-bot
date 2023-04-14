@@ -33,7 +33,9 @@ class TestManualStart(ManualStart):
     __tablename__ = "test_manual_start"
 
     id: Mapped[str] = mapped_column(
-        ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
+        ForeignKey("manual_start.id", ondelete="CASCADE"),
+        primary_key=True,
+        unique=True,
     )
     description: Mapped[str]
 
@@ -42,7 +44,9 @@ class RewashManualStart(ManualStart):
     __tablename__ = "rewash_manual_start"
 
     id: Mapped[str] = mapped_column(
-        ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
+        ForeignKey("manual_start.id", ondelete="CASCADE"),
+        primary_key=True,
+        unique=True,
     )
     photo_file_id: Mapped[str]
     description: Mapped[str]
@@ -52,7 +56,9 @@ class PaidManualStart(ManualStart):
     __tablename__ = "paid_manual_start"
 
     id: Mapped[str] = mapped_column(
-        ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
+        ForeignKey("manual_start.id", ondelete="CASCADE"),
+        primary_key=True,
+        unique=True,
     )
     payment_method: Mapped[str]
     payment_amount: Mapped[int]

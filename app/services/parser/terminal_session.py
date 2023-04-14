@@ -30,10 +30,10 @@ class TerminalSession:
             logging.error(e)
             self.active = False
 
-    async def get_table_sales_page(self) -> str:
+    async def get_table_sales_page(self) -> str | None:
         logging.debug(f"Getting table sales page {self.url}")
         if self.is_active is False:
-            return ""
+            return None
         try:
             async with aiohttp.ClientSession(cookie_jar=self.__cookie_jar) as session:
                 async with session.get(self.__table_sales_url) as resp:
@@ -42,4 +42,4 @@ class TerminalSession:
         except Exception as e:
             logging.error(e)
             self.active = False
-            return ""
+            return None
