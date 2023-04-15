@@ -1,4 +1,4 @@
-import enum
+from enum import IntEnum, auto
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import Enum, VARCHAR
@@ -8,10 +8,11 @@ from datetime import datetime
 from app.services.database.base import Base
 
 
-class ManualStartType(enum.Enum):
-    TEST = "test"
-    REWASH = "rewash"
-    PAID = "paid"
+class ManualStartType(IntEnum):
+    TEST = auto()
+    REWASH = auto()
+    PAID = auto()
+    SERVICE = auto()
 
 
 class ManualStart(Base):
@@ -20,7 +21,8 @@ class ManualStart(Base):
     id: Mapped[str] = mapped_column(
         VARCHAR(10), primary_key=True, unique=True, nullable=False
     )
-    date: Mapped[datetime] = mapped_column()
+    terminal_id: Mapped[int]
+    date: Mapped[datetime]
     mode: Mapped[int] = mapped_column(nullable=True)
     reported: Mapped[bool] = mapped_column(default=False)
     sended_to_admin: Mapped[bool] = mapped_column(default=False)
@@ -36,6 +38,15 @@ class TestManualStart(ManualStart):
         ForeignKey("manual_start.id", ondelete="CASCADE"),
         primary_key=True,
         unique=True,
+    )
+    description: Mapped[str]
+
+
+class ServiceManualStart(ManualStart):
+    __tablename__ = "service_manual_start"
+
+    id: Mapped[int] = mapped_column(
+        ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
     description: Mapped[str]
 

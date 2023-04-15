@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy import select, join
+from sqlalchemy import select
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.user import Role, User, UserRole
 
@@ -20,6 +20,15 @@ class UserDAO(BaseDAO[User]):
             await session.merge(user)
             await session.commit()
 
+    async def add_user_with_roles(self, user: User, user_roles: list[UserRole]):
+        await self.add_user(user)
+
+        async with self._session() as session:
+            for user_role in user_roles:
+                await session.merge(user_role)
+
+            await session.commit()
+
     async def get_user_roles(self, user: User) -> list[Role]:
         async with self._session() as session:
             roles = await session.execute(
@@ -32,12 +41,32 @@ class UserDAO(BaseDAO[User]):
         roles = await self.get_user_roles(user)
         return Role.ADMIN in roles
 
+    async def user_is_operator(self, user: User) -> bool:
+        roles = await self.get_user_roles(user)
+        return Role.OPERATOR in roles or Role.ADMIN in roles
 
-async def is_admin(chat_id: int, session) -> bool:
-    userdao = UserDAO(session=session)
-    user: User = await userdao.get_by_id(id_=chat_id)
+    async def user_is_moderator(self, user: User) -> bool:
+        roles = await self.get_user_roles(user)
+        return Role.MODERATOR in roles or Role.ADMIN in roles
 
-    if user is None:
-        return False
+    async def is_admin(self, chat_id: int) -> bool:
+        user: User = await self.get_by_id(id_=chat_id)
+        if user is None:
+            return False
+        return await self.user_is_admin(user)
 
-    return await userdao.user_is_admin(user)
+    async def is_operator(self, chat_id: int) -> bool:
+        user = await self.get_by_id(id_=chat_id)
+        if user is None:
+            return False
+        return await self.user_is_operator(user)
+
+    async def is_moderator(self, chat_id: int) -> bool:
+        user = await self.get_by_id(id_=chat_id)
+        if user is None:
+            return False
+        return await self.user_is_moderator(user)
+
+    async def exists(self, chat_id: int) -> bool:
+        user = await self.get_by_id(id_=chat_id)
+        return user is not None
