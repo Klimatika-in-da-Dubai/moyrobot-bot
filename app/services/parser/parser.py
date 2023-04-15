@@ -27,15 +27,20 @@ class Parser:
         table_sales_page = await session.get_table_sales_page()
         if table_sales_page is None:
             return []
-        return self.__get_manual_starts_from_page(table_sales_page)
+        return self.__get_manual_starts_from_page(session.terminal_id, table_sales_page)
 
-    def __get_manual_starts_from_page(self, table_sales_page: str) -> list[ManualStart]:
+    def __get_manual_starts_from_page(
+        self, terminal_id: int, table_sales_page: str
+    ) -> list[ManualStart]:
         starts_df = self.__get_starts_datatframe(table_sales_page)
         if starts_df.empty:
             return []
         manual_starts = self.__filter_manual_starts(starts_df)
 
-        return [self.__parse_row_to_manual_start(row) for row in manual_starts.values]
+        return [
+            self.__parse_row_to_manual_start(terminal_id, row)
+            for row in manual_starts.values
+        ]
 
     def __get_starts_datatframe(self, table_sales_page: str) -> pd.DataFrame:
         if table_sales_page == "":
@@ -46,9 +51,12 @@ class Parser:
     def __filter_manual_starts(self, starts_df: pd.DataFrame) -> pd.DataFrame:
         return starts_df.loc[starts_df["Тип запуска  БУМ"] == MANUAL_START_TEXT]
 
-    def __parse_row_to_manual_start(self, row: np.ndarray) -> ManualStart:
+    def __parse_row_to_manual_start(
+        self, terminal_id: int, row: np.ndarray
+    ) -> ManualStart:
         return ManualStart(
             id=self.__get_id(row),
+            terminal_id=terminal_id,
             date=self.__get_date(row),
             mode=self.__get_mode(row),
         )

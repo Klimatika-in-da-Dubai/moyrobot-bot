@@ -3,7 +3,8 @@ import logging
 
 
 class TerminalSession:
-    def __init__(self, url: str, login: str, password: str) -> None:
+    def __init__(self, terminal_id: int, url: str, login: str, password: str) -> None:
+        self.terminal_id = terminal_id
         self.url = url
         self.__login = login
         self.__password = password
