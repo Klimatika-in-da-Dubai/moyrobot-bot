@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import asyncio
 from datetime import datetime
 
 from app.services.database.models.manual_start import ManualStart
@@ -12,14 +12,21 @@ MANUAL_START_TEXT = "Автоматический"
 class Parser:
     def __init__(self, sessions: list[TerminalSession]) -> None:
         self.sessions: list[TerminalSession] = sessions
+        manual_starts = list()
 
     async def get_manual_starts(self) -> list[ManualStart]:
-        manual_starts = list()
-        for session in self.sessions:
-            if session.is_active() is False:
-                await session.login()
-            manual_starts.extend(await self.get_manual_starts_from_session(session))
+        tasks = [asyncio.create_task(self._get_manual_start_impl(session)) for session in self.sessions]
+        group = asyncio.gather(*tasks)
+        manual_starts_group = await group
+        manual_starts = []
+        for el in manual_starts_group:
+            manual_starts.extend(el)
         return manual_starts
+
+    async def _get_manual_start_impl(self, session: TerminalSession):
+        if session.is_active() is False:
+            await session.login()
+        return await self.get_manual_starts_from_session(session)
 
     async def get_manual_starts_from_session(
         self, session: TerminalSession
