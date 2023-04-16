@@ -15,6 +15,11 @@ class ManualStartType(IntEnum):
     SERVICE = auto()
 
 
+class PaymentMethod(IntEnum):
+    CASH = auto()
+    CARD = auto()
+
+
 class ManualStart(Base):
     __tablename__ = "manual_start"
 
@@ -25,13 +30,14 @@ class ManualStart(Base):
     date: Mapped[datetime]
     mode: Mapped[int] = mapped_column(nullable=True)
     reported: Mapped[bool] = mapped_column(default=False)
+    sended_to_chat: Mapped[bool] = mapped_column(default=False)
     sended_to_admin: Mapped[bool] = mapped_column(default=False)
     type: Mapped[ManualStartType] = mapped_column(
         Enum(ManualStartType), nullable=True, default=None
     )
 
 
-class TestManualStart(ManualStart):
+class TestManualStart(Base):
     __tablename__ = "test_manual_start"
 
     id: Mapped[str] = mapped_column(
@@ -42,7 +48,7 @@ class TestManualStart(ManualStart):
     description: Mapped[str]
 
 
-class ServiceManualStart(ManualStart):
+class ServiceManualStart(Base):
     __tablename__ = "service_manual_start"
 
     id: Mapped[int] = mapped_column(
@@ -51,7 +57,7 @@ class ServiceManualStart(ManualStart):
     description: Mapped[str]
 
 
-class RewashManualStart(ManualStart):
+class RewashManualStart(Base):
     __tablename__ = "rewash_manual_start"
 
     id: Mapped[str] = mapped_column(
@@ -63,7 +69,7 @@ class RewashManualStart(ManualStart):
     description: Mapped[str]
 
 
-class PaidManualStart(ManualStart):
+class PaidManualStart(Base):
     __tablename__ = "paid_manual_start"
 
     id: Mapped[str] = mapped_column(
@@ -71,5 +77,5 @@ class PaidManualStart(ManualStart):
         primary_key=True,
         unique=True,
     )
-    payment_method: Mapped[str]
+    payment_method: Mapped[PaymentMethod]
     payment_amount: Mapped[int]

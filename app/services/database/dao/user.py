@@ -37,6 +37,34 @@ class UserDAO(BaseDAO[User]):
             roles_list = roles.scalars().all()
             return roles_list
 
+    async def get_ids_to_report_test_manual_start(self) -> list[int]:
+        async with self._session() as session:
+            ids = await session.execute(
+                select(UserRole.id).where(UserRole.role == Role.ADMIN)
+            )
+            return ids.scalars().all()
+
+    async def get_ids_to_report_service_manual_start(self) -> list[int]:
+        async with self._session() as session:
+            ids = await session.execute(
+                select(UserRole.id).where(UserRole.role == Role.ADMIN)
+            )
+            return ids.scalars().all()
+
+    async def get_ids_to_report_rewash_manual_start(self) -> list[int]:
+        async with self._session() as session:
+            ids = await session.execute(
+                select(UserRole.id).where(UserRole.role == Role.ADMIN)
+            )
+            return ids.scalars().all()
+
+    async def get_ids_to_report_paid_manual_start(self) -> list[int]:
+        async with self._session() as session:
+            ids = await session.execute(
+                select(UserRole.id).where(UserRole.role == Role.ADMIN)
+            )
+            return ids.scalars().all()
+
     async def user_is_admin(self, user: User) -> bool:
         roles = await self.get_user_roles(user)
         return Role.ADMIN in roles

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.manual_start import (
     ManualStartType,
@@ -29,3 +29,41 @@ class ManualStartDAO(BaseDAO):
                 .limit(n)
             )
             return manual_starts.scalars().all()
+
+    async def get_typed_manual_start(self, manual_start_id: int, type: ManualStartType):
+        manual_start_table = self._match_manual_start_type(type)
+        async with self._session() as session:
+            manual_start = await session.executer(
+                select(manual_start_table).where(
+                    manual_start_table.id == manual_start_id
+                )
+            )
+            return manual_start.scalars().first()
+
+    def _match_manual_start_type(self, type: ManualStartType):
+        match type:
+            case ManualStartType.TEST:
+                return TestManualStart
+            case ManualStartType.SERVICE:
+                return ServiceManualStart
+            case ManualStartType.REWASH:
+                return RewashManualStart
+            case ManualStartType.PAID:
+                return PaidManualStart
+
+    async def report_typed_manual_start(
+        self,
+        typed_manual_start: TestManualStart
+        | ServiceManualStart
+        | RewashManualStart
+        | PaidManualStart,
+        type: ManualStartType,
+    ):
+        async with self._session() as session:
+            await session.execute(
+                update(ManualStart)
+                .where(ManualStart.id == typed_manual_start.id)
+                .values(reported=True, type=type)
+            )
+            await session.merge(typed_manual_start)
+            await session.commit()
