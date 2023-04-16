@@ -4,14 +4,15 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
-from app.core.keyboards.operator.manual_start.manual_start_report import (
-    get_manual_start_type_keyboard,
+from app.core.keyboards.operator.manual_start.manual_start_type import (
+    send_manual_start_type_keyboard,
 )
-from app.core.keyboards.operator.manual_start.menu import get_manual_starts_keyboard
+from app.core.keyboards.operator.manual_start.menu import send_manual_starts_keyboard
+
 from app.core.keyboards.operator.manual_start.test_manual_start import (
     TestManualStartCB,
     TestManualStartTarget,
-    get_test_manual_start_keyboard,
+    send_test_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.manual_start import ManualStartDAO
@@ -39,12 +40,11 @@ async def cb_description(cb: types.CallbackQuery, state: FSMContext):
 @test_manual_start_router.message(
     OperatorMenu.ManualStartSection.TestManualStart.description, F.text
 )
-async def message_description(message: types.Message, state: FSMContext):
+async def message_description(
+    message: types.Message, state: FSMContext, session: async_sessionmaker
+):
     await state.update_data(description=message.text)
-    await state.set_state(OperatorMenu.ManualStartSection.TestManualStart.menu)
-    await message.answer(
-        "Тестовый запуск", reply_markup=get_test_manual_start_keyboard()
-    )
+    await send_test_manual_start_keyboard(message.answer, state, session)
 
 
 @test_manual_start_router.callback_query(
@@ -52,13 +52,12 @@ async def message_description(message: types.Message, state: FSMContext):
     OperatorMenu.ManualStartSection.TestManualStart.menu,
     TestManualStartCB.filter((F.action == Action.BACK)),
 )
-async def cb_back(cb: types.CallbackQuery, state: FSMContext):
+async def cb_back(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
     await cb.answer()
-    await state.update_data(description="")
-    await state.set_state(OperatorMenu.ManualStartSection.type)
-    await cb.message.edit_text(  # type: ignore
-        "Выберите тип ручного запуска", reply_markup=get_manual_start_type_keyboard()
-    )
+    await state.update_data(description=None)
+    await send_manual_start_type_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @test_manual_start_router.callback_query(
@@ -85,10 +84,7 @@ async def cb_enter(
         test_manual_start, ManualStartType.TEST
     )
     await state.clear()
-    await state.set_state(OperatorMenu.ManualStartSection.menu)
-    await cb.message.edit_text(  # type: ignore
-        "Ручные запуски", reply_markup=await get_manual_starts_keyboard(session)
-    )
+    await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 async def report_test_manual_start(

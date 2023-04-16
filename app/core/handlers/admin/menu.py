@@ -8,7 +8,9 @@ from app.core.filters.admin import isAdminCB
 
 from app.core.states.admin import AdminMenu
 from app.core.keyboards.base import Action
-from app.core.keyboards.menu import get_menu_keyboard
+from app.core.keyboards.menu import (
+    send_menu_keyboard,
+)
 from app.core.keyboards.admin.menu import (
     AdminMenuCB,
     AdminMenuTarget,
@@ -41,8 +43,4 @@ async def cb_back(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await state.clear()
-    await cb.message.edit_text(  # type: ignore
-        text="Меню",
-        reply_markup=await get_menu_keyboard(cb.message.chat.id, session),  # type: ignore
-    )
+    await send_menu_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

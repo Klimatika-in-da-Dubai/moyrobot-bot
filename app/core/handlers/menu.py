@@ -6,12 +6,11 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.filters.operator import isOperatorCB
 
-from app.core.states.operator import OperatorMenu
 from app.core.states.admin import AdminMenu
 from app.core.keyboards.base import Action
-from app.core.keyboards.menu import get_menu_keyboard, MenuCB
+from app.core.keyboards.menu import MenuCB, send_menu_keyboard
 from app.core.keyboards.admin.menu import get_admin_menu_keyboard
-from app.core.keyboards.operator.menu import get_operator_menu_keyboard
+from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role, User
 
@@ -36,22 +35,17 @@ async def cmd_start(
         await message.answer("Для вас не неназначено ни одной роли")
         return
 
-    await message.answer(
-        f"Добро пожаловать, {user.name}",
-        reply_markup=await get_menu_keyboard(message.chat.id, session),
-    )
+    await send_menu_keyboard(message.answer, message, state, session)
 
 
 @menu_router.callback_query(
     isOperatorCB(), MenuCB.filter((F.role == Role.OPERATOR) & (F.action == Action.OPEN))
 )
-async def cb_open_operator_menu(cb: types.CallbackQuery, state: FSMContext) -> None:
+async def cb_open_operator_menu(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+) -> None:
     await cb.answer()
-    await state.set_state(OperatorMenu.menu)
-    await cb.message.edit_text(  # type: ignore
-        "Меню оператора", reply_markup=get_operator_menu_keyboard()
-    )
-    ...
+    await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -73,9 +67,7 @@ async def cb_open_admin_menu(
     await cb.answer()
 
     await state.set_state(AdminMenu.menu)
-    await cb.message.edit_text(  # type: ignore
-        "Админ меню", reply_markup=get_admin_menu_keyboard()
-    )
+    await cb.message.edit_text("Админ меню", reply_markup=get_admin_menu_keyboard())  # type: ignore
 
 
 @menu_router.message(Command(commands=["id"]))

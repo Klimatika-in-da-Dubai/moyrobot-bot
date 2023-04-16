@@ -1,9 +1,13 @@
 from enum import IntEnum, auto
+from typing import Callable
 from aiogram import types
 from aiogram.filters.callback_data import CallbackData
+from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.keyboards.base import Action
+from app.core.states.operator import OperatorMenu
 
 
 class ManualStartReportTarget(IntEnum):
@@ -63,3 +67,17 @@ def get_manual_start_type_keyboard() -> types.InlineKeyboardMarkup:
         )
     )
     return builder.as_markup()
+
+
+async def get_manual_start_text(state: FSMContext):
+    data = await state.get_data()
+    id = data.get("id")
+    return "Ручной запуск\n" f"*ID*: *{id}*\n" "\n" "Выберите тип ручного запуска:\n"
+
+
+async def send_manual_start_type_keyboard(
+    send_func: Callable, state: FSMContext, session: async_sessionmaker
+):
+    text = await get_manual_start_text(state)
+    await state.set_state(OperatorMenu.ManualStartSection.type)
+    await send_func(text=text, reply_markup=get_manual_start_type_keyboard())

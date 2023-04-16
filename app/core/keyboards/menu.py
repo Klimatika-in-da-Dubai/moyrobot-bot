@@ -1,4 +1,6 @@
+from typing import Callable
 from aiogram import types
+from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -45,3 +47,15 @@ async def get_menu_keyboard(
         )
 
     return builder.as_markup()
+
+
+async def send_menu_keyboard(
+    send_func: Callable,
+    message: types.Message,
+    state: FSMContext,
+    session: async_sessionmaker,
+) -> None:
+    await state.clear()
+    await send_func(
+        text="Меню", reply_markup=await get_menu_keyboard(message.chat.id, session)
+    )

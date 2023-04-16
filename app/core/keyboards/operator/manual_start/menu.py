@@ -1,10 +1,13 @@
 from enum import IntEnum, auto
+from typing import Callable
 from aiogram import types
 from aiogram.filters.callback_data import CallbackData
+from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.keyboards.base import Action
+from app.core.states.operator import OperatorMenu
 from app.services.database.dao.manual_start import ManualStartDAO
 
 MANUAL_STARTS_KEYBOARD_COUNT = 5
@@ -54,3 +57,14 @@ async def get_manual_starts_keyboard(
         ),
     )
     return builder.as_markup()
+
+
+async def send_manual_starts_keyboard(
+    send_func: Callable,
+    state: FSMContext,
+    session: async_sessionmaker,
+):
+    await state.set_state(OperatorMenu.ManualStartSection.menu)
+    await send_func(
+        "Ручные запуски", reply_markup=await get_manual_starts_keyboard(session)
+    )

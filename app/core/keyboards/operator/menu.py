@@ -1,8 +1,12 @@
 from enum import IntEnum, auto
+from typing import Callable
 from aiogram import types
+from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.base import Action
+from app.core.states.operator import OperatorMenu
 
 
 class OperatorMenuTarget(IntEnum):
@@ -35,3 +39,10 @@ def get_operator_menu_keyboard() -> types.InlineKeyboardMarkup:
         )
     )
     return builder.as_markup()
+
+
+async def send_operator_menu_keyboard(
+    send_func: Callable, state: FSMContext, session: async_sessionmaker
+):
+    await state.set_state(OperatorMenu.menu)
+    await send_func("Меню оператора", reply_markup=get_operator_menu_keyboard())

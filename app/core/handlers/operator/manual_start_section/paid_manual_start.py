@@ -4,17 +4,19 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, YesNoCB, YesNoTarget, get_yes_no_keyboard
-from app.core.keyboards.operator.manual_start.manual_start_report import (
-    get_manual_start_type_keyboard,
+from app.core.keyboards.operator.manual_start.manual_start_type import (
+    send_manual_start_type_keyboard,
 )
-from app.core.keyboards.operator.manual_start.menu import get_manual_starts_keyboard
+from app.core.keyboards.operator.manual_start.menu import (
+    send_manual_starts_keyboard,
+)
 from app.core.keyboards.operator.manual_start.paid_manual_start import (
     PaidManualStartCB,
     PaidManualStartTarget,
     PaymentMethodCB,
     PaymentMethodTarget,
-    get_paid_manual_start_keyboard,
-    get_payment_method_keyboard,
+    send_paid_manual_start_keyboard,
+    send_payment_method_keyboard,
 )
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.manual_start import ManualStartDAO
@@ -35,14 +37,11 @@ paid_manual_start_router = Router()
         (F.action == Action.OPEN) & (F.target == PaidManualStartTarget.PAYMENT_METHOD)
     ),
 )
-async def cb_payment_method(cb: types.CallbackQuery, state: FSMContext):
+async def cb_payment_method(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
     await cb.answer()
-    await state.set_state(
-        OperatorMenu.ManualStartSection.PaidManualStart.payment_method
-    )
-    await cb.message.edit_text(  # type: ignore
-        "Выберите метод оплаты", reply_markup=await get_payment_method_keyboard(state)
-    )
+    await send_payment_method_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @paid_manual_start_router.callback_query(
@@ -51,7 +50,10 @@ async def cb_payment_method(cb: types.CallbackQuery, state: FSMContext):
     PaymentMethodCB.filter(F.action == Action.SELECT),
 )
 async def cb_payment_method_select(
-    cb: types.CallbackQuery, callback_data: PaymentMethodCB, state: FSMContext
+    cb: types.CallbackQuery,
+    callback_data: PaymentMethodCB,
+    state: FSMContext,
+    session: async_sessionmaker,
 ):
     payment_method_cb = callback_data.target
     selected_method = None
@@ -65,9 +67,7 @@ async def cb_payment_method_select(
 
     await cb.answer()
     await state.update_data(payment_method=selected_method)
-    await cb.message.edit_text(  # type: ignore
-        "Выберите метод оплаты", reply_markup=await get_payment_method_keyboard(state)
-    )
+    await send_payment_method_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @paid_manual_start_router.callback_query(
@@ -75,12 +75,11 @@ async def cb_payment_method_select(
     OperatorMenu.ManualStartSection.PaidManualStart.payment_method,
     PaymentMethodCB.filter(F.action == Action.BACK),
 )
-async def cb_payment_method_back(cb: types.CallbackQuery, state: FSMContext):
+async def cb_payment_method_back(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
     await cb.answer()
-    await state.set_state(OperatorMenu.ManualStartSection.PaidManualStart.menu)
-    await cb.message.edit_text(  # type: ignore
-        "Оплата через эквайринг", reply_markup=get_paid_manual_start_keyboard()
-    )
+    await send_paid_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @paid_manual_start_router.callback_query(
@@ -102,16 +101,16 @@ async def cb_payment_amount(cb: types.CallbackQuery, state: FSMContext):
 @paid_manual_start_router.message(
     OperatorMenu.ManualStartSection.PaidManualStart.payment_amount, F.text
 )
-async def message_payment_amount(message: types.Message, state: FSMContext):
+async def message_payment_amount(
+    message: types.Message, state: FSMContext, session: async_sessionmaker
+):
     payment_amount = message.text
     if not payment_amount.isnumeric():  # type: ignore
         await message.answer("Введите число")
         return
     await state.update_data(payment_amount=int(payment_amount))  # type: ignore
-    await state.set_state(OperatorMenu.ManualStartSection.PaidManualStart.menu)
-    await message.answer(
-        "Оплата через эквайринг", reply_markup=get_paid_manual_start_keyboard()
-    )
+
+    await send_paid_manual_start_keyboard(message.answer, state, session)
 
 
 @paid_manual_start_router.callback_query(
@@ -119,13 +118,12 @@ async def message_payment_amount(message: types.Message, state: FSMContext):
     OperatorMenu.ManualStartSection.PaidManualStart.menu,
     PaidManualStartCB.filter(F.action == Action.BACK),
 )
-async def cb_back(cb: types.CallbackQuery, state: FSMContext):
+async def cb_back(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
     await cb.answer()
     await state.update_data(payment_method=None, payment_amount=None)
-    await state.set_state(OperatorMenu.ManualStartSection.type)
-    await cb.message.edit_text(  # type: ignore
-        "Выберите тип ручного запуска", reply_markup=get_manual_start_type_keyboard()
-    )
+    await send_manual_start_type_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @paid_manual_start_router.callback_query(
@@ -168,10 +166,7 @@ async def cb_bonus_no(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await state.set_state(OperatorMenu.ManualStartSection.menu)
-    await cb.message.edit_text(  # type: ignore
-        "Ручные запуски", reply_markup=await get_manual_starts_keyboard(session)
-    )
+    await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @paid_manual_start_router.callback_query(
