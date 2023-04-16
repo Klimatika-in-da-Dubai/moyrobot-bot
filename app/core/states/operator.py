@@ -6,22 +6,25 @@ class OperatorMenu(StatesGroup):
 
     class ManualStartSection(StatesGroup):
         menu = State()
+        type = State()
 
-        class ManualStartReport(StatesGroup):
-            type = State()
+        class TestManualStart(StatesGroup):
+            menu = State()
+            description = State()
 
-            class TestManualStart(StatesGroup):
-                description = State()
+        class ServiceManualStart(StatesGroup):
+            menu = State()
+            description = State()
 
-            class ServiceManualStart(StatesGroup):
-                description = State()
+        class RewashManualStart(StatesGroup):
+            menu = State()
+            photo = State()
+            description = State()
 
-            class RewashManualStart(StatesGroup):
-                photo = State()
-                description = State()
-
-            class PaidManualStart(StatesGroup):
-                payment_method = State()
-                payment_amount = State()
+        class PaidManualStart(StatesGroup):
+            menu = State()
+            payment_method = State()
+            payment_amount = State()
+            bonus = State()
 
     ...

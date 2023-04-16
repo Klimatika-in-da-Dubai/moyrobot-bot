@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.menu import get_menu_keyboard
-from app.core.keyboards.operator.manual_start.menu import get_manual_start_keyboard
+from app.core.keyboards.operator.manual_start.menu import get_manual_starts_keyboard
 from app.core.keyboards.operator.menu import OperatorMenuCB, OperatorMenuTarget
 
 from app.core.states.operator import OperatorMenu
@@ -28,7 +28,7 @@ async def cb_manual_start_open(
     await cb.answer()
     await state.set_state(OperatorMenu.ManualStartSection.menu)
     await cb.message.edit_text(  # type: ignore
-        text="Ручные запуски", reply_markup=await get_manual_start_keyboard(session)
+        text="Ручные запуски", reply_markup=await get_manual_starts_keyboard(session)
     )
 
 

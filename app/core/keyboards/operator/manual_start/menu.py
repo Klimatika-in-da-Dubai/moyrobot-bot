@@ -21,7 +21,7 @@ class ManualStartSectionCB(CallbackData, prefix="omenu_man_start"):
     manual_start_id: str
 
 
-async def get_manual_start_keyboard(
+async def get_manual_starts_keyboard(
     session: async_sessionmaker[AsyncSession],
 ) -> types.InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -34,7 +34,7 @@ async def get_manual_start_keyboard(
     for manual_start in manual_starts:
         builder.row(
             types.InlineKeyboardButton(
-                text=f"Терминал: {manual_start.terminal_id}. Id: {manual_start.id}",
+                text=f"Терминал: {manual_start.terminal_id} Id: {manual_start.id}",
                 callback_data=ManualStartSectionCB(
                     action=Action.OPEN,
                     target=ManualStartSectionTarget.MANUAL_START,
