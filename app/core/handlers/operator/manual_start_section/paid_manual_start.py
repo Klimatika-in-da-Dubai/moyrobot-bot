@@ -1,4 +1,4 @@
-from aiogram import Router, types, F
+from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -19,13 +19,14 @@ from app.core.keyboards.operator.manual_start.paid_manual_start import (
     send_payment_method_keyboard,
 )
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.mailing import MailingDAO
 from app.services.database.dao.manual_start import ManualStartDAO
+from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
     ManualStartType,
     PaidManualStart,
     PaymentMethod,
 )
-
 
 paid_manual_start_router = Router()
 
@@ -132,13 +133,27 @@ async def cb_back(
     PaidManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
 ):
     data = await state.get_data()
 
     if not check_data(data):
         await cb.answer("Не все поля заполнены", show_alert=True)
         return
+    id = data.get("id")  # type: ignore
+
+    await table_add_paid_manual_start(state, session)
+    await state.clear()
+    await report_paid_manual_start(bot, session, id)  # type: ignore
+
+    await state.set_state(OperatorMenu.ManualStartSection.PaidManualStart.bonus)
+    await cb.message.edit_text(  # type: ignore
+        "Хотите начислить бонусы?", reply_markup=get_yes_no_keyboard()
+    )
+
+
+async def table_add_paid_manual_start(state: FSMContext, session: async_sessionmaker):
+    data = await state.get_data()
     id = data.get("id")
     payment_method = data.get("payment_method")
     payment_amount = data.get("payment_amount")
@@ -150,11 +165,36 @@ async def cb_enter(
     await manual_start_dao.report_typed_manual_start(
         paid_manual_start, ManualStartType.PAID
     )
-    await state.clear()
-    await state.set_state(OperatorMenu.ManualStartSection.PaidManualStart.bonus)
-    await cb.message.edit_text(  # type: ignore
-        "Хотите начислить бонусы?", reply_markup=get_yes_no_keyboard()
+
+
+async def report_paid_manual_start(
+    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
+):
+    mailingdao = MailingDAO(session)
+    manual_start_dao = ManualStartDAO(session)
+
+    paid_manual_start: PaidManualStart = await manual_start_dao.get_typed_manual_start(
+        test_manual_start_id, ManualStartType.PAID
     )
+    payment_method_text = (
+        "Карта"
+        if paid_manual_start.payment_method == PaymentMethod.CARD
+        else "Наличные"
+    )
+
+    text = (
+        "Получен отчёт о ручном запуске\n"
+        "\n"
+        "Ручной запуск:\n"
+        "*Тип:* Оплата через эквайринг\n"
+        f"*ID:* {paid_manual_start.id}\n"
+        f"*Тип оплаты:* {payment_method_text}\n"
+        f"*Сумма оплаты:* {paid_manual_start.payment_amount}"
+    )
+
+    ids = await mailingdao.get_mailing_ids(MailingType.MANUAL_START)
+    for id in ids:
+        await bot.send_message(id, text=text)
 
 
 @paid_manual_start_router.callback_query(

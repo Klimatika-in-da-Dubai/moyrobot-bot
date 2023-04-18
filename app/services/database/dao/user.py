@@ -1,3 +1,4 @@
+from typing import Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import select
 from app.services.database.dao.base import BaseDAO
@@ -29,7 +30,7 @@ class UserDAO(BaseDAO[User]):
 
             await session.commit()
 
-    async def get_user_roles(self, user: User) -> list[Role]:
+    async def get_user_roles(self, user: User) -> Sequence[Role]:
         async with self._session() as session:
             roles = await session.execute(
                 select(UserRole.role).join(User).where(self._model.id == user.id)
@@ -37,28 +38,28 @@ class UserDAO(BaseDAO[User]):
             roles_list = roles.scalars().all()
             return roles_list
 
-    async def get_ids_to_report_test_manual_start(self) -> list[int]:
+    async def get_ids_to_report_test_manual_start(self) -> Sequence[int]:
         async with self._session() as session:
             ids = await session.execute(
                 select(UserRole.id).where(UserRole.role == Role.ADMIN)
             )
             return ids.scalars().all()
 
-    async def get_ids_to_report_service_manual_start(self) -> list[int]:
+    async def get_ids_to_report_service_manual_start(self) -> Sequence[int]:
         async with self._session() as session:
             ids = await session.execute(
                 select(UserRole.id).where(UserRole.role == Role.ADMIN)
             )
             return ids.scalars().all()
 
-    async def get_ids_to_report_rewash_manual_start(self) -> list[int]:
+    async def get_ids_to_report_rewash_manual_start(self) -> Sequence[int]:
         async with self._session() as session:
             ids = await session.execute(
                 select(UserRole.id).where(UserRole.role == Role.ADMIN)
             )
             return ids.scalars().all()
 
-    async def get_ids_to_report_paid_manual_start(self) -> list[int]:
+    async def get_ids_to_report_paid_manual_start(self) -> Sequence[int]:
         async with self._session() as session:
             ids = await session.execute(
                 select(UserRole.id).where(UserRole.role == Role.ADMIN)

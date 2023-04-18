@@ -1,16 +1,16 @@
+from typing import Sequence
 from aiogram import Router, types, F
-from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
-
+from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+
 from app.core.filters.admin import isAdminCB
 from app.core.filters.operator import isOperatorCB
-
-from app.core.states.admin import AdminMenu
 from app.core.keyboards.base import Action
 from app.core.keyboards.menu import MenuCB, send_menu_keyboard
-from app.core.keyboards.admin.menu import get_admin_menu_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
+from app.core.keyboards.admin.menu import get_admin_menu_keyboard
+from app.core.states.admin import AdminMenu
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role, User
 
@@ -30,7 +30,7 @@ async def cmd_start(
         return
 
     user: User = await userdao.get_by_id(id_=message.chat.id)
-    roles: list[Role] = await userdao.get_user_roles(user)
+    roles: Sequence[Role] = await userdao.get_user_roles(user)
     if len(roles) == 0:
         await message.answer("Для вас не неназначено ни одной роли")
         return

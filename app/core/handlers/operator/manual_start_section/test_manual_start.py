@@ -8,17 +8,16 @@ from app.core.keyboards.operator.manual_start.manual_start_type import (
     send_manual_start_type_keyboard,
 )
 from app.core.keyboards.operator.manual_start.menu import send_manual_starts_keyboard
-
 from app.core.keyboards.operator.manual_start.test_manual_start import (
     TestManualStartCB,
     TestManualStartTarget,
     send_test_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.mailing import MailingDAO
 from app.services.database.dao.manual_start import ManualStartDAO
-from app.services.database.dao.user import UserDAO
+from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStartType, TestManualStart
-
 
 test_manual_start_router = Router()
 
@@ -74,6 +73,15 @@ async def cb_enter(
         await cb.answer("Не все поля заполнены", show_alert=True)
         return
 
+    id: str = data.get("id")  # type: ignore
+    await table_add_test_manual_start(state, session)
+    await state.clear()
+    await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await report_test_manual_start(bot, session, id)
+
+
+async def table_add_test_manual_start(state: FSMContext, session: async_sessionmaker):
+    data = await state.get_data()
     id = data.get("id")
     description = data.get("description")
 
@@ -83,22 +91,30 @@ async def cb_enter(
     await manual_start_dao.report_typed_manual_start(
         test_manual_start, ManualStartType.TEST
     )
-    await state.clear()
-    await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 async def report_test_manual_start(
-    bot: Bot, session: async_sessionmaker, test_manual_start_id: int
+    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
 ):
-    userdao = UserDAO(session)
+    mailingdao = MailingDAO(session)
     manual_start_dao = ManualStartDAO(session)
-    ids_to_report = await userdao.get_ids_to_report_test_manual_start()
 
-    test_manual_start = await manual_start_dao.get_typed_manual_start(
+    test_manual_start: TestManualStart = await manual_start_dao.get_typed_manual_start(
         test_manual_start_id, ManualStartType.TEST
     )
-    for id in ids_to_report:
-        ...
+
+    text = (
+        "Получен отчёт о ручном запуске\n"
+        "\n"
+        "Ручной запуск:\n"
+        "*Тип:* Тест\n"
+        f"*ID:* {test_manual_start.id}\n"
+        f"*Причина:* {test_manual_start.description}"
+    )
+
+    ids = await mailingdao.get_mailing_ids(MailingType.MANUAL_START)
+    for id in ids:
+        await bot.send_message(id, text=text)
 
 
 def check_data(data) -> bool:

@@ -12,7 +12,6 @@ from app.core.keyboards.operator.manual_start.menu import (
     ManualStartSectionTarget,
 )
 from app.core.keyboards.operator.menu import (
-    get_operator_menu_keyboard,
     send_operator_menu_keyboard,
 )
 from app.core.states.operator import OperatorMenu
@@ -33,7 +32,6 @@ async def cb_manual_start_open(
     callback_data: ManualStartSectionCB,
     session: async_sessionmaker,
 ):
-    await cb.answer(text="В разработке", show_alert=True)
     await state.update_data(id=callback_data.manual_start_id)
     await send_manual_start_type_keyboard(cb.message.edit_text, state, session)  # type: ignore
 

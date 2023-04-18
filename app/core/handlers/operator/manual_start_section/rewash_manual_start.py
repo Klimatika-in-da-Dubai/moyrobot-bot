@@ -1,4 +1,4 @@
-from aiogram import Router, types, F
+from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio.session import async_sessionmaker
 
@@ -16,9 +16,10 @@ from app.core.keyboards.operator.manual_start.rewash_manual_start import (
     send_rewash_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.mailing import MailingDAO
 from app.services.database.dao.manual_start import ManualStartDAO
+from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStartType, RewashManualStart
-
 
 rewash_manual_start_router = Router()
 
@@ -42,7 +43,7 @@ async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStartSection.RewashManualStart.photo, F.photo
 )
 async def message_photo(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+        message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     photo_file_id = message.photo[-1].file_id  # type: ignore
     await state.update_data(photo_file_id=photo_file_id)
@@ -67,7 +68,7 @@ async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStartSection.RewashManualStart.description, F.text
 )
 async def message_description(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+        message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     await state.update_data(description=message.text)
     await send_rewash_manual_start_keyboard(message.answer, state, session)
@@ -79,7 +80,7 @@ async def message_description(
     RewashManualStartCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await state.update_data(photo_file_id=None, description=None)
@@ -92,13 +93,23 @@ async def cb_back(
     RewashManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
 ):
     data = await state.get_data()
 
     if not check_data(data):
         await cb.answer("Не все поля были заполнены", show_alert=True)
         return
+
+    id = data.get("id")  # type: ignore
+    await table_add_rewash_manual_start(state, session)
+    await state.clear()
+    await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await report_rewash_manual_start(bot, session, id)  # type: ignore
+
+
+async def table_add_rewash_manual_start(state: FSMContext, session: async_sessionmaker):
+    data = await state.get_data()
 
     id = data.get("id")
     photo_file_id = data.get("photo_file_id")
@@ -110,8 +121,32 @@ async def cb_enter(
     await manual_start_dao.report_typed_manual_start(
         rewash_manual_start, ManualStartType.REWASH
     )
-    await state.clear()
-    await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+async def report_rewash_manual_start(
+        bot: Bot, session: async_sessionmaker, test_manual_start_id: str
+):
+    mailingdao = MailingDAO(session)
+    manual_start_dao = ManualStartDAO(session)
+
+    rewash_manual_start: RewashManualStart = (
+        await manual_start_dao.get_typed_manual_start(
+            test_manual_start_id, ManualStartType.REWASH
+        )
+    )
+
+    text = (
+        "Получен отчёт о ручном запуске\n"
+        "\n"
+        "Ручной запуск:\n"
+        "*Тип:* Перемывка\n"
+        f"*ID:* {rewash_manual_start.id}\n"
+        f"*Причина:* {rewash_manual_start.description}"
+    )
+
+    ids = await mailingdao.get_mailing_ids(MailingType.MANUAL_START)
+    for id in ids:
+        await bot.send_photo(id, photo=rewash_manual_start.photo_file_id, caption=text)
 
 
 def check_data(data):

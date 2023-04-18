@@ -51,7 +51,7 @@ class TestManualStart(Base):
 class ServiceManualStart(Base):
     __tablename__ = "service_manual_start"
 
-    id: Mapped[int] = mapped_column(
+    id: Mapped[str] = mapped_column(
         ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
     description: Mapped[str]
