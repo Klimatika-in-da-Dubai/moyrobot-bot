@@ -1,0 +1,28 @@
+bot:
+  token: 
+  parse_mode:
+
+database:
+  host: 
+  name:
+  user:
+  password:
+
+redis:
+  host: 
+  port:
+  db: 
+  user:
+  password: 
+
+terminals:
+  - terminal:
+      id: 
+      url:
+      login:
+      password: 
+  - terminal:
+      id: 
+      url: 
+      login:
+      password: 
