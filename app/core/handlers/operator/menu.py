@@ -1,6 +1,7 @@
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.menu import send_menu_keyboard
@@ -8,9 +9,7 @@ from app.core.keyboards.operator.manual_start.menu import (
     send_manual_starts_keyboard,
 )
 from app.core.keyboards.operator.menu import OperatorMenuCB, OperatorMenuTarget
-
 from app.core.states.operator import OperatorMenu
-
 
 operator_menu_router = Router(name="operator-menu-router")
 

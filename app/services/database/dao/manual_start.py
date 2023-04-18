@@ -1,4 +1,5 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from typing import Sequence
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy import select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.manual_start import (
@@ -11,8 +12,8 @@ from app.services.database.models.manual_start import (
 )
 
 
-class ManualStartDAO(BaseDAO):
-    def __init__(self, session: async_sessionmaker):
+class ManualStartDAO(BaseDAO[ManualStart]):
+    def __init__(self, session: async_sessionmaker[AsyncSession]):
         super().__init__(ManualStart, session)
 
     async def add_manual_start(self, manual_start: ManualStart):
@@ -20,7 +21,16 @@ class ManualStartDAO(BaseDAO):
             await session.merge(manual_start)
             await session.commit()
 
-    async def get_n_unreported_manual_starts(self, n: int) -> list[ManualStart]:
+    async def update_manual_start_mode(self, manual_start: ManualStart):
+        async with self._session() as session:
+            await session.execute(
+                update(ManualStart.mode)
+                .where(ManualStart.id == manual_start.id)
+                .values(mode=manual_start.mode)
+            )
+            await session.commit()
+
+    async def get_n_unreported_manual_starts(self, n: int) -> Sequence[ManualStart]:
         async with self._session() as session:
             manual_starts = await session.execute(
                 select(ManualStart)
@@ -30,10 +40,12 @@ class ManualStartDAO(BaseDAO):
             )
             return manual_starts.scalars().all()
 
-    async def get_typed_manual_start(self, manual_start_id: int, type: ManualStartType):
+    async def get_typed_manual_start(
+        self, manual_start_id: str, type: ManualStartType
+    ) -> TestManualStart | ServiceManualStart | RewashManualStart | PaidManualStart:
         manual_start_table = self._match_manual_start_type(type)
         async with self._session() as session:
-            manual_start = await session.executer(
+            manual_start = await session.execute(
                 select(manual_start_table).where(
                     manual_start_table.id == manual_start_id
                 )

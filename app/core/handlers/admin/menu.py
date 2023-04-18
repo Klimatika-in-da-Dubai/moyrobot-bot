@@ -1,22 +1,20 @@
+import logging
+
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-import logging
 from app.core.filters.admin import isAdminCB
-
-from app.core.states.admin import AdminMenu
-from app.core.keyboards.base import Action
-from app.core.keyboards.menu import (
-    send_menu_keyboard,
-)
 from app.core.keyboards.admin.menu import (
     AdminMenuCB,
     AdminMenuTarget,
 )
 from app.core.keyboards.admin.users_section.menu import get_users_keyboard
-
+from app.core.keyboards.base import Action
+from app.core.keyboards.menu import (
+    send_menu_keyboard,
+)
+from app.core.states.admin import AdminMenu
 
 menu_router = Router()
 

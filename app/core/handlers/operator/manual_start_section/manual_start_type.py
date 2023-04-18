@@ -1,6 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.operator.manual_start.manual_start_type import (
@@ -8,7 +9,6 @@ from app.core.keyboards.operator.manual_start.manual_start_type import (
     ManualStartReportTarget,
 )
 from app.core.keyboards.operator.manual_start.menu import send_manual_starts_keyboard
-
 from app.core.keyboards.operator.manual_start.paid_manual_start import (
     send_paid_manual_start_keyboard,
 )
@@ -21,11 +21,8 @@ from app.core.keyboards.operator.manual_start.service_manual_start import (
 from app.core.keyboards.operator.manual_start.test_manual_start import (
     send_test_manual_start_keyboard,
 )
-
-
 from app.core.states.operator import OperatorMenu
 from app.services.database.models.manual_start import ManualStartType
-
 
 manual_start_type_router = Router()
 
