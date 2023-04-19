@@ -135,3 +135,4 @@ test.py
 alembic.ini
 .vscode
 .idea
+scripts
