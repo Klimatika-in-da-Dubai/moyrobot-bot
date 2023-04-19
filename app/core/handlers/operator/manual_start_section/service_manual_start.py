@@ -14,7 +14,9 @@ from app.core.keyboards.operator.manual_start.service_manual_start import (
     send_service_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
-from app.services.database.dao.mailing import MailingDAO
+from app.services.database.dao.mailing import (
+    get_mailing_ids,
+)
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
@@ -101,7 +103,6 @@ async def table_add_service_manual_start(
 async def report_service_manual_start(
     bot: Bot, session: async_sessionmaker, test_manual_start_id: str
 ):
-    mailingdao = MailingDAO(session)
     manual_start_dao = ManualStartDAO(session)
 
     service_manual_start: ServiceManualStart = (
@@ -119,7 +120,7 @@ async def report_service_manual_start(
         f"*Причина:* {service_manual_start.description}"
     )
 
-    ids = await mailingdao.get_mailing_ids(MailingType.MANUAL_START)
+    ids = await get_mailing_ids(session, MailingType.MANUAL_START)
     for id in ids:
         await bot.send_message(id, text=text)
 

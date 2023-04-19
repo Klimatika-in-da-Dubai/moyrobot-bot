@@ -19,7 +19,9 @@ from app.core.keyboards.operator.manual_start.paid_manual_start import (
     send_payment_method_keyboard,
 )
 from app.core.states.operator import OperatorMenu
-from app.services.database.dao.mailing import MailingDAO
+from app.services.database.dao.mailing import (
+    get_mailing_ids,
+)
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
@@ -39,7 +41,7 @@ paid_manual_start_router = Router()
     ),
 )
 async def cb_payment_method(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await send_payment_method_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -51,13 +53,13 @@ async def cb_payment_method(
     PaymentMethodCB.filter(F.action == Action.SELECT),
 )
 async def cb_payment_method_select(
-    cb: types.CallbackQuery,
-    callback_data: PaymentMethodCB,
-    state: FSMContext,
-    session: async_sessionmaker,
+        cb: types.CallbackQuery,
+        callback_data: PaymentMethodCB,
+        state: FSMContext,
+        session: async_sessionmaker,
 ):
     payment_method_cb = callback_data.target
-    selected_method = None
+
     match payment_method_cb:
         case PaymentMethodTarget.CARD:
             selected_method = PaymentMethod.CARD
@@ -77,7 +79,7 @@ async def cb_payment_method_select(
     PaymentMethodCB.filter(F.action == Action.BACK),
 )
 async def cb_payment_method_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await send_paid_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -103,7 +105,7 @@ async def cb_payment_amount(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStartSection.PaidManualStart.payment_amount, F.text
 )
 async def message_payment_amount(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+        message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     payment_amount = message.text
     if not payment_amount.isnumeric():  # type: ignore
@@ -120,7 +122,7 @@ async def message_payment_amount(
     PaidManualStartCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await state.update_data(payment_method=None, payment_amount=None)
@@ -133,7 +135,7 @@ async def cb_back(
     PaidManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
+        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
 ):
     data = await state.get_data()
 
@@ -168,9 +170,8 @@ async def table_add_paid_manual_start(state: FSMContext, session: async_sessionm
 
 
 async def report_paid_manual_start(
-    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
+        bot: Bot, session: async_sessionmaker, test_manual_start_id: str
 ):
-    mailingdao = MailingDAO(session)
     manual_start_dao = ManualStartDAO(session)
 
     paid_manual_start: PaidManualStart = await manual_start_dao.get_typed_manual_start(
@@ -192,7 +193,7 @@ async def report_paid_manual_start(
         f"*Сумма оплаты:* {paid_manual_start.payment_amount}"
     )
 
-    ids = await mailingdao.get_mailing_ids(MailingType.MANUAL_START)
+    ids = await get_mailing_ids(session, MailingType.MANUAL_START)
     for id in ids:
         await bot.send_message(id, text=text)
 
@@ -203,7 +204,7 @@ async def report_paid_manual_start(
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.NO)),
 )
 async def cb_bonus_no(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore

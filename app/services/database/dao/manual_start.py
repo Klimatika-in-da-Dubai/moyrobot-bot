@@ -1,3 +1,4 @@
+import datetime
 from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy import select, update
@@ -39,6 +40,28 @@ class ManualStartDAO(BaseDAO[ManualStart]):
                 .limit(n)
             )
             return manual_starts.scalars().all()
+
+    async def get_unalerted_manual_starts(
+        self, delay: datetime.timedelta
+    ) -> Sequence[ManualStart]:
+        async with self._session() as session:
+            manual_starts = await session.execute(
+                select(ManualStart)
+                .where(ManualStart.reported == False)
+                .where(ManualStart.sended_to_chat == False)
+                .where((datetime.datetime.now() - ManualStart.date) > delay)
+            )
+
+            return manual_starts.scalars().all()
+
+    async def set_sended_to_chat(self, manual_start: ManualStart, value: bool):
+        async with self._session() as session:
+            await session.execute(
+                update(ManualStart)
+                .where(ManualStart.id == manual_start.id)
+                .values(sended_to_chat=value)
+            )
+            await session.commit()
 
     async def get_typed_manual_start(
         self, manual_start_id: str, type: ManualStartType

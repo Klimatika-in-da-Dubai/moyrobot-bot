@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, Generic
+from typing import Sequence, TypeVar, Type, Generic
 
 from sqlalchemy import delete, func
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -21,16 +21,16 @@ class BaseDAO(Generic[Model]):
         self._model = model
         self._session = session
 
-    async def get_all(self) -> list[Model]:
+    async def get_all(self) -> Sequence[Model]:
         """
         :return: List of models.
         """
 
         async with self._session() as session:
             result = await session.execute(select(self._model))
-            return [i for i in result.all()]
+            return result.scalars().all()
 
-    async def get_by_id(self, id_: str) -> Model | None:
+    async def get_by_id(self, id_: str | int) -> Model | None:
         """
         :param id_: input id
         :return:
