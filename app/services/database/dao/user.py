@@ -36,35 +36,7 @@ class UserDAO(BaseDAO[User]):
                 select(UserRole.role).join(User).where(self._model.id == user.id)
             )
             roles_list = roles.scalars().all()
-            return roles_list
-
-    async def get_ids_to_report_test_manual_start(self) -> Sequence[int]:
-        async with self._session() as session:
-            ids = await session.execute(
-                select(UserRole.id).where(UserRole.role == Role.ADMIN)
-            )
-            return ids.scalars().all()
-
-    async def get_ids_to_report_service_manual_start(self) -> Sequence[int]:
-        async with self._session() as session:
-            ids = await session.execute(
-                select(UserRole.id).where(UserRole.role == Role.ADMIN)
-            )
-            return ids.scalars().all()
-
-    async def get_ids_to_report_rewash_manual_start(self) -> Sequence[int]:
-        async with self._session() as session:
-            ids = await session.execute(
-                select(UserRole.id).where(UserRole.role == Role.ADMIN)
-            )
-            return ids.scalars().all()
-
-    async def get_ids_to_report_paid_manual_start(self) -> Sequence[int]:
-        async with self._session() as session:
-            ids = await session.execute(
-                select(UserRole.id).where(UserRole.role == Role.ADMIN)
-            )
-            return ids.scalars().all()
+            return roles_list 
 
     async def user_is_admin(self, user: User) -> bool:
         roles = await self.get_user_roles(user)
@@ -79,7 +51,7 @@ class UserDAO(BaseDAO[User]):
         return Role.MODERATOR in roles or Role.ADMIN in roles
 
     async def is_admin(self, chat_id: int) -> bool:
-        user: User = await self.get_by_id(id_=chat_id)
+        user = await self.get_by_id(id_=chat_id)
         if user is None:
             return False
         return await self.user_is_admin(user)

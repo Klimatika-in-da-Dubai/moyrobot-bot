@@ -26,3 +26,14 @@ class Mailing(Base):
     type: Mapped[MailingType] = mapped_column(
         Enum(MailingType), primary_key=True, unique=False
     )
+
+
+class GroupMailing(Base):
+    __tablename__ = "group_mailing"
+
+    id: Mapped[int] = mapped_column(
+        ForeignKey("tg_group.id", ondelete="CASCADE"), primary_key=True, unique=False
+    )
+    type: Mapped[MailingType] = mapped_column(
+        Enum(MailingType), primary_key=True, unique=False
+    )

@@ -16,7 +16,9 @@ from app.core.keyboards.operator.manual_start.rewash_manual_start import (
     send_rewash_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
-from app.services.database.dao.mailing import MailingDAO
+from app.services.database.dao.mailing import (
+    get_mailing_ids,
+)
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStartType, RewashManualStart
@@ -43,7 +45,7 @@ async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStartSection.RewashManualStart.photo, F.photo
 )
 async def message_photo(
-        message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     photo_file_id = message.photo[-1].file_id  # type: ignore
     await state.update_data(photo_file_id=photo_file_id)
@@ -68,7 +70,7 @@ async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStartSection.RewashManualStart.description, F.text
 )
 async def message_description(
-        message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     await state.update_data(description=message.text)
     await send_rewash_manual_start_keyboard(message.answer, state, session)
@@ -80,7 +82,7 @@ async def message_description(
     RewashManualStartCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await state.update_data(photo_file_id=None, description=None)
@@ -93,7 +95,7 @@ async def cb_back(
     RewashManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
 ):
     data = await state.get_data()
 
@@ -124,9 +126,8 @@ async def table_add_rewash_manual_start(state: FSMContext, session: async_sessio
 
 
 async def report_rewash_manual_start(
-        bot: Bot, session: async_sessionmaker, test_manual_start_id: str
+    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
 ):
-    mailingdao = MailingDAO(session)
     manual_start_dao = ManualStartDAO(session)
 
     rewash_manual_start: RewashManualStart = (
@@ -144,7 +145,7 @@ async def report_rewash_manual_start(
         f"*Причина:* {rewash_manual_start.description}"
     )
 
-    ids = await mailingdao.get_mailing_ids(MailingType.MANUAL_START)
+    ids = await get_mailing_ids(session, MailingType.MANUAL_START)
     for id in ids:
         await bot.send_photo(id, photo=rewash_manual_start.photo_file_id, caption=text)
 
