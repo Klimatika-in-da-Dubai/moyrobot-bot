@@ -1,4 +1,4 @@
-import enum
+from enum import IntEnum, auto
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import Enum
@@ -7,10 +7,10 @@ from sqlalchemy.types import Enum
 from app.services.database.base import Base
 
 
-class Role(enum.Enum):
-    OPERATOR = "operator"
-    MODERATOR = "moderator"
-    ADMIN = "admin"
+class Role(IntEnum):
+    OPERATOR = auto()
+    MODERATOR = auto()
+    ADMIN = auto()
 
 
 class User(Base):

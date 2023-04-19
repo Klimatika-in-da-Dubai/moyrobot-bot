@@ -1,7 +1,7 @@
-from typing import TypeVar, Type, Generic
+from typing import Sequence, TypeVar, Type, Generic
 
 from sqlalchemy import delete, func
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.future import select
 
 from app.services.database.base import Base
@@ -12,7 +12,7 @@ Model = TypeVar("Model", Base, Base)
 class BaseDAO(Generic[Model]):
     """ORM queries for abstract table"""
 
-    def __init__(self, model: Type[Model], session: async_sessionmaker):
+    def __init__(self, model: Type[Model], session: async_sessionmaker[AsyncSession]):
         """
         :param model:
         :param session:
@@ -21,16 +21,16 @@ class BaseDAO(Generic[Model]):
         self._model = model
         self._session = session
 
-    async def get_all(self) -> list[Model]:
+    async def get_all(self) -> Sequence[Model]:
         """
         :return: List of models.
         """
 
         async with self._session() as session:
             result = await session.execute(select(self._model))
-            return [i for i in result.all()]
+            return result.scalars().all()
 
-    async def get_by_id(self, id_: int) -> Model:
+    async def get_by_id(self, id_: str | int) -> Model | None:
         """
         :param id_: input id
         :return:

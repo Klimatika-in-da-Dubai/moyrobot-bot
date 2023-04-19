@@ -131,3 +131,7 @@ dmypy.json
 
 # config
 config.yml
+test.py
+alembic.ini
+.vscode
+.idea
