@@ -27,19 +27,19 @@ class OperatorMenu(StatesGroup):
             payment_amount = State()
             bonus = State()
 
-    class Promocode:
+    class Promocode(StatesGroup):
         menu = State()
         phone = State()
         mode = State()
         description = State()
 
-    class Bonus:
+    class Bonus(StatesGroup):
         menu = State()
         phone = State()
         bonus_amount = State()
         description = State()
 
-    class Antifreeze:
+    class Antifreeze(StatesGroup):
         menu = State()
         payment_method = State()
         payment_amount = State()
