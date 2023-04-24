@@ -1,4 +1,3 @@
-from multiprocessing.reduction import steal_handle
 from aiogram.fsm.state import StatesGroup, State
 
 
