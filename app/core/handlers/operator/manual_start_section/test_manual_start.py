@@ -1,3 +1,4 @@
+import logging
 from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -42,7 +43,7 @@ async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStartSection.TestManualStart.description, F.text
 )
 async def message_description(
-        message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     await state.update_data(description=message.text)
     await send_test_manual_start_keyboard(message.answer, state, session)
@@ -54,7 +55,7 @@ async def message_description(
     TestManualStartCB.filter((F.action == Action.BACK)),
 )
 async def cb_back(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await state.update_data(description=None)
@@ -67,7 +68,7 @@ async def cb_back(
     TestManualStartCB.filter((F.action == Action.ENTER)),
 )
 async def cb_enter(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
 ):
     data = await state.get_data()
 
@@ -96,7 +97,7 @@ async def table_add_test_manual_start(state: FSMContext, session: async_sessionm
 
 
 async def report_test_manual_start(
-        bot: Bot, session: async_sessionmaker, test_manual_start_id: str
+    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
 ):
     manual_start_dao = ManualStartDAO(session)
 
@@ -114,7 +115,10 @@ async def report_test_manual_start(
     )
     ids = await get_mailing_ids(session, MailingType.MANUAL_START)
     for id in ids:
-        await bot.send_message(id, text=text)
+        try:
+            await bot.send_message(id, text=text)
+        except Exception:
+            logging.error("Can't send report to chat with id %s", id)
 
 
 def check_data(data) -> bool:
