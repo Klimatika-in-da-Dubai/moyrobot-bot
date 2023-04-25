@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.menu import send_menu_keyboard
+from app.core.keyboards.operator.bonus.menu import send_bonus_keyboard
 from app.core.keyboards.operator.manual_start.menu import (
     send_manual_starts_keyboard,
 )
@@ -60,7 +61,7 @@ async def cb_bonus(
     state: FSMContext,
     session: async_sessionmaker[AsyncSession],
 ):
-    await send_bonus_keyboard(cb.message.edit_text, state, session)
+    await send_bonus_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
