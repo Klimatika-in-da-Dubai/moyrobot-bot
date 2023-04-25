@@ -1,3 +1,4 @@
+import logging
 from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -122,7 +123,10 @@ async def report_service_manual_start(
 
     ids = await get_mailing_ids(session, MailingType.MANUAL_START)
     for id in ids:
-        await bot.send_message(id, text=text)
+        try:
+            await bot.send_message(id, text=text)
+        except Exception:
+            logging.error("Can't send report to chat with id %s", id)
 
 
 def check_data(data) -> bool:

@@ -1,3 +1,4 @@
+import logging
 from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -41,7 +42,7 @@ paid_manual_start_router = Router()
     ),
 )
 async def cb_payment_method(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await send_payment_method_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -53,10 +54,10 @@ async def cb_payment_method(
     PaymentMethodCB.filter(F.action == Action.SELECT),
 )
 async def cb_payment_method_select(
-        cb: types.CallbackQuery,
-        callback_data: PaymentMethodCB,
-        state: FSMContext,
-        session: async_sessionmaker,
+    cb: types.CallbackQuery,
+    callback_data: PaymentMethodCB,
+    state: FSMContext,
+    session: async_sessionmaker,
 ):
     payment_method_cb = callback_data.target
 
@@ -79,7 +80,7 @@ async def cb_payment_method_select(
     PaymentMethodCB.filter(F.action == Action.BACK),
 )
 async def cb_payment_method_back(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await send_paid_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -105,7 +106,7 @@ async def cb_payment_amount(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStartSection.PaidManualStart.payment_amount, F.text
 )
 async def message_payment_amount(
-        message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     payment_amount = message.text
     if not payment_amount.isnumeric():  # type: ignore
@@ -122,7 +123,7 @@ async def message_payment_amount(
     PaidManualStartCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await state.update_data(payment_method=None, payment_amount=None)
@@ -135,7 +136,7 @@ async def cb_back(
     PaidManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
 ):
     data = await state.get_data()
 
@@ -170,7 +171,7 @@ async def table_add_paid_manual_start(state: FSMContext, session: async_sessionm
 
 
 async def report_paid_manual_start(
-        bot: Bot, session: async_sessionmaker, test_manual_start_id: str
+    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
 ):
     manual_start_dao = ManualStartDAO(session)
 
@@ -195,7 +196,10 @@ async def report_paid_manual_start(
 
     ids = await get_mailing_ids(session, MailingType.MANUAL_START)
     for id in ids:
-        await bot.send_message(id, text=text)
+        try:
+            await bot.send_message(id, text=text)
+        except Exception:
+            logging.error("Can't send report to chat with id %s", id)
 
 
 @paid_manual_start_router.callback_query(
@@ -204,7 +208,7 @@ async def report_paid_manual_start(
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.NO)),
 )
 async def cb_bonus_no(
-        cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
