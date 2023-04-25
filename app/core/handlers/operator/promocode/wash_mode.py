@@ -25,7 +25,7 @@ async def cb_select_mode(
 ):
     await cb.answer()
     await state.update_data(wash_mode=callback_data.wash_mode)
-    await send_promocode_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+    await send_promocode_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @wash_mode_router.callback_query(
@@ -39,4 +39,4 @@ async def cb_back(
     session: async_sessionmaker,
 ):
     await cb.answer()
-    await send_promocode_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+    await send_promocode_keyboard(cb.message.edit_text, state, session)  # type: ignore

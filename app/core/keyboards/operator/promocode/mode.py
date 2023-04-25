@@ -63,9 +63,7 @@ def get_wash_mode_keyboard() -> types.InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-async def send_washmode_keyboard(
-    func, message: types.Message, state: FSMContext, session: async_sessionmaker
-):
+async def send_washmode_keyboard(func, state: FSMContext, session: async_sessionmaker):
     text = await get_promocode_text(state)
     await state.set_state(OperatorMenu.Promocode.wash_mode)
     await func(text=text, reply_markup=get_wash_mode_keyboard())

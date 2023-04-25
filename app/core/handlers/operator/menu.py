@@ -45,7 +45,7 @@ async def cb_promocode(
     session: async_sessionmaker[AsyncSession],
 ):
     await cb.answer()
-    await send_promocode_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+    await send_promocode_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -60,7 +60,7 @@ async def cb_bonus(
     state: FSMContext,
     session: async_sessionmaker[AsyncSession],
 ):
-    ...
+    await send_bonus_keyboard(cb.message.edit_text, state, session)
 
 
 @menu_router.callback_query(

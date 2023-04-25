@@ -88,7 +88,7 @@ async def get_promocode_info_status_emoji(
 
 
 async def send_promocode_keyboard(
-    func, message: types.Message, state: FSMContext, session: async_sessionmaker
+    func, state: FSMContext, session: async_sessionmaker
 ) -> None:
     text = await get_promocode_text(state)
     await state.set_state(OperatorMenu.Promocode.menu)

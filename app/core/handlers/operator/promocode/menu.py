@@ -49,7 +49,7 @@ async def message_promocode_phone(
         return
 
     await state.update_data(phone=phone)
-    await send_promocode_keyboard(message.answer, message, state, session)
+    await send_promocode_keyboard(message.answer, state, session)
 
 
 @menu_router.callback_query(
@@ -63,7 +63,7 @@ async def cb_promocode_wash_mode(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await send_washmode_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+    await send_washmode_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -88,7 +88,7 @@ async def message_promocode_description(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     await state.update_data(description=message.text)
-    await send_promocode_keyboard(message.answer, message, state, session)
+    await send_promocode_keyboard(message.answer, state, session)
 
 
 @menu_router.callback_query(
@@ -137,4 +137,4 @@ async def cb_cancel_promocode_phone(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await send_promocode_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+    await send_promocode_keyboard(cb.message.edit_text, state, session)  # type: ignore
