@@ -45,7 +45,9 @@ async def message_promocode_phone(
 ):
     phone = convert_text_to_phone(message.text)  # type: ignore
     if not is_correct_phone(phone):
-        await message.answer("Некорректный номер телефона")
+        await message.answer(
+            "Некорректный номер телефона", reply_markup=get_cancel_keyboard()
+        )
         return
 
     await state.update_data(phone=phone)
