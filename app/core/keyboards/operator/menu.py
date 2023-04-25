@@ -12,6 +12,9 @@ from app.core.states.operator import OperatorMenu
 class OperatorMenuTarget(IntEnum):
     NONE = auto()
     MANUAL_START = auto()
+    BONUS = auto()
+    PROMOCODE = auto()
+    ANTIFREEZE = auto()
 
 
 class OperatorMenuCB(CallbackData, prefix="operator_menu"):
@@ -24,12 +27,40 @@ def get_operator_menu_keyboard() -> types.InlineKeyboardMarkup:
 
     builder.row(
         types.InlineKeyboardButton(
-            text="Ручной запуск",
+            text="Отчитаться по ручному запуску",
             callback_data=OperatorMenuCB(
                 action=Action.OPEN, target=OperatorMenuTarget.MANUAL_START
             ).pack(),
         )
     )
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Выдать промокод",
+            callback_data=OperatorMenuCB(
+                action=Action.OPEN, target=OperatorMenuTarget.PROMOCODE
+            ).pack(),
+        )
+    )
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Начислить бонусы",
+            callback_data=OperatorMenuCB(
+                action=Action.OPEN, target=OperatorMenuTarget.BONUS
+            ).pack(),
+        )
+    )
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Продать незамерзайку",
+            callback_data=OperatorMenuCB(
+                action=Action.OPEN, target=OperatorMenuTarget.ANTIFREEZE
+            ).pack(),
+        )
+    )
+
     builder.row(
         types.InlineKeyboardButton(
             text="Назад",

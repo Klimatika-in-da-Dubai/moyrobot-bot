@@ -30,7 +30,7 @@ class OperatorMenu(StatesGroup):
     class Promocode(StatesGroup):
         menu = State()
         phone = State()
-        mode = State()
+        wash_mode = State()
         description = State()
 
     class Bonus(StatesGroup):
