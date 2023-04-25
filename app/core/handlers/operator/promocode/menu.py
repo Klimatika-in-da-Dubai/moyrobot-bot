@@ -133,7 +133,7 @@ async def cb_enter(
     or_f(OperatorMenu.Promocode.description, OperatorMenu.Promocode.phone),
     CancelCB.filter(F.action == Action.CANCEL),
 )
-async def cb_cancel_promocode_phone(
+async def cb_cancel_enter_text(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
