@@ -12,6 +12,9 @@ from app.core.keyboards.operator.bonus.menu import (
 )
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.bonus import BonusDAO
+from app.services.database.models.bonus import Bonus
+from app.utils.bonus import get_bonus_info
 from app.utils.text import convert_text_to_phone, is_correct_phone
 
 
@@ -126,7 +129,18 @@ async def cb_back(
 async def cb_enter(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
-    ...
+    phone, bonus_amount, description = await get_bonus_info(state)
+
+    if any(el is None for el in (phone, bonus_amount, description)):
+        await cb.answer("Не все поля заполнены", show_alert=True)
+        return
+
+    bonusdao = BonusDAO(session)
+    bonus = Bonus(phone=phone, bonus_amount=bonus_amount, description=description)
+
+    await bonusdao.add_bonus(bonus)
+    await state.clear()
+    await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
