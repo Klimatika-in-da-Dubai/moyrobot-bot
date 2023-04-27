@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, YesNoCB, YesNoTarget, get_yes_no_keyboard
+from app.core.keyboards.operator.bonus.menu import send_bonus_keyboard
 from app.core.keyboards.operator.manual_start.manual_start_type import (
     send_manual_start_type_keyboard,
 )
@@ -14,11 +15,10 @@ from app.core.keyboards.operator.manual_start.menu import (
 from app.core.keyboards.operator.manual_start.paid_manual_start import (
     PaidManualStartCB,
     PaidManualStartTarget,
-    PaymentMethodCB,
-    PaymentMethodTarget,
     send_paid_manual_start_keyboard,
     send_payment_method_keyboard,
 )
+from app.core.keyboards.payment_method import PaymentMethodCB, PaymentMethodTarget
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.mailing import (
     get_mailing_ids,
@@ -219,8 +219,10 @@ async def cb_bonus_no(
     OperatorMenu.ManualStartSection.PaidManualStart.bonus,
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.YES)),
 )
-async def cb_bonus_yes(cb: types.CallbackQuery, state: FSMContext):
-    await cb.answer("В разработке", show_alert=True)
+async def cb_bonus_yes(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await send_bonus_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 def check_data(data) -> bool:

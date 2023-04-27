@@ -15,6 +15,7 @@ class Action(IntEnum):
     ENTER_TEXT = auto()
     ADD_PHOTO = auto()
     SELECT = auto()
+    CANCEL = auto()
 
 
 class YesNoTarget(IntEnum):
@@ -41,4 +42,19 @@ def get_yes_no_keyboard() -> types.InlineKeyboardMarkup:
         ),
     )
 
+    return builder.as_markup()
+
+
+class CancelCB(CallbackData, prefix="cancel"):
+    action: Action
+
+
+def get_cancel_keyboard() -> types.InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Отмена", callback_data=CancelCB(action=Action.CANCEL).pack()
+        )
+    )
     return builder.as_markup()

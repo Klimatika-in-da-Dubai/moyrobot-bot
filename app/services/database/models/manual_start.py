@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 from app.services.database.base import Base
+from app.services.database.models.utils import PaymentMethod
 
 
 class ManualStartType(IntEnum):
@@ -13,11 +14,6 @@ class ManualStartType(IntEnum):
     REWASH = auto()
     PAID = auto()
     SERVICE = auto()
-
-
-class PaymentMethod(IntEnum):
-    CASH = auto()
-    CARD = auto()
 
 
 class ManualStart(Base):
