@@ -23,6 +23,8 @@ def is_correct_phone(phone: str) -> bool:
 
     if phone.startswith("8"):
         phone = phone.replace("8", "+7", 1)
+    elif phone.startswith("7"):
+        phone = phone.replace("7", "+7", 1)
 
     if re.match(r"\+7\d{10}$", phone):
         return True
