@@ -22,8 +22,8 @@ logger = logging.getLogger(name="AdminMenu")
 
 
 @menu_router.callback_query(
-    isAdminCB(),
     AdminMenu.menu,
+    isAdminCB(),
     AdminMenuCB.filter((F.action == Action.OPEN) & (F.target == AdminMenuTarget.USER)),
 )
 async def cb_open_users_menu(

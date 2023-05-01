@@ -29,8 +29,8 @@ service_manual_start_router = Router()
 
 
 @service_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.ServiceManualStart.menu,
+    isOperatorCB(),
     ServiceManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
         & (F.target == ServiceManualStartTarget.DESCRIPTION)
@@ -41,7 +41,7 @@ async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     await state.set_state(
         OperatorMenu.ManualStartSection.ServiceManualStart.description
     )
-    await cb.message.answer("Напишите причну ручного запуска")  # type: ignore
+    await cb.message.edit_text("Напишите причну ручного запуска")  # type: ignore
 
 
 @service_manual_start_router.message(
@@ -53,8 +53,8 @@ async def message_description(message: types.Message, state: FSMContext, session
 
 
 @service_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.ServiceManualStart.menu,
+    isOperatorCB(),
     ServiceManualStartCB.filter((F.action == Action.BACK)),
 )
 async def cb_back(
@@ -66,8 +66,8 @@ async def cb_back(
 
 
 @service_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.ServiceManualStart.menu,
+    isOperatorCB(),
     ServiceManualStartCB.filter((F.action == Action.ENTER)),
 )
 async def cb_enter(

@@ -26,8 +26,8 @@ test_manual_start_router = Router()
 
 
 @test_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.TestManualStart.menu,
+    isOperatorCB(),
     TestManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
         & (F.target == TestManualStartTarget.DESCRIPTION)
@@ -36,7 +36,7 @@ test_manual_start_router = Router()
 async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
     await state.set_state(OperatorMenu.ManualStartSection.TestManualStart.description)
-    await cb.message.answer("Напишите причну ручного запуска")  # type: ignore
+    await cb.message.edit_text("Напишите причну ручного запуска")  # type: ignore
 
 
 @test_manual_start_router.message(
@@ -50,8 +50,8 @@ async def message_description(
 
 
 @test_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.TestManualStart.menu,
+    isOperatorCB(),
     TestManualStartCB.filter((F.action == Action.BACK)),
 )
 async def cb_back(
@@ -63,8 +63,8 @@ async def cb_back(
 
 
 @test_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.TestManualStart.menu,
+    isOperatorCB(),
     TestManualStartCB.filter((F.action == Action.ENTER)),
 )
 async def cb_enter(

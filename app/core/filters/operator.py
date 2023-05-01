@@ -10,20 +10,20 @@ from app.services.database.models.user import Role
 
 class isOperatorCB(Filter):
     def __init__(self):
-        self.role = Role.ADMIN
+        self.role = Role.OPERATOR
 
     async def __call__(
         self, cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
     ) -> bool:
         userdao = UserDAO(session=session)
         if not await userdao.exists(chat_id=cb.message.chat.id):  # type: ignore
-            await send_menu_keyboard(cb.message.answer, state, session)  # type: ignore
+            await send_menu_keyboard(cb.message.answer, cb.message, state, session)  # type: ignore
             return False
 
         if not await userdao.is_operator(chat_id=cb.message.chat.id):  # type: ignore
             await cb.answer(text="Вы не являетесь оператором", show_alert=True)
 
-            await send_menu_keyboard(cb.message.answer, state, session)  # type: ignore
+            await send_menu_keyboard(cb.message.answer, cb.message, state, session)  # type: ignore
             return False
 
         return True

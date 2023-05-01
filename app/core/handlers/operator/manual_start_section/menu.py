@@ -20,8 +20,8 @@ manual_start_menu_router = Router()
 
 
 @manual_start_menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.menu,
+    isOperatorCB(),
     ManualStartSectionCB.filter(
         (F.action == Action.OPEN) & (F.target == ManualStartSectionTarget.MANUAL_START)
     ),
@@ -37,8 +37,8 @@ async def cb_manual_start_open(
 
 
 @manual_start_menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.menu,
+    isOperatorCB(),
     ManualStartSectionCB.filter(
         F.action == Action.BACK & F.target == ManualStartSectionTarget.NONE
     ),

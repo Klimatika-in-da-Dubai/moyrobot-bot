@@ -13,8 +13,8 @@ wash_mode_router = Router()
 
 
 @wash_mode_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Promocode.wash_mode,
+    isOperatorCB(),
     WashModeCB.filter(F.action == Action.SELECT),
 )
 async def cb_select_mode(
@@ -29,8 +29,8 @@ async def cb_select_mode(
 
 
 @wash_mode_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Promocode.wash_mode,
+    isOperatorCB(),
     WashModeCB.filter(F.action == Action.BACK),
 )
 async def cb_back(

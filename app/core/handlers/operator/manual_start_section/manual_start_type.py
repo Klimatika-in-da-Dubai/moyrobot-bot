@@ -28,8 +28,8 @@ manual_start_type_router = Router()
 
 
 @manual_start_type_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.type,
+    isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
         & (F.target == ManualStartReportTarget.TEST_MANUAL_START)
@@ -45,8 +45,8 @@ async def cb_test_manual_start(
 
 
 @manual_start_type_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.type,
+    isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
         & (F.target == ManualStartReportTarget.SERVICE_MANUAL_START)
@@ -61,8 +61,8 @@ async def cb_service_manual_start(
 
 
 @manual_start_type_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.type,
+    isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
         & (F.target == ManualStartReportTarget.REWASH_MANUAL_START)
@@ -78,8 +78,8 @@ async def cb_rewash_manual_start(
 
 
 @manual_start_type_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.type,
+    isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
         & (F.target == ManualStartReportTarget.PAID_MANUAL_START)
@@ -95,8 +95,8 @@ async def cb_paid_manual_start(
 
 
 @manual_start_type_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.type,
+    isOperatorCB(),
     ManualStartReportCB.filter(F.action == Action.BACK),
 )
 async def cb_back(

@@ -25,8 +25,8 @@ menu_router = Router()
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(
         (F.action == Action.OPEN) & (F.target == AntifreezeMenuTarget.PAYMENT_METHOD)
     ),
@@ -39,8 +39,8 @@ async def cb_antifreeze_payment_method(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.payment_method,
+    isOperatorCB(),
     PaymentMethodCB.filter(F.action == Action.SELECT),
 )
 async def cb_payment_method_select(
@@ -65,8 +65,8 @@ async def cb_payment_method_select(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(
         (F.action == Action.ENTER_TEXT)
         & (F.target == AntifreezeMenuTarget.PAYMENT_AMOUNT)
@@ -93,8 +93,8 @@ async def message_payment_amount(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
@@ -106,8 +106,8 @@ async def cb_back(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
@@ -130,10 +130,10 @@ async def cb_enter(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     or_f(
         OperatorMenu.Antifreeze.payment_amount,
     ),
+    isOperatorCB(),
     CancelCB.filter(F.action == Action.CANCEL),
 )
 async def cb_cancel_enter_text(

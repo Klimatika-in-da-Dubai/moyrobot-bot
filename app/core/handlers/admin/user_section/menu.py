@@ -16,8 +16,8 @@ menu_router = Router()
 
 
 @menu_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.menu,
+    isAdminCB(),
     UsersSectionCB.filter(F.action == Action.LIST),
 )
 async def cb_open_users_list(cb: types.CallbackQuery, state: FSMContext):
@@ -26,8 +26,8 @@ async def cb_open_users_list(cb: types.CallbackQuery, state: FSMContext):
 
 
 @menu_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.menu,
+    isAdminCB(),
     UsersSectionCB.filter(F.action == Action.ADD),
 )
 async def cb_add_user(cb: types.CallbackQuery, state: FSMContext):
@@ -39,8 +39,8 @@ async def cb_add_user(cb: types.CallbackQuery, state: FSMContext):
 
 
 @menu_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.menu,
+    isAdminCB(),
     UsersSectionCB.filter(F.action == Action.DELETE),
 )
 async def cb_delete_user(cb: types.CallbackQuery, state: FSMContext):
@@ -49,8 +49,8 @@ async def cb_delete_user(cb: types.CallbackQuery, state: FSMContext):
 
 
 @menu_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.menu,
+    isAdminCB(),
     UsersSectionCB.filter(F.action == Action.BACK),
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext):
