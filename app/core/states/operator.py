@@ -4,6 +4,13 @@ from aiogram.fsm.state import StatesGroup, State
 class OperatorMenu(StatesGroup):
     menu = State()
 
+    class Shift(StatesGroup):
+        menu = State()
+        money_amount = State()
+        antifreeze_count = State()
+        chemistry_count = State()
+        robot_check = State()
+
     class ManualStartSection(StatesGroup):
         menu = State()
         type = State()

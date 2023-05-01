@@ -77,14 +77,16 @@ async def cb_antifreeze_payment_amount(
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Antifreeze.payment_amount)
-    await cb.message.edit_text(text="Напишите сумму оплаты в рублях", reply_markup=get_cancel_keyboard())  # type: ignore
+    await cb.message.edit_text(  # type: ignore
+        text="Напишите сумму оплаты в рублях", reply_markup=get_cancel_keyboard()
+    )  # type: ignore
 
 
 @menu_router.message(OperatorMenu.Antifreeze.payment_amount, F.text)
 async def message_payment_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
-    if not message.text.isnumeric():  # type: ignore
+    if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
         await message.answer("Не корректная сумма", reply_markup=get_cancel_keyboard())
         return
 

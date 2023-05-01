@@ -74,7 +74,7 @@ async def cb_bonus_amount(
 async def message_bonus_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
-    if not message.text.isnumeric():  # type: ignore
+    if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
         await message.answer(
             "Введена некорректная сумма", reply_markup=get_cancel_keyboard()
         )

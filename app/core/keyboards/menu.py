@@ -56,6 +56,7 @@ async def send_menu_keyboard(
     session: async_sessionmaker,
 ) -> None:
     await state.clear()
+
     await send_func(
         text="Меню", reply_markup=await get_menu_keyboard(message.chat.id, session)
     )

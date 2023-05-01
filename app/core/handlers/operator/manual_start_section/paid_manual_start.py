@@ -109,7 +109,7 @@ async def message_payment_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     payment_amount = message.text
-    if not payment_amount.isnumeric():  # type: ignore
+    if not payment_amount.isnumeric() or int(message.text) <= 0:  # type: ignore
         await message.edit_text("Введите число")
         return
     await state.update_data(payment_amount=int(payment_amount))  # type: ignore
