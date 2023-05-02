@@ -6,7 +6,7 @@ from app.core.keyboards.base import Action
 from app.services.database.models.user import Role
 
 
-class UsersSectionCB(CallbackData, prefix="amenu_user_section"):
+class UsersCB(CallbackData, prefix="amenu_user_section"):
     action: Action
 
 
@@ -16,26 +16,26 @@ def get_users_keyboard() -> types.InlineKeyboardMarkup:
     builder.row(
         types.InlineKeyboardButton(
             text="Список пользователей",
-            callback_data=UsersSectionCB(action=Action.LIST).pack(),
+            callback_data=UsersCB(action=Action.LIST).pack(),
         )
     )
     builder.row(
         types.InlineKeyboardButton(
             text="Добавить пользователя",
-            callback_data=UsersSectionCB(action=Action.ADD).pack(),
+            callback_data=UsersCB(action=Action.ADD).pack(),
         )
     )
 
     builder.row(
         types.InlineKeyboardButton(
             text="Удалить пользователя",
-            callback_data=UsersSectionCB(action=Action.DELETE).pack(),
+            callback_data=UsersCB(action=Action.DELETE).pack(),
         )
     )
 
     builder.row(
         types.InlineKeyboardButton(
-            text="Назад", callback_data=UsersSectionCB(action=Action.BACK).pack()
+            text="Назад", callback_data=UsersCB(action=Action.BACK).pack()
         )
     )
     return builder.as_markup()

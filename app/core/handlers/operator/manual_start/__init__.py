@@ -1,23 +1,23 @@
 from aiogram import Router
-from app.core.handlers.operator.manual_start_section.menu import (
+from app.core.handlers.operator.manual_start.menu import (
     manual_start_menu_router,
 )
-from app.core.handlers.operator.manual_start_section.manual_start_type import (
+from app.core.handlers.operator.manual_start.type import (
     manual_start_type_router,
 )
 
-from app.core.handlers.operator.manual_start_section.test_manual_start import (
+from app.core.handlers.operator.manual_start.test import (
     test_manual_start_router,
 )
 
-from app.core.handlers.operator.manual_start_section.service_manual_start import (
+from app.core.handlers.operator.manual_start.service import (
     service_manual_start_router,
 )
-from app.core.handlers.operator.manual_start_section.rewash_manual_start import (
+from app.core.handlers.operator.manual_start.rewash import (
     rewash_manual_start_router,
 )
 
-from app.core.handlers.operator.manual_start_section.paid_manual_start import (
+from app.core.handlers.operator.manual_start.paid import (
     paid_manual_start_router,
 )
 

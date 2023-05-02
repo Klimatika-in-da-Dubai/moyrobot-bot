@@ -5,11 +5,11 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
-from app.core.keyboards.operator.manual_start.manual_start_type import (
+from app.core.keyboards.operator.manual_start.type import (
     send_manual_start_type_keyboard,
 )
 from app.core.keyboards.operator.manual_start.menu import send_manual_starts_keyboard
-from app.core.keyboards.operator.manual_start.test_manual_start import (
+from app.core.keyboards.operator.manual_start.test import (
     TestManualStartCB,
     TestManualStartTarget,
     send_test_manual_start_keyboard,
@@ -26,7 +26,7 @@ test_manual_start_router = Router()
 
 
 @test_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.TestManualStart.menu,
+    OperatorMenu.ManualStart.TestManualStart.menu,
     isOperatorCB(),
     TestManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
@@ -35,12 +35,12 @@ test_manual_start_router = Router()
 )
 async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
-    await state.set_state(OperatorMenu.ManualStartSection.TestManualStart.description)
+    await state.set_state(OperatorMenu.ManualStart.TestManualStart.description)
     await cb.message.edit_text("Напишите причну ручного запуска")  # type: ignore
 
 
 @test_manual_start_router.message(
-    OperatorMenu.ManualStartSection.TestManualStart.description, F.text
+    OperatorMenu.ManualStart.TestManualStart.description, F.text
 )
 async def message_description(
     message: types.Message, state: FSMContext, session: async_sessionmaker
@@ -50,7 +50,7 @@ async def message_description(
 
 
 @test_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.TestManualStart.menu,
+    OperatorMenu.ManualStart.TestManualStart.menu,
     isOperatorCB(),
     TestManualStartCB.filter((F.action == Action.BACK)),
 )
@@ -63,7 +63,7 @@ async def cb_back(
 
 
 @test_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.TestManualStart.menu,
+    OperatorMenu.ManualStart.TestManualStart.menu,
     isOperatorCB(),
     TestManualStartCB.filter((F.action == Action.ENTER)),
 )

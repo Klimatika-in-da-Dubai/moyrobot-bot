@@ -11,7 +11,7 @@ class OperatorMenu(StatesGroup):
         chemistry_count = State()
         robot_check = State()
 
-    class ManualStartSection(StatesGroup):
+    class ManualStart(StatesGroup):
         menu = State()
         type = State()
 

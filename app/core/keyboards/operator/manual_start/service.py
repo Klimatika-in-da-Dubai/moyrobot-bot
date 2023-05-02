@@ -72,5 +72,5 @@ async def send_service_manual_start_keyboard(
     session: async_sessionmaker,
 ):
     text = await get_manual_start_text(state)
-    await state.set_state(OperatorMenu.ManualStartSection.ServiceManualStart.menu)
+    await state.set_state(OperatorMenu.ManualStart.ServiceManualStart.menu)
     await send_func(text=text, reply_markup=get_service_manual_start_keyboard())

@@ -36,7 +36,7 @@ class UserDAO(BaseDAO[User]):
                 select(UserRole.role).join(User).where(self._model.id == user.id)
             )
             roles_list = roles.scalars().all()
-            return roles_list 
+            return roles_list
 
     async def user_is_admin(self, user: User) -> bool:
         roles = await self.get_user_roles(user)

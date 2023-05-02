@@ -6,13 +6,13 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, YesNoCB, YesNoTarget, get_yes_no_keyboard
 from app.core.keyboards.operator.bonus.menu import send_bonus_keyboard
-from app.core.keyboards.operator.manual_start.manual_start_type import (
+from app.core.keyboards.operator.manual_start.type import (
     send_manual_start_type_keyboard,
 )
 from app.core.keyboards.operator.manual_start.menu import (
     send_manual_starts_keyboard,
 )
-from app.core.keyboards.operator.manual_start.paid_manual_start import (
+from app.core.keyboards.operator.manual_start.paid import (
     PaidManualStartCB,
     PaidManualStartTarget,
     send_paid_manual_start_keyboard,
@@ -35,7 +35,7 @@ paid_manual_start_router = Router()
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    OperatorMenu.ManualStart.PaidManualStart.menu,
     isOperatorCB(),
     PaidManualStartCB.filter(
         (F.action == Action.OPEN) & (F.target == PaidManualStartTarget.PAYMENT_METHOD)
@@ -49,7 +49,7 @@ async def cb_payment_method(
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.payment_method,
+    OperatorMenu.ManualStart.PaidManualStart.payment_method,
     isOperatorCB(),
     PaymentMethodCB.filter(F.action == Action.SELECT),
 )
@@ -75,7 +75,7 @@ async def cb_payment_method_select(
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.payment_method,
+    OperatorMenu.ManualStart.PaidManualStart.payment_method,
     isOperatorCB(),
     PaymentMethodCB.filter(F.action == Action.BACK),
 )
@@ -87,7 +87,7 @@ async def cb_payment_method_back(
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    OperatorMenu.ManualStart.PaidManualStart.menu,
     isOperatorCB(),
     PaidManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
@@ -96,14 +96,12 @@ async def cb_payment_method_back(
 )
 async def cb_payment_amount(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
-    await state.set_state(
-        OperatorMenu.ManualStartSection.PaidManualStart.payment_amount
-    )
+    await state.set_state(OperatorMenu.ManualStart.PaidManualStart.payment_amount)
     await cb.message.edit_text("Напишите сумму оплаты")  # type: ignore
 
 
 @paid_manual_start_router.message(
-    OperatorMenu.ManualStartSection.PaidManualStart.payment_amount, F.text
+    OperatorMenu.ManualStart.PaidManualStart.payment_amount, F.text
 )
 async def message_payment_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
@@ -118,7 +116,7 @@ async def message_payment_amount(
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    OperatorMenu.ManualStart.PaidManualStart.menu,
     isOperatorCB(),
     PaidManualStartCB.filter(F.action == Action.BACK),
 )
@@ -131,7 +129,7 @@ async def cb_back(
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    OperatorMenu.ManualStart.PaidManualStart.menu,
     isOperatorCB(),
     PaidManualStartCB.filter(F.action == Action.ENTER),
 )
@@ -143,13 +141,13 @@ async def cb_enter(
     if not check_data(data):
         await cb.answer("Не все поля заполнены", show_alert=True)
         return
-    id = data.get("id")  # type: ignore
+    id = data.get("id")
 
     await table_add_paid_manual_start(state, session)
     await state.clear()
     await report_paid_manual_start(bot, session, id)  # type: ignore
 
-    await state.set_state(OperatorMenu.ManualStartSection.PaidManualStart.bonus)
+    await state.set_state(OperatorMenu.ManualStart.PaidManualStart.bonus)
     await cb.message.edit_text(  # type: ignore
         "Хотите начислить бонусы?", reply_markup=get_yes_no_keyboard()
     )
@@ -203,7 +201,7 @@ async def report_paid_manual_start(
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.bonus,
+    OperatorMenu.ManualStart.PaidManualStart.bonus,
     isOperatorCB(),
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.NO)),
 )
@@ -215,7 +213,7 @@ async def cb_bonus_no(
 
 
 @paid_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.PaidManualStart.bonus,
+    OperatorMenu.ManualStart.PaidManualStart.bonus,
     isOperatorCB(),
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.YES)),
 )

@@ -16,6 +16,8 @@ def convert_text_to_phone(phone: str) -> str:
 
     if phone.startswith("8"):
         phone = phone.replace("8", "+7", 1)
+    elif phone.startswith("7"):
+        phone = phone.replace("7", "+7", 1)
     return phone
 
 

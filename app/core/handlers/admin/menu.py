@@ -9,7 +9,7 @@ from app.core.keyboards.admin.menu import (
     AdminMenuCB,
     AdminMenuTarget,
 )
-from app.core.keyboards.admin.users_section.menu import get_users_keyboard
+from app.core.keyboards.admin.users.menu import get_users_keyboard
 from app.core.keyboards.base import Action
 from app.core.keyboards.menu import (
     send_menu_keyboard,
@@ -32,7 +32,7 @@ async def cb_open_users_menu(
     session: async_sessionmaker[AsyncSession],
 ):
     await cb.answer()
-    await state.set_state(AdminMenu.UsersSection.menu)
+    await state.set_state(AdminMenu.Users.menu)
     await cb.message.edit_text("Пользователи", reply_markup=get_users_keyboard())  # type: ignore
 
 
