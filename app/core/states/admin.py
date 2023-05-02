@@ -4,17 +4,17 @@ from aiogram.fsm.state import StatesGroup, State
 class AdminMenu(StatesGroup):
     menu = State()
 
-    class OperatorsSection(StatesGroup):
+    class Operators(StatesGroup):
         ...
 
-    class ModeratorsSection(StatesGroup):
+    class Moderators(StatesGroup):
         ...
 
     # Нужно ли?
-    class AdminsSection(StatesGroup):
+    class Admins(StatesGroup):
         ...
 
-    class UsersSection(StatesGroup):
+    class Users(StatesGroup):
         menu = State()
 
         class Add(StatesGroup):

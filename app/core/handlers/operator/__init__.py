@@ -1,6 +1,6 @@
 from aiogram import Router
 from app.core.handlers.operator.menu import menu_router
-from app.core.handlers.operator.manual_start_section import manual_start_router
+from app.core.handlers.operator.manual_start import manual_start_router
 from app.core.handlers.operator.promocode import promocode_router
 from app.core.handlers.operator.bonus import bonus_router
 from app.core.handlers.operator.antifreeze import antifreeze_router

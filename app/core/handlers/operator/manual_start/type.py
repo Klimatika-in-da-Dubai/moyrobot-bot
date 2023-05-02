@@ -4,21 +4,21 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
-from app.core.keyboards.operator.manual_start.manual_start_type import (
+from app.core.keyboards.operator.manual_start.type import (
     ManualStartReportCB,
     ManualStartReportTarget,
 )
 from app.core.keyboards.operator.manual_start.menu import send_manual_starts_keyboard
-from app.core.keyboards.operator.manual_start.paid_manual_start import (
+from app.core.keyboards.operator.manual_start.paid import (
     send_paid_manual_start_keyboard,
 )
-from app.core.keyboards.operator.manual_start.rewash_manual_start import (
+from app.core.keyboards.operator.manual_start.rewash import (
     send_rewash_manual_start_keyboard,
 )
-from app.core.keyboards.operator.manual_start.service_manual_start import (
+from app.core.keyboards.operator.manual_start.service import (
     send_service_manual_start_keyboard,
 )
-from app.core.keyboards.operator.manual_start.test_manual_start import (
+from app.core.keyboards.operator.manual_start.test import (
     send_test_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
@@ -28,7 +28,7 @@ manual_start_type_router = Router()
 
 
 @manual_start_type_router.callback_query(
-    OperatorMenu.ManualStartSection.type,
+    OperatorMenu.ManualStart.type,
     isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
@@ -40,12 +40,12 @@ async def cb_test_manual_start(
 ):
     await cb.answer()
     await state.update_data(type=ManualStartType.TEST)
-    await state.set_state(OperatorMenu.ManualStartSection.TestManualStart.menu)
+    await state.set_state(OperatorMenu.ManualStart.TestManualStart.menu)
     await send_test_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @manual_start_type_router.callback_query(
-    OperatorMenu.ManualStartSection.type,
+    OperatorMenu.ManualStart.type,
     isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
@@ -61,7 +61,7 @@ async def cb_service_manual_start(
 
 
 @manual_start_type_router.callback_query(
-    OperatorMenu.ManualStartSection.type,
+    OperatorMenu.ManualStart.type,
     isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
@@ -78,7 +78,7 @@ async def cb_rewash_manual_start(
 
 
 @manual_start_type_router.callback_query(
-    OperatorMenu.ManualStartSection.type,
+    OperatorMenu.ManualStart.type,
     isOperatorCB(),
     ManualStartReportCB.filter(
         (F.action == Action.OPEN)
@@ -95,7 +95,7 @@ async def cb_paid_manual_start(
 
 
 @manual_start_type_router.callback_query(
-    OperatorMenu.ManualStartSection.type,
+    OperatorMenu.ManualStart.type,
     isOperatorCB(),
     ManualStartReportCB.filter(F.action == Action.BACK),
 )

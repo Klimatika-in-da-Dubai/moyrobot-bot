@@ -13,14 +13,14 @@ from app.services.database.dao.manual_start import ManualStartDAO
 MANUAL_STARTS_KEYBOARD_COUNT = 5
 
 
-class ManualStartSectionTarget(IntEnum):
+class ManualStartTarget(IntEnum):
     MANUAL_START = auto()
     NONE = auto()
 
 
-class ManualStartSectionCB(CallbackData, prefix="omenu_man_start"):
+class ManualStartCB(CallbackData, prefix="omenu_man_start"):
     action: Action
-    target: ManualStartSectionTarget
+    target: ManualStartTarget
     manual_start_id: str
 
 
@@ -38,9 +38,9 @@ async def get_manual_starts_keyboard(
         builder.row(
             types.InlineKeyboardButton(
                 text=f"Терминал: {manual_start.terminal_id} Id: {manual_start.id}",
-                callback_data=ManualStartSectionCB(
+                callback_data=ManualStartCB(
                     action=Action.OPEN,
-                    target=ManualStartSectionTarget.MANUAL_START,
+                    target=ManualStartTarget.MANUAL_START,
                     manual_start_id=manual_start.id,
                 ).pack(),
             )
@@ -49,9 +49,9 @@ async def get_manual_starts_keyboard(
     builder.row(
         types.InlineKeyboardButton(
             text="Назад",
-            callback_data=ManualStartSectionCB(
+            callback_data=ManualStartCB(
                 action=Action.BACK,
-                target=ManualStartSectionTarget.NONE,
+                target=ManualStartTarget.NONE,
                 manual_start_id="",
             ).pack(),
         ),
@@ -64,7 +64,7 @@ async def send_manual_starts_keyboard(
     state: FSMContext,
     session: async_sessionmaker,
 ):
-    await state.set_state(OperatorMenu.ManualStartSection.menu)
+    await state.set_state(OperatorMenu.ManualStart.menu)
     await send_func(
         "Ручные запуски", reply_markup=await get_manual_starts_keyboard(session)
     )
