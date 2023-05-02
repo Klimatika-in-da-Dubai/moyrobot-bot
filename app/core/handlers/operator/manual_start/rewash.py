@@ -5,13 +5,13 @@ from sqlalchemy.ext.asyncio.session import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
-from app.core.keyboards.operator.manual_start.manual_start_type import (
+from app.core.keyboards.operator.manual_start.type import (
     send_manual_start_type_keyboard,
 )
 from app.core.keyboards.operator.manual_start.menu import (
     send_manual_starts_keyboard,
 )
-from app.core.keyboards.operator.manual_start.rewash_manual_start import (
+from app.core.keyboards.operator.manual_start.rewash import (
     RewashManualStartCB,
     RewashManualStartTarget,
     send_rewash_manual_start_keyboard,
@@ -28,7 +28,7 @@ rewash_manual_start_router = Router()
 
 
 @rewash_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    OperatorMenu.ManualStart.RewashManualStart.menu,
     isOperatorCB(),
     RewashManualStartCB.filter(
         (F.action == Action.ADD_PHOTO) & (F.target == RewashManualStartTarget.PHOTO),
@@ -36,14 +36,14 @@ rewash_manual_start_router = Router()
 )
 async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
-    await state.set_state(OperatorMenu.ManualStartSection.RewashManualStart.photo)
+    await state.set_state(OperatorMenu.ManualStart.RewashManualStart.photo)
     await cb.message.edit_text(  # type: ignore
         "Сделайте фотографию так, чтобы было хорошо видно номер автомобиля"
     )
 
 
 @rewash_manual_start_router.message(
-    OperatorMenu.ManualStartSection.RewashManualStart.photo, F.photo
+    OperatorMenu.ManualStart.RewashManualStart.photo, F.photo
 )
 async def message_photo(
     message: types.Message, state: FSMContext, session: async_sessionmaker
@@ -54,7 +54,7 @@ async def message_photo(
 
 
 @rewash_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    OperatorMenu.ManualStart.RewashManualStart.menu,
     isOperatorCB(),
     RewashManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
@@ -63,12 +63,12 @@ async def message_photo(
 )
 async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
-    await state.set_state(OperatorMenu.ManualStartSection.RewashManualStart.description)
+    await state.set_state(OperatorMenu.ManualStart.RewashManualStart.description)
     await cb.message.edit_text("Напишите причину перемывки")  # type: ignore
 
 
 @rewash_manual_start_router.message(
-    OperatorMenu.ManualStartSection.RewashManualStart.description, F.text
+    OperatorMenu.ManualStart.RewashManualStart.description, F.text
 )
 async def message_description(
     message: types.Message, state: FSMContext, session: async_sessionmaker
@@ -78,7 +78,7 @@ async def message_description(
 
 
 @rewash_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    OperatorMenu.ManualStart.RewashManualStart.menu,
     isOperatorCB(),
     RewashManualStartCB.filter(F.action == Action.BACK),
 )
@@ -91,7 +91,7 @@ async def cb_back(
 
 
 @rewash_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    OperatorMenu.ManualStart.RewashManualStart.menu,
     isOperatorCB(),
     RewashManualStartCB.filter(F.action == Action.ENTER),
 )
@@ -104,7 +104,7 @@ async def cb_enter(
         await cb.answer("Не все поля были заполнены", show_alert=True)
         return
 
-    id = data.get("id")  # type: ignore
+    id = data.get("id")
     await table_add_rewash_manual_start(state, session)
     await state.clear()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore

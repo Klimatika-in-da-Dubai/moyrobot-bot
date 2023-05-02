@@ -8,10 +8,10 @@ from app.core.filters.admin import isAdminCB
 
 from app.core.states.admin import AdminMenu
 from app.core.keyboards.base import Action
-from app.core.keyboards.admin.users_section.menu import get_users_keyboard
+from app.core.keyboards.admin.users.menu import get_users_keyboard
 
 
-from app.core.keyboards.admin.users_section.add_user import (
+from app.core.keyboards.admin.users.add import (
     AddUserCB,
     AddUserTarget,
     get_add_user_keyboard,
@@ -26,17 +26,17 @@ logger = logging.getLogger("user_add_section")
 
 
 @add_user_router.callback_query(
-    AdminMenu.UsersSection.Add.menu,
+    AdminMenu.Users.Add.menu,
     isAdminCB(),
     AddUserCB.filter((F.target == AddUserTarget.ID) & (F.action == Action.ENTER_TEXT)),
 )
 async def cb_enter_id(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
-    await state.set_state(AdminMenu.UsersSection.Add.id)
+    await state.set_state(AdminMenu.Users.Add.id)
     await cb.message.answer("Введите id пользователя")  # type: ignore
 
 
-@add_user_router.message(AdminMenu.UsersSection.Add.id, F.text)
+@add_user_router.message(AdminMenu.Users.Add.id, F.text)
 async def message_user_id(message: types.Message, state: FSMContext):
     if not message.text.isnumeric():  # type: ignore
         await message.answer("Введите число")
@@ -46,7 +46,7 @@ async def message_user_id(message: types.Message, state: FSMContext):
 
 
 @add_user_router.callback_query(
-    AdminMenu.UsersSection.Add.menu,
+    AdminMenu.Users.Add.menu,
     isAdminCB(),
     AddUserCB.filter(
         (F.target == AddUserTarget.NAME) & (F.action == Action.ENTER_TEXT)
@@ -54,30 +54,30 @@ async def message_user_id(message: types.Message, state: FSMContext):
 )
 async def cb_enter_name(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
-    await state.set_state(AdminMenu.UsersSection.Add.name)
+    await state.set_state(AdminMenu.Users.Add.name)
     await cb.message.answer("Введите имя пользователя")  # type: ignore
 
 
-@add_user_router.message(AdminMenu.UsersSection.Add.name, F.text)
+@add_user_router.message(AdminMenu.Users.Add.name, F.text)
 async def message_user_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
     await send_add_user_menu(message, state)
 
 
 @add_user_router.callback_query(
-    AdminMenu.UsersSection.Add.menu,
+    AdminMenu.Users.Add.menu,
     isAdminCB(),
     AddUserCB.filter((F.target == AddUserTarget.ROLES) & (F.action == Action.OPEN)),
 )
 async def cb_open_role_selection(cb: types.CallbackQuery, state: FSMContext):
-    await state.set_state(AdminMenu.UsersSection.Add.role)
+    await state.set_state(AdminMenu.Users.Add.role)
     await cb.message.edit_text(  # type: ignore
         "Выберете роли пользователя", reply_markup=await get_roles_keyboard(state)
     )
 
 
 @add_user_router.callback_query(
-    AdminMenu.UsersSection.Add.role,
+    AdminMenu.Users.Add.role,
     isAdminCB(),
     AddUserCB.filter(F.action == Action.SELECT),
 )
@@ -115,7 +115,7 @@ async def cb_select_role(
 
 
 @add_user_router.callback_query(
-    AdminMenu.UsersSection.Add.role,
+    AdminMenu.Users.Add.role,
     isAdminCB(),
     AddUserCB.filter(F.action == Action.BACK),
 )
@@ -125,19 +125,19 @@ async def cb_roles_back(cb: types.CallbackQuery, state: FSMContext):
 
 
 @add_user_router.callback_query(
-    AdminMenu.UsersSection.Add.menu,
+    AdminMenu.Users.Add.menu,
     isAdminCB(),
     AddUserCB.filter(F.action == Action.BACK),
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
     await state.clear()
-    await state.set_state(AdminMenu.UsersSection.menu)
+    await state.set_state(AdminMenu.Users.menu)
     await cb.message.edit_text("Пользователи", reply_markup=get_users_keyboard())  # type: ignore
 
 
 @add_user_router.callback_query(
-    AdminMenu.UsersSection.Add.menu,
+    AdminMenu.Users.Add.menu,
     isAdminCB(),
     AddUserCB.filter(F.action == Action.ENTER),
 )
@@ -177,7 +177,7 @@ def is_correct_data(data: dict[str, Any]):
 
 
 async def send_add_user_menu(message: types.Message, state: FSMContext):
-    await state.set_state(AdminMenu.UsersSection.Add.menu)
+    await state.set_state(AdminMenu.Users.Add.menu)
     await message.answer(
         "Добавить пользователя",
         reply_markup=await get_add_user_keyboard(state),
@@ -185,7 +185,7 @@ async def send_add_user_menu(message: types.Message, state: FSMContext):
 
 
 async def edit_text_add_user_menu(message: types.Message, state: FSMContext):
-    await state.set_state(AdminMenu.UsersSection.Add.menu)
+    await state.set_state(AdminMenu.Users.Add.menu)
     await message.edit_text(
         "Добавить пользователя",
         reply_markup=await get_add_user_keyboard(state),

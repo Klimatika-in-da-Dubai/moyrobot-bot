@@ -82,5 +82,5 @@ async def send_manual_start_type_keyboard(
     send_func: Callable, state: FSMContext, session: async_sessionmaker
 ):
     text = await get_manual_start_text(state)
-    await state.set_state(OperatorMenu.ManualStartSection.type)
+    await state.set_state(OperatorMenu.ManualStart.type)
     await send_func(text=text, reply_markup=get_manual_start_type_keyboard())

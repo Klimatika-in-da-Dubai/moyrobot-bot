@@ -94,16 +94,14 @@ async def send_paid_manual_start_keyboard(
     send_func: Callable, state: FSMContext, session: async_sessionmaker
 ):
     text = await get_manual_start_text(state)
-    await state.set_state(OperatorMenu.ManualStartSection.PaidManualStart.menu)
+    await state.set_state(OperatorMenu.ManualStart.PaidManualStart.menu)
     await send_func(text=text, reply_markup=get_paid_manual_start_keyboard())
 
 
 async def send_payment_method_keyboard(
     send_func: Callable, state: FSMContext, session: async_sessionmaker
 ):
-    await state.set_state(
-        OperatorMenu.ManualStartSection.PaidManualStart.payment_method
-    )
+    await state.set_state(OperatorMenu.ManualStart.PaidManualStart.payment_method)
     await send_func(
         text="Выберите тип оплаты",
         reply_markup=await get_payment_method_keyboard(state),

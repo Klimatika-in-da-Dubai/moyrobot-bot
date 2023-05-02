@@ -5,11 +5,11 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
-from app.core.keyboards.operator.manual_start.manual_start_type import (
+from app.core.keyboards.operator.manual_start.type import (
     send_manual_start_type_keyboard,
 )
 from app.core.keyboards.operator.manual_start.menu import send_manual_starts_keyboard
-from app.core.keyboards.operator.manual_start.service_manual_start import (
+from app.core.keyboards.operator.manual_start.service import (
     ServiceManualStartCB,
     ServiceManualStartTarget,
     send_service_manual_start_keyboard,
@@ -29,7 +29,7 @@ service_manual_start_router = Router()
 
 
 @service_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.ServiceManualStart.menu,
+    OperatorMenu.ManualStart.ServiceManualStart.menu,
     isOperatorCB(),
     ServiceManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
@@ -38,14 +38,12 @@ service_manual_start_router = Router()
 )
 async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
-    await state.set_state(
-        OperatorMenu.ManualStartSection.ServiceManualStart.description
-    )
+    await state.set_state(OperatorMenu.ManualStart.ServiceManualStart.description)
     await cb.message.edit_text("Напишите причну ручного запуска")  # type: ignore
 
 
 @service_manual_start_router.message(
-    OperatorMenu.ManualStartSection.ServiceManualStart.description, F.text
+    OperatorMenu.ManualStart.ServiceManualStart.description, F.text
 )
 async def message_description(message: types.Message, state: FSMContext, session):
     await state.update_data(description=message.text)
@@ -53,7 +51,7 @@ async def message_description(message: types.Message, state: FSMContext, session
 
 
 @service_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.ServiceManualStart.menu,
+    OperatorMenu.ManualStart.ServiceManualStart.menu,
     isOperatorCB(),
     ServiceManualStartCB.filter((F.action == Action.BACK)),
 )
@@ -66,7 +64,7 @@ async def cb_back(
 
 
 @service_manual_start_router.callback_query(
-    OperatorMenu.ManualStartSection.ServiceManualStart.menu,
+    OperatorMenu.ManualStart.ServiceManualStart.menu,
     isOperatorCB(),
     ServiceManualStartCB.filter((F.action == Action.ENTER)),
 )
@@ -79,7 +77,7 @@ async def cb_enter(
         await cb.answer("Не все поля заполнены", show_alert=True)
         return
 
-    id = data.get("id")  # type: ignore
+    id = data.get("id")
     await table_add_service_manual_start(state, session)
     await state.clear()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore

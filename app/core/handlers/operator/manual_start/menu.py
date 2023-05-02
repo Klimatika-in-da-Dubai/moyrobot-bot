@@ -4,12 +4,12 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
-from app.core.keyboards.operator.manual_start.manual_start_type import (
+from app.core.keyboards.operator.manual_start.type import (
     send_manual_start_type_keyboard,
 )
 from app.core.keyboards.operator.manual_start.menu import (
-    ManualStartSectionCB,
-    ManualStartSectionTarget,
+    ManualStartCB,
+    ManualStartTarget,
 )
 from app.core.keyboards.operator.menu import (
     send_operator_menu_keyboard,
@@ -20,16 +20,16 @@ manual_start_menu_router = Router()
 
 
 @manual_start_menu_router.callback_query(
-    OperatorMenu.ManualStartSection.menu,
+    OperatorMenu.ManualStart.menu,
     isOperatorCB(),
-    ManualStartSectionCB.filter(
-        (F.action == Action.OPEN) & (F.target == ManualStartSectionTarget.MANUAL_START)
+    ManualStartCB.filter(
+        (F.action == Action.OPEN) & (F.target == ManualStartTarget.MANUAL_START)
     ),
 )
 async def cb_manual_start_open(
     cb: types.CallbackQuery,
     state: FSMContext,
-    callback_data: ManualStartSectionCB,
+    callback_data: ManualStartCB,
     session: async_sessionmaker,
 ):
     await state.update_data(id=callback_data.manual_start_id)
@@ -37,11 +37,9 @@ async def cb_manual_start_open(
 
 
 @manual_start_menu_router.callback_query(
-    OperatorMenu.ManualStartSection.menu,
+    OperatorMenu.ManualStart.menu,
     isOperatorCB(),
-    ManualStartSectionCB.filter(
-        F.action == Action.BACK & F.target == ManualStartSectionTarget.NONE
-    ),
+    ManualStartCB.filter(F.action == Action.BACK & F.target == ManualStartTarget.NONE),
 )
 async def cb_back(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker

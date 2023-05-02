@@ -82,5 +82,5 @@ async def send_rewash_manual_start_keyboard(
     send_func: Callable, state: FSMContext, session: async_sessionmaker
 ):
     text = await get_manual_start_text(state)
-    await state.set_state(OperatorMenu.ManualStartSection.RewashManualStart.menu)
+    await state.set_state(OperatorMenu.ManualStart.RewashManualStart.menu)
     await send_func(text=text, reply_markup=get_rewash_manual_start_keyboard())
