@@ -17,7 +17,7 @@ from app.utils.shift import get_open_shift
 
 
 class OpenShiftMenuTarget(IntEnum):
-    CLEANING = auto()
+    CLEANING_CHECK = auto()
     NONE = auto()
 
 
@@ -40,7 +40,7 @@ def get_open_shift_keyboard(shift: OpenShift) -> types.InlineKeyboardMarkup:
         types.InlineKeyboardButton(
             text=f"Качество уборки {emojis.cleaning}",
             callback_data=OpenShiftMenuCB(
-                action=Action.SELECT, target=OpenShiftMenuTarget.CLEANING
+                action=Action.SELECT, target=OpenShiftMenuTarget.CLEANING_CHECK
             ).pack(),
         )
     )

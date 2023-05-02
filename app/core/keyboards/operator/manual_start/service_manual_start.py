@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
+from app.utils.text import to_correct_message
 
 
 class ServiceManualStartTarget(IntEnum):
@@ -57,7 +58,7 @@ async def get_manual_start_text(state: FSMContext):
 
     description_text = description if description is not None else ""
 
-    return (
+    return to_correct_message(
         "Ручной запуск\n"
         "*Тип:* Технический\n"
         f"*ID:* {id}\n"

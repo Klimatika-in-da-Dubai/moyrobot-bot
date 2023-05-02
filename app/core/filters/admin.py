@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.filters import Filter
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from app.core.keyboards.menu import get_menu_keyboard, send_menu_keyboard
+from app.core.keyboards.menu import send_menu_keyboard
 from app.services.database.dao.user import UserDAO
 
 from app.services.database.models.user import Role

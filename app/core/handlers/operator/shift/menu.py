@@ -127,7 +127,7 @@ async def message_chemistry_count(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
-        await message.edit_text(
+        await message.answer(
             "Неверное количество химии", reply_markup=get_cancel_keyboard()
         )
         return

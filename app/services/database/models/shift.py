@@ -13,14 +13,14 @@ class Shift(Base):
     open_date: Mapped[datetime] = mapped_column(nullable=True)
     opened_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"))
     close_date: Mapped[datetime] = mapped_column(nullable=True)
-    closed_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"))
+    closed_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"), nullable=True)
 
 
 class OpenShift(Base):
     __tablename__ = "open_shift"
 
     id: Mapped[int] = mapped_column(
-        ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
+        ForeignKey("shift.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
     date: Mapped[datetime] = mapped_column(default=datetime.now())
     money_amount: Mapped[int] = mapped_column(default=0)
@@ -38,7 +38,7 @@ class CloseShift(Base):
     __tablename__ = "close_shift"
 
     id: Mapped[int] = mapped_column(
-        ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
+        ForeignKey("shift.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
     date: Mapped[datetime] = mapped_column(default=datetime.now())
     money_amount: Mapped[int] = mapped_column(default=0, nullable=False)

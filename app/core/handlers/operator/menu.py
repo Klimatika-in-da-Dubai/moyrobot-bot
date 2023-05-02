@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
-from app.core.filters.shift import isShiftOpenedCB
+from app.core.filters.shift import isShiftClosedCB, isShiftOpenedCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.menu import send_menu_keyboard
 from app.core.keyboards.operator.antifreeze.menu import send_antifreeze_keyboard
@@ -26,10 +26,10 @@ menu_router = Router(name="operator-menu-router")
 @menu_router.callback_query(
     OperatorMenu.menu,
     isOperatorCB(),
-    ~isShiftOpenedCB(),
     OperatorMenuCB.filter(
         (F.action == Action.OPEN) & (F.target == OperatorMenuTarget.OPEN_SHIFT)
     ),
+    isShiftClosedCB(),
 )
 async def cb_open_shift(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
@@ -40,11 +40,11 @@ async def cb_open_shift(
 
 @menu_router.callback_query(
     OperatorMenu.menu,
-    isShiftOpenedCB(),
     isOperatorCB(),
     OperatorMenuCB.filter(
         (F.action == Action.OPEN) & (F.target == OperatorMenuTarget.CLOSE_SHIFT)
     ),
+    isShiftOpenedCB(),
 )
 async def cb_close_shift(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker

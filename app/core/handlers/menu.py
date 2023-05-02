@@ -11,7 +11,6 @@ from app.core.keyboards.admin.menu import get_admin_menu_keyboard
 from app.core.keyboards.base import Action
 from app.core.keyboards.menu import MenuCB, send_menu_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
-from app.core.keyboards.operator.shift.open import send_open_shift_menu_keyboard
 from app.core.states.admin import AdminMenu
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role

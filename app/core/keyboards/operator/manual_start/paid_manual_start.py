@@ -10,6 +10,7 @@ from app.core.keyboards.base import Action
 from app.core.keyboards.payment_method import get_payment_method_keyboard
 from app.core.states.operator import OperatorMenu
 from app.services.database.models.manual_start import PaymentMethod
+from app.utils.text import to_correct_message
 
 
 class PaidManualStartTarget(IntEnum):
@@ -80,7 +81,7 @@ async def get_manual_start_text(state: FSMContext):
 
     payment_amount_text = payment_amount if payment_amount is not None else ""
 
-    return (
+    return to_correct_message(
         "Ручной запуск\n"
         "*Тип:* Оплата через эквайринг\n"
         f"*ID:* {id}\n"

@@ -19,7 +19,7 @@ class CloseShiftMenuTarget(IntEnum):
     NONE = auto()
 
 
-class CloseShiftMenuCB(CallbackData, prefix="open_shift"):
+class CloseShiftMenuCB(CallbackData, prefix="close_shift"):
     action: Action
     target: CloseShiftMenuTarget
 

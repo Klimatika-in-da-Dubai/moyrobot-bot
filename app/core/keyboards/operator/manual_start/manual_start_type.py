@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
+from app.utils.text import to_correct_message
 
 
 class ManualStartReportTarget(IntEnum):
@@ -72,7 +73,9 @@ def get_manual_start_type_keyboard() -> types.InlineKeyboardMarkup:
 async def get_manual_start_text(state: FSMContext):
     data = await state.get_data()
     id = data.get("id")
-    return "Ручной запуск\n" f"*ID*: *{id}*\n" "\n" "Выберите тип ручного запуска:\n"
+    return to_correct_message(
+        "Ручной запуск\n" f"*ID*: *{id}*\n" "\n" "Выберите тип ручного запуска:\n"
+    )
 
 
 async def send_manual_start_type_keyboard(
