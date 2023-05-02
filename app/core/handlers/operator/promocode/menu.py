@@ -23,8 +23,8 @@ menu_router = Router()
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Promocode.menu,
+    isOperatorCB(),
     PromocodeMenuCB.filter(
         (F.action == Action.ENTER_TEXT) & (F.target == PromocodeMenuTarget.PHONE)
     ),
@@ -55,8 +55,8 @@ async def message_promocode_phone(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Promocode.menu,
+    isOperatorCB(),
     PromocodeMenuCB.filter(
         (F.action == Action.OPEN) & (F.target == PromocodeMenuTarget.WASH_MODE)
     ),
@@ -69,8 +69,8 @@ async def cb_promocode_wash_mode(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Promocode.menu,
+    isOperatorCB(),
     PromocodeMenuCB.filter(
         (F.action == Action.ENTER_TEXT) & (F.target == PromocodeMenuTarget.DESCRIPTION)
     ),
@@ -94,8 +94,8 @@ async def message_promocode_description(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Promocode.menu,
+    isOperatorCB(),
     PromocodeMenuCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
@@ -108,8 +108,8 @@ async def cb_back(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Promocode.menu,
+    isOperatorCB(),
     PromocodeMenuCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
@@ -131,8 +131,8 @@ async def cb_enter(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     or_f(OperatorMenu.Promocode.description, OperatorMenu.Promocode.phone),
+    isOperatorCB(),
     CancelCB.filter(F.action == Action.CANCEL),
 )
 async def cb_cancel_enter_text(

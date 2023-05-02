@@ -7,6 +7,7 @@ def to_correct_message(text: str) -> str:
         .replace("(", "\\(")
         .replace(")", "\\)")
         .replace("-", "\\-")
+        .replace("_", "\\_")
     )
 
 

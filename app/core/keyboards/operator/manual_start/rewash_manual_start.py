@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
+from app.utils.text import to_correct_message
 
 
 class RewashManualStartTarget(IntEnum):
@@ -68,7 +69,7 @@ async def get_manual_start_text(state: FSMContext):
     photo_status = "✅" if photo_file_id is not None else "❌"
     description_text = description if description is not None else ""
 
-    return (
+    return to_correct_message(
         "Ручной запуск\n"
         "*Тип:* Перемывка\n"
         f"*ID:* {id}\n"

@@ -40,7 +40,7 @@ class BaseDAO(Generic[Model]):
             result = await session.execute(
                 select(self._model).where(self._model.id == id_)
             )
-            return result.scalars().first()
+            return result.scalar()
 
     async def delete_all(self) -> None:
         """

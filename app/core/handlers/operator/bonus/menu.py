@@ -22,8 +22,8 @@ menu_router = Router()
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Bonus.menu,
+    isOperatorCB(),
     BonusMenuCB.filter(
         (F.action == Action.ENTER_TEXT) & (F.target == BonusMenuTarget.PHONE)
     ),
@@ -54,8 +54,8 @@ async def message_phone(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Bonus.menu,
+    isOperatorCB(),
     BonusMenuCB.filter(
         (F.action == Action.ENTER_TEXT) & (F.target == BonusMenuTarget.BONUS_AMOUNT)
     ),
@@ -74,7 +74,7 @@ async def cb_bonus_amount(
 async def message_bonus_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
-    if not message.text.isnumeric():  # type: ignore
+    if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
         await message.answer(
             "Введена некорректная сумма", reply_markup=get_cancel_keyboard()
         )
@@ -84,8 +84,8 @@ async def message_bonus_amount(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Bonus.menu,
+    isOperatorCB(),
     BonusMenuCB.filter(
         (F.action == Action.ENTER_TEXT) & (F.target == BonusMenuTarget.DESCRIPTION)
     ),
@@ -109,8 +109,8 @@ async def message_bonus_description(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Bonus.menu,
+    isOperatorCB(),
     BonusMenuCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
@@ -122,8 +122,8 @@ async def cb_back(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Bonus.menu,
+    isOperatorCB(),
     BonusMenuCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
@@ -144,12 +144,12 @@ async def cb_enter(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     or_f(
         OperatorMenu.Bonus.phone,
         OperatorMenu.Bonus.bonus_amount,
         OperatorMenu.Bonus.description,
     ),
+    isOperatorCB(),
     CancelCB.filter(F.action == Action.CANCEL),
 )
 async def cb_cancel_enter_text(

@@ -35,8 +35,8 @@ paid_manual_start_router = Router()
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    isOperatorCB(),
     PaidManualStartCB.filter(
         (F.action == Action.OPEN) & (F.target == PaidManualStartTarget.PAYMENT_METHOD)
     ),
@@ -49,8 +49,8 @@ async def cb_payment_method(
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.payment_method,
+    isOperatorCB(),
     PaymentMethodCB.filter(F.action == Action.SELECT),
 )
 async def cb_payment_method_select(
@@ -75,8 +75,8 @@ async def cb_payment_method_select(
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.payment_method,
+    isOperatorCB(),
     PaymentMethodCB.filter(F.action == Action.BACK),
 )
 async def cb_payment_method_back(
@@ -87,8 +87,8 @@ async def cb_payment_method_back(
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    isOperatorCB(),
     PaidManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
         & (F.target == PaidManualStartTarget.PAYMENT_AMOUNT)
@@ -99,7 +99,7 @@ async def cb_payment_amount(cb: types.CallbackQuery, state: FSMContext):
     await state.set_state(
         OperatorMenu.ManualStartSection.PaidManualStart.payment_amount
     )
-    await cb.message.answer("Напишите сумму оплаты")  # type: ignore
+    await cb.message.edit_text("Напишите сумму оплаты")  # type: ignore
 
 
 @paid_manual_start_router.message(
@@ -109,8 +109,8 @@ async def message_payment_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
     payment_amount = message.text
-    if not payment_amount.isnumeric():  # type: ignore
-        await message.answer("Введите число")
+    if not payment_amount.isnumeric() or int(message.text) <= 0:  # type: ignore
+        await message.edit_text("Введите число")
         return
     await state.update_data(payment_amount=int(payment_amount))  # type: ignore
 
@@ -118,8 +118,8 @@ async def message_payment_amount(
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    isOperatorCB(),
     PaidManualStartCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
@@ -131,8 +131,8 @@ async def cb_back(
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.menu,
+    isOperatorCB(),
     PaidManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
@@ -203,8 +203,8 @@ async def report_paid_manual_start(
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.bonus,
+    isOperatorCB(),
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.NO)),
 )
 async def cb_bonus_no(
@@ -215,8 +215,8 @@ async def cb_bonus_no(
 
 
 @paid_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.PaidManualStart.bonus,
+    isOperatorCB(),
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.YES)),
 )
 async def cb_bonus_yes(

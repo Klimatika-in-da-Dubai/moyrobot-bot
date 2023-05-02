@@ -25,8 +25,8 @@ menu_router = Router()
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(
         (F.action == Action.OPEN) & (F.target == AntifreezeMenuTarget.PAYMENT_METHOD)
     ),
@@ -39,8 +39,8 @@ async def cb_antifreeze_payment_method(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.payment_method,
+    isOperatorCB(),
     PaymentMethodCB.filter(F.action == Action.SELECT),
 )
 async def cb_payment_method_select(
@@ -65,8 +65,8 @@ async def cb_payment_method_select(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(
         (F.action == Action.ENTER_TEXT)
         & (F.target == AntifreezeMenuTarget.PAYMENT_AMOUNT)
@@ -77,14 +77,16 @@ async def cb_antifreeze_payment_amount(
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Antifreeze.payment_amount)
-    await cb.message.edit_text(text="Напишите сумму оплаты в рублях", reply_markup=get_cancel_keyboard())  # type: ignore
+    await cb.message.edit_text(  # type: ignore
+        text="Напишите сумму оплаты в рублях", reply_markup=get_cancel_keyboard()
+    )  # type: ignore
 
 
 @menu_router.message(OperatorMenu.Antifreeze.payment_amount, F.text)
 async def message_payment_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
-    if not message.text.isnumeric():  # type: ignore
+    if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
         await message.answer("Не корректная сумма", reply_markup=get_cancel_keyboard())
         return
 
@@ -93,8 +95,8 @@ async def message_payment_amount(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
@@ -106,8 +108,8 @@ async def cb_back(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.Antifreeze.menu,
+    isOperatorCB(),
     AntifreezeMenuCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
@@ -130,10 +132,10 @@ async def cb_enter(
 
 
 @menu_router.callback_query(
-    isOperatorCB(),
     or_f(
         OperatorMenu.Antifreeze.payment_amount,
     ),
+    isOperatorCB(),
     CancelCB.filter(F.action == Action.CANCEL),
 )
 async def cb_cancel_enter_text(

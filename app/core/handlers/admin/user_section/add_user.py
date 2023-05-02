@@ -26,8 +26,8 @@ logger = logging.getLogger("user_add_section")
 
 
 @add_user_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.Add.menu,
+    isAdminCB(),
     AddUserCB.filter((F.target == AddUserTarget.ID) & (F.action == Action.ENTER_TEXT)),
 )
 async def cb_enter_id(cb: types.CallbackQuery, state: FSMContext):
@@ -46,8 +46,8 @@ async def message_user_id(message: types.Message, state: FSMContext):
 
 
 @add_user_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.Add.menu,
+    isAdminCB(),
     AddUserCB.filter(
         (F.target == AddUserTarget.NAME) & (F.action == Action.ENTER_TEXT)
     ),
@@ -65,8 +65,8 @@ async def message_user_name(message: types.Message, state: FSMContext):
 
 
 @add_user_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.Add.menu,
+    isAdminCB(),
     AddUserCB.filter((F.target == AddUserTarget.ROLES) & (F.action == Action.OPEN)),
 )
 async def cb_open_role_selection(cb: types.CallbackQuery, state: FSMContext):
@@ -77,8 +77,8 @@ async def cb_open_role_selection(cb: types.CallbackQuery, state: FSMContext):
 
 
 @add_user_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.Add.role,
+    isAdminCB(),
     AddUserCB.filter(F.action == Action.SELECT),
 )
 async def cb_select_role(
@@ -115,8 +115,8 @@ async def cb_select_role(
 
 
 @add_user_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.Add.role,
+    isAdminCB(),
     AddUserCB.filter(F.action == Action.BACK),
 )
 async def cb_roles_back(cb: types.CallbackQuery, state: FSMContext):
@@ -125,8 +125,8 @@ async def cb_roles_back(cb: types.CallbackQuery, state: FSMContext):
 
 
 @add_user_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.Add.menu,
+    isAdminCB(),
     AddUserCB.filter(F.action == Action.BACK),
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext):
@@ -137,8 +137,8 @@ async def cb_back(cb: types.CallbackQuery, state: FSMContext):
 
 
 @add_user_router.callback_query(
-    isAdminCB(),
     AdminMenu.UsersSection.Add.menu,
+    isAdminCB(),
     AddUserCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(

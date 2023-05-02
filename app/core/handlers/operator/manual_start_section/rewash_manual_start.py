@@ -28,8 +28,8 @@ rewash_manual_start_router = Router()
 
 
 @rewash_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    isOperatorCB(),
     RewashManualStartCB.filter(
         (F.action == Action.ADD_PHOTO) & (F.target == RewashManualStartTarget.PHOTO),
     ),
@@ -37,7 +37,7 @@ rewash_manual_start_router = Router()
 async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
     await state.set_state(OperatorMenu.ManualStartSection.RewashManualStart.photo)
-    await cb.message.answer(  # type: ignore
+    await cb.message.edit_text(  # type: ignore
         "Сделайте фотографию так, чтобы было хорошо видно номер автомобиля"
     )
 
@@ -54,8 +54,8 @@ async def message_photo(
 
 
 @rewash_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    isOperatorCB(),
     RewashManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
         & (F.target == RewashManualStartTarget.DESCRIPTION),
@@ -64,7 +64,7 @@ async def message_photo(
 async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
     await state.set_state(OperatorMenu.ManualStartSection.RewashManualStart.description)
-    await cb.message.answer("Напишите причину перемывки")  # type: ignore
+    await cb.message.edit_text("Напишите причину перемывки")  # type: ignore
 
 
 @rewash_manual_start_router.message(
@@ -78,8 +78,8 @@ async def message_description(
 
 
 @rewash_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    isOperatorCB(),
     RewashManualStartCB.filter(F.action == Action.BACK),
 )
 async def cb_back(
@@ -91,8 +91,8 @@ async def cb_back(
 
 
 @rewash_manual_start_router.callback_query(
-    isOperatorCB(),
     OperatorMenu.ManualStartSection.RewashManualStart.menu,
+    isOperatorCB(),
     RewashManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
