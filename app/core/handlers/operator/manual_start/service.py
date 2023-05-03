@@ -24,6 +24,7 @@ from app.services.database.models.manual_start import (
     ManualStartType,
     ServiceManualStart,
 )
+from app.utils.text import to_correct_message
 
 service_manual_start_router = Router()
 
@@ -110,7 +111,7 @@ async def report_service_manual_start(
         )
     )
 
-    text = (
+    text = to_correct_message(
         "Получен отчёт о ручном запуске\n"
         "\n"
         "Ручной запуск:\n"

@@ -21,6 +21,7 @@ from app.services.database.dao.mailing import (
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStartType, TestManualStart
+from app.utils.text import to_correct_message
 
 test_manual_start_router = Router()
 
@@ -105,7 +106,7 @@ async def report_test_manual_start(
         test_manual_start_id, ManualStartType.TEST
     )
 
-    text = (
+    text = to_correct_message(
         "Получен отчёт о ручном запуске\n"
         "\n"
         "Ручной запуск:\n"
