@@ -66,5 +66,5 @@ async def cb_enter(
     openshift.id = shift.id
     openshift.date = shift.open_date
     await openshiftdao.add_shift(openshift)
-
+    await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore

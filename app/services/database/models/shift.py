@@ -14,6 +14,7 @@ class Shift(Base):
     opened_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"))
     close_date: Mapped[datetime] = mapped_column(nullable=True)
     closed_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"), nullable=True)
+    notified: Mapped[bool] = mapped_column(default=False)
 
 
 class OpenShift(Base):
@@ -32,6 +33,7 @@ class OpenShift(Base):
     robot_leak_check: Mapped[bool] = mapped_column(default=False)
     gates_check: Mapped[bool] = mapped_column(default=False)
     cleaning_check: Mapped[bool] = mapped_column(default=True)
+    notified: Mapped[bool] = mapped_column(default=False)
 
 
 class CloseShift(Base):
@@ -46,5 +48,7 @@ class CloseShift(Base):
     chemistry_count: Mapped[int] = mapped_column(default=0)
     chemistry_check: Mapped[bool] = mapped_column(default=False)
     equipment_check: Mapped[bool] = mapped_column(default=False)
+    robot_movement_check: Mapped[bool] = mapped_column(default=False)
     robot_leak_check: Mapped[bool] = mapped_column(default=False)
     gates_check: Mapped[bool] = mapped_column(default=False)
+    notified: Mapped[bool] = mapped_column(default=False)
