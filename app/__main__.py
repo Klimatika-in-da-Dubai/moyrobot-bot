@@ -7,6 +7,7 @@ from aiogram.fsm.storage.redis import RedisStorage
 from app.core.handlers import handlers_router
 from app.core.middlewares.db import DbSessionMiddleware
 from app.services.database.connector import setup_get_pool
+from app.services.notifier.setup_notifiers import setup_common_notifiers
 from app.services.parser.parser import Parser
 from app.services.parser.terminal_session import TerminalSession
 from app.services.scheduler.scheduler import get_scheduler
@@ -40,8 +41,9 @@ async def main():
     session = await setup_get_pool(config.db.uri)
     parser = get_parser(config)
     dp = Dispatcher(storage=RedisStorage.from_url(config.redis.url))
+
     scheduler = get_scheduler(bot, parser, session)
-    
+
     setup_routers(dp)
     setup_middlewares(dp, session)
     try:

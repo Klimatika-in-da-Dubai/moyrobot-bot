@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
-from app.utils.text import to_correct_message
+from app.utils.text import escape_chars
 
 
 class TestManualStartTarget(IntEnum):
@@ -54,10 +54,10 @@ def get_test_manual_start_keyboard() -> types.InlineKeyboardMarkup:
 async def get_manual_start_text(state: FSMContext):
     data = await state.get_data()
 
-    id = data.get("id")
+    id = escape_chars(data.get("id"))
     description = data.get("description")
-    description_text = description if description is not None else ""
-    return to_correct_message(
+    description_text = escape_chars(description) if description is not None else ""
+    return (
         "Ручной запуск\n"
         "*Тип:* Тест\n"
         f"*ID:* {id}\n"

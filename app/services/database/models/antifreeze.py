@@ -13,4 +13,4 @@ class Antifreeze(Base):
     date: Mapped[datetime] = mapped_column(default=datetime.now())
     payment_method: Mapped[PaymentMethod]
     payment_amount: Mapped[int]
-    sended_to_admin: Mapped[bool] = mapped_column(default=False)
+    notified: Mapped[bool] = mapped_column(default=False)

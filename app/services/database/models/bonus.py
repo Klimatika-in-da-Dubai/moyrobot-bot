@@ -14,4 +14,4 @@ class Bonus(Base):
     phone: Mapped[str]
     bonus_amount: Mapped[int]
     description: Mapped[str]
-    sended_to_admin: Mapped[bool] = mapped_column(default=False)
+    notified: Mapped[bool] = mapped_column(default=False)

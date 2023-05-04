@@ -209,7 +209,7 @@ async def cb_enter(
 
     refund_dao = RefundDAO(session)
     await refund_dao.add_refund(refund)
-
+    await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 

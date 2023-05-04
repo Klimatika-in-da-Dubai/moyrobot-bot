@@ -3,6 +3,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.services.parser.parser import Parser
+from app.services.scheduler.common_notifiers import notify
 from app.services.scheduler.send_alert import send_manual_starts_alert
 from app.services.scheduler.update_db import update_db
 
@@ -15,4 +16,5 @@ def get_scheduler(
     scheduler.add_job(
         send_manual_starts_alert, "interval", seconds=30, args=(bot, session)
     )
+    scheduler.add_job(notify, "interval", seconds=5, args=(bot, session))
     return scheduler

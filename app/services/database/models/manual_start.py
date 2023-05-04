@@ -25,12 +25,13 @@ class ManualStart(Base):
     terminal_id: Mapped[int]
     date: Mapped[datetime]
     mode: Mapped[int] = mapped_column(nullable=True)
-    reported: Mapped[bool] = mapped_column(default=False)
-    sended_to_chat: Mapped[bool] = mapped_column(default=False)
-    sended_to_admin: Mapped[bool] = mapped_column(default=False)
     type: Mapped[ManualStartType] = mapped_column(
         Enum(ManualStartType), nullable=True, default=None
     )
+    reported: Mapped[bool] = mapped_column(default=False)
+    report_reminded: Mapped[bool] = mapped_column(default=False)
+    report_alerted: Mapped[bool] = mapped_column(default=False)
+    notified: Mapped[bool] = mapped_column(default=False)
 
 
 class TestManualStart(Base):

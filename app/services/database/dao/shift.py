@@ -1,4 +1,5 @@
-from sqlalchemy import select
+from typing import Sequence
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.shift import CloseShift, OpenShift, Shift
@@ -16,6 +17,20 @@ class ShiftDAO(BaseDAO[Shift]):
 
         async with self._session() as session:
             await session.merge(shift)
+            await session.commit()
+
+    async def get_unnotified(self) -> Sequence[Shift]:
+        async with self._session() as session:
+            bonuses = await session.execute(
+                select(Shift).where(Shift.notified == False)  # noqa: E712
+            )
+            return bonuses.scalars().all()
+
+    async def make_notified(self, shift: Shift):
+        async with self._session() as session:
+            await session.execute(
+                update(Shift).where(Shift.id == shift.id).values(notified=True)
+            )
             await session.commit()
 
     async def is_shift_opened(self) -> bool:
@@ -56,6 +71,20 @@ class OpenShiftDAO(BaseDAO[OpenShift]):
             await session.merge(shift)
             await session.commit()
 
+    async def get_unnotified(self) -> Sequence[OpenShift]:
+        async with self._session() as session:
+            bonuses = await session.execute(
+                select(OpenShift).where(OpenShift.notified == False)  # noqa: E712
+            )
+            return bonuses.scalars().all()
+
+    async def make_notified(self, shift: OpenShift):
+        async with self._session() as session:
+            await session.execute(
+                update(OpenShift).where(OpenShift.id == shift.id).values(notified=True)
+            )
+            await session.commit()
+
 
 class CloseShiftDAO(BaseDAO[CloseShift]):
     def __init__(self, session: async_sessionmaker):
@@ -69,4 +98,20 @@ class CloseShiftDAO(BaseDAO[CloseShift]):
 
         async with self._session() as session:
             await session.merge(shift)
+            await session.commit()
+
+    async def get_unnotified(self) -> Sequence[CloseShift]:
+        async with self._session() as session:
+            bonuses = await session.execute(
+                select(CloseShift).where(CloseShift.notified == False)  # noqa: E712
+            )
+            return bonuses.scalars().all()
+
+    async def make_notified(self, shift: CloseShift):
+        async with self._session() as session:
+            await session.execute(
+                update(CloseShift)
+                .where(CloseShift.id == shift.id)
+                .values(notified=True)
+            )
             await session.commit()

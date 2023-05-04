@@ -15,16 +15,13 @@ from app.core.keyboards.operator.manual_start.service import (
     send_service_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
-from app.services.database.dao.mailing import (
-    get_mailing_ids,
-)
+
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
     ManualStartType,
     ServiceManualStart,
 )
-from app.utils.text import to_correct_message
 
 service_manual_start_router = Router()
 
@@ -78,11 +75,9 @@ async def cb_enter(
         await cb.answer("Не все поля заполнены", show_alert=True)
         return
 
-    id = data.get("id")
     await table_add_service_manual_start(state, session)
     await state.clear()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
-    await report_service_manual_start(bot, session, id)  # type: ignore
 
 
 async def table_add_service_manual_start(
@@ -98,34 +93,6 @@ async def table_add_service_manual_start(
     await manual_start_dao.report_typed_manual_start(
         service_manual_start, ManualStartType.SERVICE
     )
-
-
-async def report_service_manual_start(
-    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
-):
-    manual_start_dao = ManualStartDAO(session)
-
-    service_manual_start: ServiceManualStart = (
-        await manual_start_dao.get_typed_manual_start(
-            test_manual_start_id, ManualStartType.SERVICE
-        )
-    )
-
-    text = to_correct_message(
-        "Получен отчёт о ручном запуске\n"
-        "\n"
-        "Ручной запуск:\n"
-        "*Тип:* Технический\n"
-        f"*ID:* {service_manual_start.id}\n"
-        f"*Причина:* {service_manual_start.description}"
-    )
-
-    ids = await get_mailing_ids(session, MailingType.MANUAL_START)
-    for id in ids:
-        try:
-            await bot.send_message(id, text=text)
-        except Exception:
-            logging.error("Can't send report to chat with id %s", id)
 
 
 def check_data(data) -> bool:

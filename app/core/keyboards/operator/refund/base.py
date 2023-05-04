@@ -54,7 +54,7 @@ async def get_refund_base_builder(
 
     builder.row(
         types.InlineKeyboardButton(
-            text=f"Устройство оплаты: {refund_text.payment_device} {emojis.payment_device}",
+            text=f"Оплата через: {refund_text.payment_device} {emojis.payment_device}",
             callback_data=RefundMenuCB(
                 action=Action.SELECT, target=RefundMenuTarget.PAYMENT_DEVICE
             ).pack(),

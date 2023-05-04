@@ -16,5 +16,5 @@ async def update_db(parser: Parser, session: async_sessionmaker[AsyncSession]):
             await manual_start_dao.add_manual_start(manual_start)
             continue
 
-        if db_manual_start.mode is None:
+        if db_manual_start.mode is None and manual_start.mode is not None:
             await manual_start_dao.update_manual_start_mode(manual_start)

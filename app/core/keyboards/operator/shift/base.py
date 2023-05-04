@@ -39,10 +39,10 @@ class ShiftEmojis:
 
 @dataclass
 class ShiftInfo:
-    money_amount: int
-    antifreeze_count: int
+    money_amount: str
+    antifreeze_count: str
     equipment_check: bool
-    chemistry_count: int
+    chemistry_count: str
     chemistry_check: bool
     robot_check: bool
     gates_check: bool
@@ -52,7 +52,7 @@ def get_shift_menu_builder(shift: OpenShift | CloseShift) -> InlineKeyboardBuild
     builder = InlineKeyboardBuilder()
 
     shift_info = get_shift_menu_info(shift)
-    emojis: ShiftEmojis = get_shift_menu_emojis(shift_info)
+    emojis: ShiftEmojis = get_shift_menu_emojis(shift)
 
     builder.row(
         types.InlineKeyboardButton(
@@ -113,12 +113,14 @@ def get_shift_menu_builder(shift: OpenShift | CloseShift) -> InlineKeyboardBuild
 
 
 def get_shift_menu_info(shift: OpenShift | CloseShift):
-    money_amount = shift.money_amount if shift.money_amount is not None else 0
+    money_amount = str(shift.money_amount) if shift.money_amount is not None else ""
     antifreeze_count = (
-        shift.antifreeze_count if shift.antifreeze_count is not None else 0
+        str(shift.antifreeze_count) if shift.antifreeze_count is not None else ""
     )
     equipment_check = True if shift.equipment_check else False
-    chemistry_count = shift.chemistry_count if shift.chemistry_count is not None else 0
+    chemistry_count = (
+        str(shift.chemistry_count) if shift.chemistry_count is not None else ""
+    )
     chemistry_check = True if shift.chemistry_check else False
     robot_check = (
         True if shift.robot_leak_check and shift.robot_movement_check else False
@@ -135,13 +137,13 @@ def get_shift_menu_info(shift: OpenShift | CloseShift):
     )
 
 
-def get_shift_menu_emojis(shift: ShiftInfo):
-    money_amount = "✅" if shift.money_amount != 0 else "❌"
-    antifreeze_count = "✅" if shift.antifreeze_count != 0 else "❌"
+def get_shift_menu_emojis(shift: OpenShift | CloseShift):
+    money_amount = "✅" if shift.money_amount is not None else "❌"
+    antifreeze_count = "✅" if shift.antifreeze_count is not None else "❌"
     equipment_check = "✅" if shift.equipment_check else "❌"
-    chemistry_count = "✅" if shift.chemistry_count != 0 else "❌"
+    chemistry_count = "✅" if shift.chemistry_count is not None else "❌"
     chemistry_check = "✅" if shift.chemistry_check else "❌"
-    robot_check = "✅" if shift.robot_check else "❌"
+    robot_check = "✅" if shift.robot_movement_check and shift.robot_leak_check else "❌"
     gates_check = "✅" if shift.gates_check else "❌"
 
     return ShiftEmojis(

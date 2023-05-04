@@ -46,7 +46,7 @@ async def cb_money_amount(
 async def message_money_amount(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
-    if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
+    if not message.text.isnumeric() or int(message.text) < 0:  # type: ignore
         await message.answer(
             "Неверное количество денег в кассе", reply_markup=get_cancel_keyboard()
         )
@@ -79,7 +79,7 @@ async def cb_antifreeze_count(
 async def message_antifreeze_count(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
-    if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
+    if not message.text.isnumeric() or int(message.text) < 0:  # type: ignore
         await message.answer(
             "Неверное количество незамерзайки", reply_markup=get_cancel_keyboard()
         )
@@ -126,7 +126,7 @@ async def cb_chemistry_count(
 async def message_chemistry_count(
     message: types.Message, state: FSMContext, session: async_sessionmaker
 ):
-    if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
+    if not message.text.isnumeric() or int(message.text) < 0:  # type: ignore
         await message.answer(
             "Неверное количество химии", reply_markup=get_cancel_keyboard()
         )

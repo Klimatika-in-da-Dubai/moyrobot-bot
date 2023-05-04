@@ -1,14 +1,34 @@
 import re
 
+SPECIAL_CHARS = [
+    "\\",
+    "_",
+    "*",
+    "[",
+    "]",
+    "(",
+    ")",
+    "~",
+    "`",
+    ">",
+    "<",
+    "&",
+    "#",
+    "+",
+    "-",
+    "=",
+    "|",
+    "{",
+    "}",
+    ".",
+    "!",
+]
 
-def to_correct_message(text: str) -> str:
-    return (
-        text.replace("+", "\\+")
-        .replace("(", "\\(")
-        .replace(")", "\\)")
-        .replace("-", "\\-")
-        .replace("_", "\\_")
-    )
+
+def escape_chars(text: str) -> str:
+    for char in SPECIAL_CHARS:
+        text = text.replace(char, "\\" + char)
+    return text
 
 
 def convert_text_to_phone(phone: str) -> str:
