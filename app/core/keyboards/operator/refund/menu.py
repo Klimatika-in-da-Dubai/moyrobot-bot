@@ -7,15 +7,20 @@ from app.core.keyboards.operator.refund.base import (
     RefundMenuCB,
     RefundMenuTarget,
     get_refund_base_builder,
+    get_refund_emojis,
 )
+from app.core.states.operator import OperatorMenu
+from app.services.database.models.refund import PaymentDevice, Refund
 from app.services.database.models.utils import PaymentMethod
+from app.utils.refund import get_refund, get_refund_menu_text
 
 
-def get_default_refund_keyboard(refund: Refund) -> types.InlineKeyboardMarkup:
-    builder = get_refund_base_builder()
+async def get_default_refund_keyboard(
+    refund: Refund, state: FSMContext
+) -> types.InlineKeyboardMarkup:
+    builder = await get_refund_base_builder(refund, state)
 
-    refund_text_info = get_refund_text(refund)
-    emojis: RefundEmojis = get_refund_emojis(refund)
+    emojis: RefundEmojis = await get_refund_emojis(refund, state)
 
     builder.row(
         types.InlineKeyboardButton(
@@ -55,13 +60,13 @@ def get_default_refund_keyboard(refund: Refund) -> types.InlineKeyboardMarkup:
 
     builder.row(
         types.InlineKeyboardButton(
-            text=f"Назад",
+            text="Назад",
             callback_data=RefundMenuCB(
                 action=Action.BACK, target=RefundMenuTarget.NONE
             ).pack(),
         ),
         types.InlineKeyboardButton(
-            text=f"Готово",
+            text="Готово",
             callback_data=RefundMenuCB(
                 action=Action.ENTER, target=RefundMenuTarget.NONE
             ).pack(),
@@ -71,11 +76,12 @@ def get_default_refund_keyboard(refund: Refund) -> types.InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def get_terminal_card_refund_keyboard(refund: Refund) -> types.InlineKeyboardMarkup:
-    builder = get_refund_base_builder()
+async def get_terminal_card_refund_keyboard(
+    refund: Refund, state: FSMContext
+) -> types.InlineKeyboardMarkup:
+    builder = await get_refund_base_builder(refund, state)
 
-    refund_text_info = get_refund_text(refund)
-    emojis: RefundEmojis = get_refund_emojis(refund)
+    emojis: RefundEmojis = await get_refund_emojis(refund, state)
 
     builder.row(
         types.InlineKeyboardButton(
@@ -106,13 +112,13 @@ def get_terminal_card_refund_keyboard(refund: Refund) -> types.InlineKeyboardMar
 
     builder.row(
         types.InlineKeyboardButton(
-            text=f"Назад",
+            text="Назад",
             callback_data=RefundMenuCB(
                 action=Action.BACK, target=RefundMenuTarget.NONE
             ).pack(),
         ),
         types.InlineKeyboardButton(
-            text=f"Готово",
+            text="Готово",
             callback_data=RefundMenuCB(
                 action=Action.ENTER, target=RefundMenuTarget.NONE
             ).pack(),
@@ -123,14 +129,16 @@ def get_terminal_card_refund_keyboard(refund: Refund) -> types.InlineKeyboardMar
 
 
 async def send_refund_keyboard(func, state: FSMContext, session: async_sessionmaker):
-    refund: Refund = get_refund(state)
+    refund: Refund = await get_refund(state)
 
     if (
         refund.payment_device == PaymentDevice.TERMINAL
         and refund.payment_method == PaymentMethod.CARD
     ):
-        reply_markup = get_terminal_card_refund_keyboard(refund)
+        reply_markup = await get_terminal_card_refund_keyboard(refund, state)
     else:
-        reply_markup = get_default_refund_keyboard(refund)
+        reply_markup = await get_default_refund_keyboard(refund, state)
 
-    await func(text="Возврат", reply_markup=reply_markup)
+    text = get_refund_menu_text(refund)
+    await func(text=text, reply_markup=reply_markup)
+    await state.set_state(OperatorMenu.Refund.menu)

@@ -4,8 +4,6 @@ from app.services.database.models.manual_start import ManualStart
 
 from app.services.parser.parser import Parser
 
-import datetime
-
 
 async def update_db(parser: Parser, session: async_sessionmaker[AsyncSession]):
     manual_starts = await parser.get_manual_starts()

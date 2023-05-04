@@ -1,5 +1,4 @@
 {
-  " reportGeneralTypeIssues": false,
   "venvPath": ".",
   "venv": ".venv"
 }

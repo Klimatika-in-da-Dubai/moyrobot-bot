@@ -46,6 +46,12 @@ class OperatorMenu(StatesGroup):
         bonus_amount = State()
         description = State()
 
+    class Refund(StatesGroup):
+        menu = State()
+        description = State()
+        statement_photo = State()
+        consumable_photo = State()
+
     class Antifreeze(StatesGroup):
         menu = State()
         payment_method = State()
