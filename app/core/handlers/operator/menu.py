@@ -16,6 +16,7 @@ from app.core.keyboards.operator.menu import (
     OperatorMenuTarget,
 )
 from app.core.keyboards.operator.promocode.menu import send_promocode_keyboard
+from app.core.keyboards.operator.refund.menu import send_refund_keyboard
 from app.core.keyboards.operator.shift.close import send_close_shift_menu_keyboard
 from app.core.keyboards.operator.shift.open import send_open_shift_menu_keyboard
 from app.core.states.operator import OperatorMenu
@@ -99,6 +100,20 @@ async def cb_bonus(
 ):
     await cb.answer()
     await send_bonus_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+@menu_router.callback_query(
+    OperatorMenu.menu,
+    isOperatorCB(),
+    OperatorMenuCB.filter(
+        (F.action == Action.OPEN) & (F.target == OperatorMenuTarget.REFUND)
+    ),
+)
+async def cb_refund(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await cb.answer()
+    await send_refund_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(

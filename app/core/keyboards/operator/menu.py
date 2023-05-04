@@ -17,6 +17,7 @@ class OperatorMenuTarget(IntEnum):
     MANUAL_START = auto()
     BONUS = auto()
     PROMOCODE = auto()
+    REFUND = auto()
     ANTIFREEZE = auto()
 
 
@@ -60,6 +61,15 @@ def get_opened_operator_menu_keyboard() -> types.InlineKeyboardMarkup:
             text="Начислить бонусы",
             callback_data=OperatorMenuCB(
                 action=Action.OPEN, target=OperatorMenuTarget.BONUS
+            ).pack(),
+        )
+    )
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Сделать возврат",
+            callback_data=OperatorMenuCB(
+                action=Action.OPEN, target=OperatorMenuTarget.REFUND
             ).pack(),
         )
     )

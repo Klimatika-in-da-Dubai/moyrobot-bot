@@ -30,6 +30,7 @@ from app.services.database.models.manual_start import (
     PaidManualStart,
     PaymentMethod,
 )
+from app.utils.text import to_correct_message
 
 paid_manual_start_router = Router()
 
@@ -182,7 +183,7 @@ async def report_paid_manual_start(
         else "Наличные"
     )
 
-    text = (
+    text = to_correct_message(
         "Получен отчёт о ручном запуске\n"
         "\n"
         "Ручной запуск:\n"

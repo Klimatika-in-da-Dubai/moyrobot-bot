@@ -77,6 +77,6 @@ class Parser:
         return datetime.strptime(row[2], "%d.%m.%Y %H:%M:%S")
 
     def __get_mode(self, row) -> int | None:
-        if row[8] == np.nan:
+        if row[8] == "Режим":
             return None
         return int(row[8].split()[1])

@@ -26,12 +26,15 @@ async def cmd_start(
     userdao = UserDAO(session=session)
     if not await userdao.exists(chat_id=message.chat.id):
         await message.answer(
-            "Вас не добавили в список пользователей\. Пожалуйста напишите команду /id и отправьте свой id администратору"
+            text=(
+                "Вас не добавили в список пользователей\\."
+                "Пожалуйста напишите команду /id и отправьте свой id администратору"
+            )
         )
         return
 
     user = await userdao.get_by_id(id_=message.chat.id)
-    roles: Sequence[Role] = await userdao.get_user_roles(user)
+    roles: Sequence[Role] = await userdao.get_user_roles(user)  # type: ignore
     if len(roles) == 0:
         await message.answer("Для вас не неназначено ни одной роли")
         return
