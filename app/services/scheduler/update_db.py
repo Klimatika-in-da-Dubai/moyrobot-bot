@@ -4,7 +4,6 @@ from app.services.database.models.manual_start import ManualStart
 
 from app.services.parser.parser import Parser
 
-import datetime
 
 async def update_db(parser: Parser, session: async_sessionmaker[AsyncSession]):
     manual_starts = await parser.get_manual_starts()
@@ -17,5 +16,5 @@ async def update_db(parser: Parser, session: async_sessionmaker[AsyncSession]):
             await manual_start_dao.add_manual_start(manual_start)
             continue
 
-        if db_manual_start.mode is None:
+        if db_manual_start.mode is None and manual_start.mode is not None:
             await manual_start_dao.update_manual_start_mode(manual_start)

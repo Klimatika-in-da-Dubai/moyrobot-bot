@@ -20,7 +20,7 @@ async def get_menu_keyboard(
     builder = InlineKeyboardBuilder()
     userdao = UserDAO(session=session)
     user = await userdao.get_by_id(chat_id)
-    user_roles = await userdao.get_user_roles(user)
+    user_roles = await userdao.get_user_roles(user)  # type: ignore
 
     if any(role in user_roles for role in (Role.OPERATOR, Role.ADMIN)):
         builder.row(
@@ -56,6 +56,7 @@ async def send_menu_keyboard(
     session: async_sessionmaker,
 ) -> None:
     await state.clear()
+
     await send_func(
         text="Меню", reply_markup=await get_menu_keyboard(message.chat.id, session)
     )

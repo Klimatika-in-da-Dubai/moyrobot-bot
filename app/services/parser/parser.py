@@ -6,16 +6,18 @@ from datetime import datetime
 from app.services.database.models.manual_start import ManualStart
 from app.services.parser.terminal_session import TerminalSession
 
-MANUAL_START_TEXT = "Автоматический"
+MANUAL_START_TEXT = "Ручной"
 
 
 class Parser:
     def __init__(self, sessions: list[TerminalSession]) -> None:
         self.sessions: list[TerminalSession] = sessions
-        manual_starts = list()
 
     async def get_manual_starts(self) -> list[ManualStart]:
-        tasks = [asyncio.create_task(self._get_manual_start_impl(session)) for session in self.sessions]
+        tasks = [
+            asyncio.create_task(self._get_manual_start_impl(session))
+            for session in self.sessions
+        ]
         group = asyncio.gather(*tasks)
         manual_starts_group = await group
         manual_starts = []
@@ -75,6 +77,6 @@ class Parser:
         return datetime.strptime(row[2], "%d.%m.%Y %H:%M:%S")
 
     def __get_mode(self, row) -> int | None:
-        if row[8] == np.nan:
+        if row[8] == "Режим":
             return None
         return int(row[8].split()[1])
