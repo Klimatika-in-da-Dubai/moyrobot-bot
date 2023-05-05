@@ -28,12 +28,12 @@ class ManualStartReminder(Notifier):
         await self._dao.make_report_reminded(manual_start)
 
     def get_text(self, manual_start: ManualStart):
-        date = escape_chars(manual_start.date.strftime("%Y\\-%m\\-%d %H:%M:%S"))
+        date = escape_chars(manual_start.date.strftime("%Y-%m-%d %H:%M:%S"))
 
         return (
             "Не было получено отчёта по ручному запуску\n\n"
             f"*ID:* {escape_chars(manual_start.id)}\n"
-            f"*Дата\\-время:* {date} \n"
+            f"*Дата\\-время запуска:* {date} \n"
         )
 
     @override
