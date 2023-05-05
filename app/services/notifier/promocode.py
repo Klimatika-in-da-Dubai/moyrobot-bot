@@ -1,3 +1,4 @@
+import datetime
 from typing_extensions import override
 from aiogram import Bot
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -16,7 +17,10 @@ class PromocodeNotifier(Notifier):
 
     @override
     async def get_objects_to_notify(self):
-        return await self._dao.get_unnotified()
+        today = datetime.datetime.today()
+        end = today.replace(hour=9, minute=0, second=0, microsecond=0)
+        begin = end - datetime.timedelta(hours=24)
+        return await self._dao.get_unnotified_between_time(begin, end)
 
     @override
     async def make_notified(self, promocode: Promocode):

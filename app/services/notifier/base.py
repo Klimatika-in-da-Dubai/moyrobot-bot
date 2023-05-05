@@ -1,4 +1,5 @@
 from abc import abstractmethod
+import logging
 from aiogram import Bot
 
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -21,7 +22,10 @@ class Notifier:
         for obj in objects_to_notify:
             await self.make_notified(obj)
             for id in ids:
-                await self.send_notify(id, obj)
+                try:
+                    await self.send_notify(id, obj)
+                except Exception:
+                    logging.error("Can't send notify to user with id = %s", id)
 
     @abstractmethod
     async def get_objects_to_notify(self) -> list:

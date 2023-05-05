@@ -1,3 +1,4 @@
+import datetime
 from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy import select, update
@@ -18,6 +19,17 @@ class PromocodeDAO(BaseDAO[Promocode]):
         async with self._session() as session:
             bonuses = await session.execute(
                 select(Promocode).where(Promocode.notified == False)  # noqa: E712
+            )
+            return bonuses.scalars().all()
+
+    async def get_unnotified_between_time(
+        self, begin: datetime.datetime, end: datetime.datetime
+    ) -> Sequence[Promocode]:
+        async with self._session() as session:
+            bonuses = await session.execute(
+                select(Promocode)
+                .filter(Promocode.date.between(begin, end))
+                .where(Promocode.notified == False)  # noqa: E712
             )
             return bonuses.scalars().all()
 
