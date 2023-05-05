@@ -41,25 +41,61 @@ class ManualStartDAO(BaseDAO[ManualStart]):
             )
             return manual_starts.scalars().all()
 
-    async def get_unalerted_manual_starts(
-        self, delay: datetime.timedelta
-    ) -> Sequence[ManualStart]:
+    async def get_unreminded(self, delay: datetime.timedelta) -> Sequence[ManualStart]:
         async with self._session() as session:
             manual_starts = await session.execute(
                 select(ManualStart)
-                .where(ManualStart.reported == False)
-                .where(ManualStart.sended_to_chat == False)
+                .where(ManualStart.reported == False)  # noqa: E712
+                .where(ManualStart.report_reminded == False)  # noqa: E712
+                .where((datetime.datetime.now() - ManualStart.date) > delay)
+            )
+            return manual_starts.scalars().all()
+
+    async def get_unalerted(self, delay: datetime.timedelta) -> Sequence[ManualStart]:
+        async with self._session() as session:
+            manual_starts = await session.execute(
+                select(ManualStart)
+                .where(ManualStart.reported == False)  # noqa: E712
+                .where(ManualStart.report_alerted == False)  # noqa: E712
                 .where((datetime.datetime.now() - ManualStart.date) > delay)
             )
 
             return manual_starts.scalars().all()
 
-    async def set_sended_to_chat(self, manual_start: ManualStart, value: bool):
+    async def get_unnotified(self) -> Sequence[ManualStart]:
+        async with self._session() as session:
+            manual_starts = await session.execute(
+                select(ManualStart)
+                .where(ManualStart.reported == True)  # noqa: E712
+                .where(ManualStart.notified == False)  # noqa: E712
+            )
+
+            return manual_starts.scalars().all()
+
+    async def make_report_reminded(self, manual_start: ManualStart):
         async with self._session() as session:
             await session.execute(
                 update(ManualStart)
                 .where(ManualStart.id == manual_start.id)
-                .values(sended_to_chat=value)
+                .values(report_reminded=True)
+            )
+            await session.commit()
+
+    async def make_report_alerted(self, manual_start: ManualStart):
+        async with self._session() as session:
+            await session.execute(
+                update(ManualStart)
+                .where(ManualStart.id == manual_start.id)
+                .values(report_alerted=True)
+            )
+            await session.commit()
+
+    async def make_notified(self, manual_start: ManualStart):
+        async with self._session() as session:
+            await session.execute(
+                update(ManualStart)
+                .where(ManualStart.id == manual_start.id)
+                .values(notified=True)
             )
             await session.commit()
 

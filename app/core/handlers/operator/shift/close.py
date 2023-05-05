@@ -3,7 +3,7 @@ from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.operator import isOperatorCB
-from app.core.filters.shift import isShiftClosedCB, isShiftOpenedCB
+from app.core.filters.shift import isShiftOpenedCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.keyboards.operator.shift.close import (
@@ -42,7 +42,7 @@ async def cb_enter(
         return
 
     shift.close_date = datetime.now()
-    shift.closed_by_id = cb.message.chat.id
+    shift.closed_by_id = cb.message.chat.id  # type: ignore
     await shiftdao.add_shift(shift)
 
     close_shift = await get_close_shift(state)
@@ -51,5 +51,5 @@ async def cb_enter(
 
     closeshiftdao = CloseShiftDAO(session)
     await closeshiftdao.add_shift(close_shift)
-
-    await send_operator_menu_keyboard(cb.message.edit_text, state, session)
+    await state.clear()
+    await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore

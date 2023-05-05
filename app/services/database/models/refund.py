@@ -33,3 +33,4 @@ class Refund(Base):
     description: Mapped[str]
     statement_photo_file_id: Mapped[str]
     consumable_photo_file_id: Mapped[str] = mapped_column(nullable=True)
+    notified: Mapped[bool] = mapped_column(default=False)

@@ -17,13 +17,11 @@ from app.core.keyboards.operator.manual_start.rewash import (
     send_rewash_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
-from app.services.database.dao.mailing import (
-    get_mailing_ids,
-)
+
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStartType, RewashManualStart
-from app.utils.text import to_correct_message
+
 
 rewash_manual_start_router = Router()
 
@@ -105,11 +103,9 @@ async def cb_enter(
         await cb.answer("Не все поля были заполнены", show_alert=True)
         return
 
-    id = data.get("id")
     await table_add_rewash_manual_start(state, session)
     await state.clear()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
-    await report_rewash_manual_start(bot, session, id)  # type: ignore
 
 
 async def table_add_rewash_manual_start(state: FSMContext, session: async_sessionmaker):
@@ -125,36 +121,6 @@ async def table_add_rewash_manual_start(state: FSMContext, session: async_sessio
     await manual_start_dao.report_typed_manual_start(
         rewash_manual_start, ManualStartType.REWASH
     )
-
-
-async def report_rewash_manual_start(
-    bot: Bot, session: async_sessionmaker, test_manual_start_id: str
-):
-    manual_start_dao = ManualStartDAO(session)
-
-    rewash_manual_start: RewashManualStart = (
-        await manual_start_dao.get_typed_manual_start(
-            test_manual_start_id, ManualStartType.REWASH
-        )
-    )
-
-    text = to_correct_message(
-        "Получен отчёт о ручном запуске\n"
-        "\n"
-        "Ручной запуск:\n"
-        "*Тип:* Перемывка\n"
-        f"*ID:* {rewash_manual_start.id}\n"
-        f"*Причина:* {rewash_manual_start.description}"
-    )
-
-    ids = await get_mailing_ids(session, MailingType.MANUAL_START)
-    for id in ids:
-        try:
-            await bot.send_photo(
-                id, photo=rewash_manual_start.photo_file_id, caption=text
-            )
-        except Exception:
-            logging.error("Can't send report to chat with id %s", id)
 
 
 def check_data(data):

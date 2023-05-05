@@ -10,7 +10,7 @@ from app.core.keyboards.base import Action
 from app.core.keyboards.payment_method import get_payment_method_keyboard
 from app.core.states.operator import OperatorMenu
 from app.services.database.models.manual_start import PaymentMethod
-from app.utils.text import to_correct_message
+from app.utils.text import escape_chars
 
 
 class PaidManualStartTarget(IntEnum):
@@ -69,7 +69,7 @@ def get_paid_manual_start_keyboard() -> types.InlineKeyboardMarkup:
 async def get_manual_start_text(state: FSMContext):
     data = await state.get_data()
 
-    id = data.get("id")
+    id = escape_chars(data.get("id"))
     payment_method = data.get("payment_method")
     payment_amount = data.get("payment_amount")
 
@@ -81,7 +81,7 @@ async def get_manual_start_text(state: FSMContext):
 
     payment_amount_text = payment_amount if payment_amount is not None else ""
 
-    return to_correct_message(
+    return (
         "Ручной запуск\n"
         "*Тип:* Оплата через эквайринг\n"
         f"*ID:* {id}\n"

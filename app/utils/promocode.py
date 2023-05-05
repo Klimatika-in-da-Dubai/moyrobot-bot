@@ -1,14 +1,14 @@
 from aiogram.fsm.context import FSMContext
 from app.services.database.models.promocode import WashMode
-from app.utils.text import format_phone, to_correct_message
+from app.utils.text import format_phone, escape_chars
 
 
 async def get_promocode_text_info(state: FSMContext) -> tuple[str, str, str]:
     phone, wash_mode, description = await get_promocode_info(state)
 
-    phone_text = format_phone(phone) if phone is not None else ""
+    phone_text = escape_chars(format_phone(phone)) if phone is not None else ""
     wash_mode_text = str(wash_mode.value) if wash_mode is not None else ""
-    description_text = description if description is not None else ""
+    description_text = escape_chars(description) if description is not None else ""
 
     return (
         phone_text,
@@ -24,9 +24,9 @@ async def get_promocode_text(state: FSMContext) -> str:
         f"Выдать промокод\n\n"
         f"*Телефон:* {phone}\n"
         f"*Режим:* {wash_mode}\n"
-        f"*Причина: * {description}\n"
+        f"*Причина:* {description}\n"
     )
-    return to_correct_message(text)
+    return text
 
 
 async def get_promocode_info(

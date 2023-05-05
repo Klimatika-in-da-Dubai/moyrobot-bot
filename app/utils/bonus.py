@@ -1,6 +1,6 @@
 from aiogram.fsm.context import FSMContext
 
-from app.utils.text import format_phone, to_correct_message
+from app.utils.text import escape_chars, format_phone
 
 
 async def get_bonus_info(
@@ -27,9 +27,9 @@ async def get_bonus_info(
 async def get_bonus_text(state: FSMContext):
     phone, bonus, description = await get_bonus_info(state)
 
-    phone_text = format_phone(phone) if phone is not None else ""
-    bonus_text = str(bonus) if bonus is not None else ""
-    description_text = description if description is not None else ""
+    phone_text = escape_chars(format_phone(phone)) if phone is not None else ""
+    bonus_text = escape_chars(str(bonus)) if bonus is not None else ""
+    description_text = escape_chars(description) if description is not None else ""
 
     text = (
         "Начислить бонусы\n\n"
@@ -38,4 +38,4 @@ async def get_bonus_text(state: FSMContext):
         f"*Причина:* {description_text}\n"
     )
 
-    return to_correct_message(text)
+    return text

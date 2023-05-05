@@ -23,4 +23,4 @@ class Promocode(Base):
     phone: Mapped[str]
     wash_mode: Mapped[WashMode] = mapped_column(Enum(WashMode))
     description: Mapped[str]
-    sended_to_admin: Mapped[bool] = mapped_column(default=False)
+    notified: Mapped[bool] = mapped_column(default=False)

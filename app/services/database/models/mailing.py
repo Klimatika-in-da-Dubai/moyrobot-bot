@@ -8,9 +8,11 @@ from app.services.database.base import Base
 
 
 class MailingType(IntEnum):
-    MANUAL_START_ALERT = auto()
+    MANUAL_START_REPORT_ALERT = auto()
+    MANUAL_START_REPORT_REMIND = auto()
     MANUAL_START = auto()
     SHIFT = auto()
+    ANTIFREEZE = auto()
     CLEANING = auto()
     PROMOCODE = auto()
     BONUS = auto()
