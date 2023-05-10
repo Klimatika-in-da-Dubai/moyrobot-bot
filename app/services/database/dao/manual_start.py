@@ -25,7 +25,7 @@ class ManualStartDAO(BaseDAO[ManualStart]):
     async def update_manual_start_mode(self, manual_start: ManualStart):
         async with self._session() as session:
             await session.execute(
-                update(ManualStart.mode)
+                update(ManualStart)
                 .where(ManualStart.id == manual_start.id)
                 .values(mode=manual_start.mode)
             )
