@@ -7,3 +7,5 @@ services:
     restart: on-failure
     stop_signal: SIGINT
     network_mode: "host"
+    environment:
+      - TZ=Europe/Moscow
