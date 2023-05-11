@@ -12,8 +12,9 @@ from app.core.keyboards.operator.shift.open import OpenShiftMenuCB, OpenShiftMen
 
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.shift import OpenShiftDAO, ShiftDAO
+from app.services.database.dao.user import UserDAO
 from app.services.database.models.shift import Shift
-from app.utils.shift import get_open_shift
+from app.utils.shift import get_open_shift, get_operator_id
 
 
 open_shift_router = Router()
@@ -32,7 +33,7 @@ async def cb_cleaning_check(
     await cb.answer()
     shift = await get_open_shift(state)
     await state.update_data(cleaning_check=not shift.cleaning_check)
-    await send_shift_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 
 @open_shift_router.callback_query(
@@ -46,9 +47,15 @@ async def cb_enter(
 ):
     shiftdao = ShiftDAO(session)
     openshiftdao = OpenShiftDAO(session)
+    userdao = UserDAO(session)
+
+    opened_by_id = await get_operator_id(state)
+    if await userdao.is_work_account(opened_by_id):
+        await cb.answer("Выберите оператора", show_alert=True)
+        return
 
     await shiftdao.add_shift(
-        Shift(opened_by_id=cb.message.chat.id, open_date=datetime.now())  # type: ignore
+        Shift(opened_by_id=opened_by_id, open_date=datetime.now())  # type: ignore
     )
     shift = await shiftdao.get_last_shift()
 

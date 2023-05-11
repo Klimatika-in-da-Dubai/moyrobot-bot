@@ -50,3 +50,14 @@ async def get_close_shift(state: FSMContext) -> CloseShift:
             shift.__setattr__(el, value)
 
     return shift
+
+
+async def get_operator_id(state: FSMContext) -> int | None:
+    data = await state.get_data()
+
+    return data.get("operator_id")
+
+
+async def get_operator_name(state: FSMContext) -> str | None:
+    data = await state.get_data()
+    return data.get("operator_name")

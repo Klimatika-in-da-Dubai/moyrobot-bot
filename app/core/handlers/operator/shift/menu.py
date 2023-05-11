@@ -17,8 +17,10 @@ from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.keyboards.operator.shift.open import (
     OpenShiftMenuCB,
 )
+from app.core.keyboards.operator.shift.operators import send_operators_keyboard
 from app.core.keyboards.operator.shift.robot import send_robot_check_keyboard
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.user import UserDAO
 from app.utils.shift import get_open_shift
 
 
@@ -29,11 +31,30 @@ menu_router = Router()
     OperatorMenu.Shift.menu,
     isOperatorCB(),
     ShiftMenuCB.filter(
+        (F.action == Action.OPEN) & (F.target == ShiftMenuTarget.OPERATOR_NAME)
+    ),
+)
+async def cb_operator_name(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    userdao = UserDAO(session)
+    if not await userdao.is_work_account(cb.message.chat.id):
+        await cb.answer("Вы не можете сменить оператора.", show_alert=True)
+        return
+    await cb.answer()
+    await send_operators_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+@menu_router.callback_query(
+    OperatorMenu.Shift.menu,
+    isOperatorCB(),
+    ShiftMenuCB.filter(
         (F.action == Action.ENTER_TEXT) & (F.target == ShiftMenuTarget.MONEY_AMOUNT)
     ),
 )
 async def cb_money_amount(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery,
+    state: FSMContext,
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Shift.money_amount)
@@ -53,7 +74,7 @@ async def message_money_amount(
         return
 
     await state.update_data(money_amount=int(message.text))  # type: ignore
-    await send_shift_keyboard(message.answer, state, session)
+    await send_shift_keyboard(message.answer, message, state, session)
 
 
 @menu_router.callback_query(
@@ -66,7 +87,6 @@ async def message_money_amount(
 async def cb_antifreeze_count(
     cb: types.CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker,
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Shift.antifreeze_count)
@@ -86,7 +106,7 @@ async def message_antifreeze_count(
         return
 
     await state.update_data(antifreeze_count=int(message.text))  # type: ignore
-    await send_shift_keyboard(message.answer, state, session)
+    await send_shift_keyboard(message.answer, message, state, session)
 
 
 @menu_router.callback_query(
@@ -102,7 +122,7 @@ async def cb_equipment_check(
     await cb.answer()
     shift = await get_open_shift(state)
     await state.update_data(equipment_check=not shift.equipment_check)
-    await send_shift_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -113,7 +133,8 @@ async def cb_equipment_check(
     ),
 )
 async def cb_chemistry_count(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery,
+    state: FSMContext,
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Shift.chemistry_count)
@@ -133,7 +154,7 @@ async def message_chemistry_count(
         return
 
     await state.update_data(chemistry_count=int(message.text))  # type: ignore
-    await send_shift_keyboard(message.answer, state, session)
+    await send_shift_keyboard(message.answer, message, state, session)
 
 
 @menu_router.callback_query(
@@ -149,7 +170,7 @@ async def cb_chemistry_check(
     await cb.answer()
     shift = await get_open_shift(state)
     await state.update_data(chemistry_check=not shift.chemistry_check)
-    await send_shift_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -179,7 +200,7 @@ async def cb_gates_check(
     await cb.answer()
     shift = await get_open_shift(state)
     await state.update_data(gates_check=not shift.gates_check)
-    await send_shift_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -211,4 +232,4 @@ async def cb_cancel(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await send_shift_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

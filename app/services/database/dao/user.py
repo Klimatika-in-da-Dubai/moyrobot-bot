@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import List, Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import select
 from app.services.database.dao.base import BaseDAO
@@ -30,43 +30,54 @@ class UserDAO(BaseDAO[User]):
 
             await session.commit()
 
-    async def get_user_roles(self, user: User) -> Sequence[Role]:
+    async def get_user_roles(self, user: User) -> list[Role]:
         async with self._session() as session:
             roles = await session.execute(
                 select(UserRole.role).join(User).where(self._model.id == user.id)
             )
             roles_list = roles.scalars().all()
-            return roles_list
+            return list(roles_list)
 
-    async def user_is_admin(self, user: User) -> bool:
-        roles = await self.get_user_roles(user)
-        return Role.ADMIN in roles
+    async def get_operators(self) -> list[User]:
+        async with self._session() as session:
+            users = await session.execute(
+                select(User).join(UserRole).where(UserRole.role == Role.OPERATOR)
+            )
+            return list(users.scalars().all())
 
-    async def user_is_operator(self, user: User) -> bool:
-        roles = await self.get_user_roles(user)
-        return Role.OPERATOR in roles or Role.ADMIN in roles
-
-    async def user_is_moderator(self, user: User) -> bool:
-        roles = await self.get_user_roles(user)
-        return Role.MODERATOR in roles or Role.ADMIN in roles
+    async def get_user_name_by_id(self, chat_id: int) -> str:
+        user = await self.get_by_id(id_=chat_id)
+        if user is None:
+            raise RuntimeError("No user with id %s", chat_id)
+        return user.name
 
     async def is_admin(self, chat_id: int) -> bool:
         user = await self.get_by_id(id_=chat_id)
         if user is None:
             return False
-        return await self.user_is_admin(user)
+        roles = await self.get_user_roles(user)
+        return Role.ADMIN in roles
 
     async def is_operator(self, chat_id: int) -> bool:
         user = await self.get_by_id(id_=chat_id)
         if user is None:
             return False
-        return await self.user_is_operator(user)
+        roles = await self.get_user_roles(user)
+        return Role.OPERATOR in roles or Role.ADMIN in roles or Role.WORK_ACCOUNT
 
     async def is_moderator(self, chat_id: int) -> bool:
         user = await self.get_by_id(id_=chat_id)
         if user is None:
             return False
-        return await self.user_is_moderator(user)
+        roles = await self.get_user_roles(user)
+        return Role.MODERATOR in roles or Role.ADMIN in roles
+
+    async def is_work_account(self, chat_id: int) -> bool:
+        user = await self.get_by_id(id_=chat_id)
+        if user is None:
+            return False
+        roles = await self.get_user_roles(user)
+        return Role.WORK_ACCOUNT in roles
 
     async def exists(self, chat_id: int) -> bool:
         user = await self.get_by_id(id_=chat_id)

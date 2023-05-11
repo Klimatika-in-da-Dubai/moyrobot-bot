@@ -47,4 +47,4 @@ async def cb_back(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await send_shift_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

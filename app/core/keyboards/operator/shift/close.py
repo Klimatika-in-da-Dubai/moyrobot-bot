@@ -12,7 +12,7 @@ from app.core.keyboards.operator.shift.base import (
 )
 from app.core.states.operator import OperatorMenu
 from app.services.database.models.shift import OpenShift
-from app.utils.shift import get_close_shift
+from app.utils.shift import get_close_shift, get_operator_name
 
 
 class CloseShiftMenuTarget(IntEnum):
@@ -24,8 +24,10 @@ class CloseShiftMenuCB(CallbackData, prefix="close_shift"):
     target: CloseShiftMenuTarget
 
 
-def get_close_shift_keyboard(shift: OpenShift) -> types.InlineKeyboardMarkup:
-    builder = get_shift_menu_builder(shift)
+def get_close_shift_keyboard(
+    shift: OpenShift, operator_name: str | None = None
+) -> types.InlineKeyboardMarkup:
+    builder = get_shift_menu_builder(shift, operator_name)
 
     builder.row(
         types.InlineKeyboardButton(
@@ -50,5 +52,9 @@ async def send_close_shift_menu_keyboard(
 ):
     shift = await get_close_shift(state)
 
+    operator_name = await get_operator_name(state)
+    await func(
+        text="Открытие смены",
+        reply_markup=get_close_shift_keyboard(shift, operator_name),
+    )
     await state.set_state(OperatorMenu.Shift.menu)
-    await func(text="Открытие смены", reply_markup=get_close_shift_keyboard(shift))
