@@ -11,6 +11,7 @@ class Role(IntEnum):
     OPERATOR = auto()
     MODERATOR = auto()
     ADMIN = auto()
+    WORK_ACCOUNT = auto()
 
 
 class User(Base):

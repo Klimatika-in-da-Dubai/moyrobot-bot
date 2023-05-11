@@ -22,7 +22,9 @@ async def get_menu_keyboard(
     user = await userdao.get_by_id(chat_id)
     user_roles = await userdao.get_user_roles(user)  # type: ignore
 
-    if any(role in user_roles for role in (Role.OPERATOR, Role.ADMIN)):
+    if any(
+        role in user_roles for role in (Role.OPERATOR, Role.ADMIN, Role.WORK_ACCOUNT)
+    ):
         builder.row(
             types.InlineKeyboardButton(
                 text="Меню оператора",

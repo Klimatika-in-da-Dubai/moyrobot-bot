@@ -17,8 +17,7 @@ from app.core.keyboards.operator.menu import (
 )
 from app.core.keyboards.operator.promocode.menu import send_promocode_keyboard
 from app.core.keyboards.operator.refund.menu import send_refund_keyboard
-from app.core.keyboards.operator.shift.close import send_close_shift_menu_keyboard
-from app.core.keyboards.operator.shift.open import send_open_shift_menu_keyboard
+from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.states.operator import OperatorMenu
 
 menu_router = Router(name="operator-menu-router")
@@ -36,7 +35,7 @@ async def cb_open_shift(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await send_open_shift_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -51,7 +50,7 @@ async def cb_close_shift(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await send_close_shift_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
