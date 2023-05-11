@@ -12,8 +12,9 @@ from app.core.keyboards.operator.shift.base import (
     get_shift_menu_builder,
 )
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.user import UserDAO
 from app.services.database.models.shift import OpenShift
-from app.utils.shift import get_open_shift
+from app.utils.shift import get_open_shift, get_operator_id, get_operator_name
 
 
 class OpenShiftMenuTarget(IntEnum):
@@ -31,8 +32,10 @@ class OpenShiftEmojis:
     cleaning: Literal["👍", "👎"]
 
 
-def get_open_shift_keyboard(shift: OpenShift) -> types.InlineKeyboardMarkup:
-    builder = get_shift_menu_builder(shift)
+def get_open_shift_keyboard(
+    shift: OpenShift, operator_name: str | None = None
+) -> types.InlineKeyboardMarkup:
+    builder = get_shift_menu_builder(shift, operator_name)
 
     emojis = get_open_shift_emojis(shift)
 
@@ -72,5 +75,10 @@ async def send_open_shift_menu_keyboard(
 ):
     shift = await get_open_shift(state)
 
+    operator_name = await get_operator_name(state)
+
+    await func(
+        text="Открытие смены",
+        reply_markup=get_open_shift_keyboard(shift, operator_name),
+    )
     await state.set_state(OperatorMenu.Shift.menu)
-    await func(text="Открытие смены", reply_markup=get_open_shift_keyboard(shift))

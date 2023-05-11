@@ -8,10 +8,12 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.core.keyboards.base import Action
 from app.services.database.models.shift import CloseShift, OpenShift
+from app.utils.shift import get_operator_name
 
 
 class ShiftMenuTarget(IntEnum):
     NONE = auto()
+    OPERATOR_NAME = auto()
     MONEY_AMOUNT = auto()
     ANTIFREEZE_COUNT = auto()
     EQUIPMENT_CHECK = auto()
@@ -28,6 +30,7 @@ class ShiftMenuCB(CallbackData, prefix="shift"):
 
 @dataclass
 class ShiftEmojis:
+    operator_name: Literal["✅", "❌"]
     money_amount: Literal["✅", "❌"]
     antifreeze_count: Literal["✅", "❌"]
     equipment_check: Literal["✅", "❌"]
@@ -39,6 +42,7 @@ class ShiftEmojis:
 
 @dataclass
 class ShiftInfo:
+    operator_name: str
     money_amount: str
     antifreeze_count: str
     equipment_check: bool
@@ -48,12 +52,22 @@ class ShiftInfo:
     gates_check: bool
 
 
-def get_shift_menu_builder(shift: OpenShift | CloseShift) -> InlineKeyboardBuilder:
+def get_shift_menu_builder(
+    shift: OpenShift | CloseShift, operator_name: str | None = None
+) -> InlineKeyboardBuilder:
     builder = InlineKeyboardBuilder()
 
-    shift_info = get_shift_menu_info(shift)
-    emojis: ShiftEmojis = get_shift_menu_emojis(shift)
+    shift_info = get_shift_menu_info(shift, operator_name)
+    emojis: ShiftEmojis = get_shift_menu_emojis(shift, operator_name)
 
+    builder.row(
+        types.InlineKeyboardButton(
+            text=f"Оператор: {shift_info.operator_name} {emojis.operator_name}",
+            callback_data=ShiftMenuCB(
+                action=Action.OPEN, target=ShiftMenuTarget.OPERATOR_NAME
+            ).pack(),
+        )
+    )
     builder.row(
         types.InlineKeyboardButton(
             text=f"Денег в кассе: {shift_info.money_amount} {emojis.money_amount}",
@@ -112,7 +126,8 @@ def get_shift_menu_builder(shift: OpenShift | CloseShift) -> InlineKeyboardBuild
     return builder
 
 
-def get_shift_menu_info(shift: OpenShift | CloseShift):
+def get_shift_menu_info(shift: OpenShift | CloseShift, operator_name: str | None):
+    operator_name = operator_name if operator_name is not None else ""
     money_amount = str(shift.money_amount) if shift.money_amount is not None else ""
     antifreeze_count = (
         str(shift.antifreeze_count) if shift.antifreeze_count is not None else ""
@@ -126,7 +141,9 @@ def get_shift_menu_info(shift: OpenShift | CloseShift):
         True if shift.robot_leak_check and shift.robot_movement_check else False
     )
     gates_check = True if shift.gates_check else False
+
     return ShiftInfo(
+        operator_name=operator_name,
         money_amount=money_amount,
         antifreeze_count=antifreeze_count,
         equipment_check=equipment_check,
@@ -137,7 +154,8 @@ def get_shift_menu_info(shift: OpenShift | CloseShift):
     )
 
 
-def get_shift_menu_emojis(shift: OpenShift | CloseShift):
+def get_shift_menu_emojis(shift: OpenShift | CloseShift, operator_name: str | None):
+    operator_name = "✅" if operator_name is not None else "❌"
     money_amount = "✅" if shift.money_amount is not None else "❌"
     antifreeze_count = "✅" if shift.antifreeze_count is not None else "❌"
     equipment_check = "✅" if shift.equipment_check else "❌"
@@ -147,6 +165,7 @@ def get_shift_menu_emojis(shift: OpenShift | CloseShift):
     gates_check = "✅" if shift.gates_check else "❌"
 
     return ShiftEmojis(
+        operator_name=operator_name,
         money_amount=money_amount,
         antifreeze_count=antifreeze_count,
         equipment_check=equipment_check,
