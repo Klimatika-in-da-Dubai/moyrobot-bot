@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.operator.shift.menu import send_shift_keyboard
-from app.core.keyboards.operator.shift.operators import OperatorsCB
+from app.core.keyboards.operator.shift.operator import OperatorsCB
 
 from app.core.states.operator import OperatorMenu
 
@@ -13,7 +13,7 @@ operator_name_router = Router()
 
 
 @operator_name_router.callback_query(
-    OperatorMenu.Shift.operator_name,
+    OperatorMenu.Shift.operator,
     isOperatorCB(),
     OperatorsCB.filter(F.action == Action.SELECT),
 )
@@ -28,7 +28,7 @@ async def cb_select_operator_name(
 
 
 @operator_name_router.callback_query(
-    OperatorMenu.Shift.operator_name,
+    OperatorMenu.Shift.operator,
     isOperatorCB(),
     OperatorsCB.filter(F.action == Action.BACK),
 )

@@ -17,7 +17,7 @@ from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.keyboards.operator.shift.open import (
     OpenShiftMenuCB,
 )
-from app.core.keyboards.operator.shift.operators import send_operators_keyboard
+from app.core.keyboards.operator.shift.operator import send_operators_keyboard
 from app.core.keyboards.operator.shift.robot import send_robot_check_keyboard
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.user import UserDAO
