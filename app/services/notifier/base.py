@@ -24,8 +24,9 @@ class Notifier:
             for id in ids:
                 try:
                     await self.send_notify(id, obj)
-                except Exception:
+                except Exception as e:
                     logging.error("Can't send notify to user with id = %s", id)
+                    logging.error("Exception: %s", e)
 
     @abstractmethod
     async def get_objects_to_notify(self) -> list:
