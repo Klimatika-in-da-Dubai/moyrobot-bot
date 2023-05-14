@@ -5,7 +5,7 @@ def get_text(shift: OpenShift | CloseShift) -> str:
     if isinstance(shift, OpenShift):
         head = "Открытие смены"
     else:
-        head = "Закртыие смены"
+        head = "Закрытие смены"
 
     antifreeze_message = ""
     if shift.antifreeze_count != 0:
