@@ -37,7 +37,7 @@ def get_problems_text(shift: OpenShift | CloseShift) -> str:
     if all([shift.robot_leak_check, shift.robot_movement_check, shift.gates_check]):
         return ""
 
-    robot_movement = "\t\t__Хода робота__\n" if not shift.robot_movement_check else ""
+    robot_movement = "\t\t__Ход робота__\n" if not shift.robot_movement_check else ""
     robot_leak = "\t\t__Протечка робота__\n" if not shift.robot_leak_check else ""
     gates_check = "\t\t__Работа ворот__\n" if not shift.gates_check else ""
 
