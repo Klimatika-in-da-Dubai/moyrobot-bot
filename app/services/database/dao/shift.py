@@ -21,10 +21,10 @@ class ShiftDAO(BaseDAO[Shift]):
 
     async def get_unnotified(self) -> Sequence[Shift]:
         async with self._session() as session:
-            bonuses = await session.execute(
+            shifts = await session.execute(
                 select(Shift).where(Shift.notified == False)  # noqa: E712
             )
-            return bonuses.scalars().all()
+            return shifts.scalars().all()
 
     async def make_notified(self, shift: Shift):
         async with self._session() as session:
@@ -53,6 +53,15 @@ class ShiftDAO(BaseDAO[Shift]):
         async with self._session() as session:
             result = await session.execute(
                 select(Shift).order_by(Shift.close_date.desc())
+            )
+            return result.scalar()
+
+    async def get_last_closed(self) -> Shift:
+        async with self._session() as session:
+            result = await session.execute(
+                select(Shift)
+                .where(Shift.close_date.is_not(None))
+                .order_by(Shift.close_date.desc())
             )
             return result.scalar()
 
