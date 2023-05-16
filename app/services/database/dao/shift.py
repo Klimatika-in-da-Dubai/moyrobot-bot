@@ -21,10 +21,10 @@ class ShiftDAO(BaseDAO[Shift]):
 
     async def get_unnotified(self) -> Sequence[Shift]:
         async with self._session() as session:
-            bonuses = await session.execute(
+            shifts = await session.execute(
                 select(Shift).where(Shift.notified == False)  # noqa: E712
             )
-            return bonuses.scalars().all()
+            return shifts.scalars().all()
 
     async def make_notified(self, shift: Shift):
         async with self._session() as session:
