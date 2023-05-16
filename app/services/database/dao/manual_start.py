@@ -67,6 +67,7 @@ class ManualStartDAO(BaseDAO[ManualStart]):
             manual_starts = await session.execute(
                 select(ManualStart)
                 .where(ManualStart.reported == True)  # noqa: E712
+                .where(ManualStart.mode != None)  # noqa: E712
                 .where(ManualStart.notified == False)  # noqa: E712
             )
 

@@ -2,6 +2,7 @@ from aiogram.fsm.context import FSMContext
 
 from app.services.database.models.refund import PaymentDevice, Refund
 from app.services.database.models.utils import PaymentMethod
+from app.utils.text import escape_chars
 
 
 async def get_refund(state: FSMContext) -> Refund:
@@ -26,7 +27,9 @@ async def get_refund(state: FSMContext) -> Refund:
 
 
 def get_refund_menu_text(refund: Refund) -> str:
-    description = refund.description if refund.description is not None else ""
+    description = (
+        escape_chars(refund.description) if refund.description is not None else ""
+    )
 
     text = "Возврат\n" f"*Причина:* {description}"
     return text
