@@ -11,6 +11,7 @@ from app.core.keyboards.operator.shift.close import (
 )
 
 from app.core.states.operator import OperatorMenu
+from app.services.checker.shift.shift import ShiftChecker
 from app.services.database.dao.shift import CloseShiftDAO, ShiftDAO
 from app.services.database.dao.user import UserDAO
 from app.utils.shift import get_close_shift, get_operator_id
@@ -56,6 +57,8 @@ async def cb_enter(
     close_shift.date = shift.close_date
     closeshiftdao = CloseShiftDAO(session)
     await closeshiftdao.add_shift(close_shift)
+
+    await ShiftChecker(session).check(shift)
 
     await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore

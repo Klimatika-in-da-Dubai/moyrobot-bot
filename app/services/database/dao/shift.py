@@ -56,6 +56,15 @@ class ShiftDAO(BaseDAO[Shift]):
             )
             return result.scalar()
 
+    async def get_last_closed(self) -> Shift:
+        async with self._session() as session:
+            result = await session.execute(
+                select(Shift)
+                .where(Shift.close_date.is_not(None))
+                .order_by(Shift.close_date.desc())
+            )
+            return result.scalar()
+
 
 class OpenShiftDAO(BaseDAO[OpenShift]):
     def __init__(self, session: async_sessionmaker):

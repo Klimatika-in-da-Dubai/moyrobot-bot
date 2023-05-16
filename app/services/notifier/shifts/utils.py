@@ -25,6 +25,7 @@ def get_text(shift: OpenShift | CloseShift) -> str:
 
     return (
         f"{head}\n\n"
+        f"*ID:* {shift.id}\n"
         f"*Касса:* {shift.money_amount}\n"
         f"{antifreeze_message}"
         f"*Химия:* {shift.chemistry_count} {chemistry_check_message}\n"

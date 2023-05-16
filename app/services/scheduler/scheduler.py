@@ -21,6 +21,6 @@ def get_scheduler(
     scheduler.add_job(update_db, "interval", seconds=30, args=(parser, session))
     scheduler.add_job(notify, "interval", seconds=10, args=(common_notifiers,))
     scheduler.add_job(notify, "cron", hour="9", args=(bonus_promo_notifiers,))
-    scheduler.add_job(notify, "interval", minutes=5, args=(shift_notifier,))
+    scheduler.add_job(notify, "interval", seconds=10, args=(shift_notifier,))
 
     return scheduler
