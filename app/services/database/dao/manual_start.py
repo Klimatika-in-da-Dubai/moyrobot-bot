@@ -67,7 +67,7 @@ class ManualStartDAO(BaseDAO[ManualStart]):
             manual_starts = await session.execute(
                 select(ManualStart)
                 .where(ManualStart.reported == True)  # noqa: E712
-                .where(ManualStart.mode != None)  # noqa: E712
+                .where(ManualStart.mode != None)  # noqa: E711
                 .where(ManualStart.notified == False)  # noqa: E712
             )
 
@@ -139,3 +139,17 @@ class ManualStartDAO(BaseDAO[ManualStart]):
             )
             await session.merge(typed_manual_start)
             await session.commit()
+
+    async def get_typed_between_time(
+        self, type: ManualStartType, begin: datetime.datetime, end: datetime.datetime
+    ):
+        async with self._session() as session:
+            typed_manual_start_table = self._match_manual_start_type(type)
+            result = await session.execute(
+                select(typed_manual_start_table)
+                .join(ManualStart)
+                .where(ManualStart.type == type)
+                .where(ManualStart.date.between(begin, end))
+            )
+
+            return result.scalars().all()

@@ -11,6 +11,7 @@ from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.keyboards.operator.shift.open import OpenShiftMenuCB, OpenShiftMenuTarget
 
 from app.core.states.operator import OperatorMenu
+from app.services.checker.shifts_difference.checker import ShiftsDifferenceCheck
 from app.services.database.dao.shift import OpenShiftDAO, ShiftDAO
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.shift import Shift
@@ -73,5 +74,9 @@ async def cb_enter(
     openshift.id = shift.id
     openshift.date = shift.open_date
     await openshiftdao.add_shift(openshift)
+
+    last_closed_shift = await shiftdao.get_last_closed()
+    await ShiftsDifferenceCheck(session).check(last_closed_shift, shift)
+
     await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore

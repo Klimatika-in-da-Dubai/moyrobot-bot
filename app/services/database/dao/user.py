@@ -63,7 +63,9 @@ class UserDAO(BaseDAO[User]):
         if user is None:
             return False
         roles = await self.get_user_roles(user)
-        return Role.OPERATOR in roles or Role.ADMIN in roles or Role.WORK_ACCOUNT
+        return (
+            Role.OPERATOR in roles or Role.ADMIN in roles or Role.WORK_ACCOUNT in roles
+        )
 
     async def is_moderator(self, chat_id: int) -> bool:
         user = await self.get_by_id(id_=chat_id)

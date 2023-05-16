@@ -12,6 +12,8 @@ class MailingType(IntEnum):
     MANUAL_START_REPORT_REMIND = auto()
     MANUAL_START = auto()
     SHIFT = auto()
+    SHIFT_CHECK = auto()
+    SHIFTS_DIFFERENCE = auto()
     ANTIFREEZE = auto()
     CLEANING = auto()
     PROMOCODE = auto()
