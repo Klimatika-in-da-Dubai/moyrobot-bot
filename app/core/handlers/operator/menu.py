@@ -8,6 +8,7 @@ from app.core.keyboards.base import Action
 from app.core.keyboards.menu import send_menu_keyboard
 from app.core.keyboards.operator.antifreeze.menu import send_antifreeze_keyboard
 from app.core.keyboards.operator.bonus.menu import send_bonus_keyboard
+from app.core.keyboards.operator.cleaning.cleaning import send_cleaning_menu
 from app.core.keyboards.operator.manual_start.menu import (
     send_manual_starts_keyboard,
 )
@@ -19,6 +20,7 @@ from app.core.keyboards.operator.promocode.menu import send_promocode_keyboard
 from app.core.keyboards.operator.refund.menu import send_refund_keyboard
 from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.states.operator import OperatorMenu
+from app.services.database.dto.cleaning import CleaningDTO, Place, Work
 
 menu_router = Router(name="operator-menu-router")
 
@@ -67,6 +69,58 @@ async def cb_manual_start_open(
 ):
     await cb.answer()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+@menu_router.callback_query(
+    OperatorMenu.menu,
+    isOperatorCB(),
+    OperatorMenuCB.filter(
+        (F.action == Action.OPEN) & (F.target == OperatorMenuTarget.CLEANING)
+    ),
+)
+async def cb_cleaning_open(
+    cb: types.CallbackQuery,
+    state: FSMContext,
+    session: async_sessionmaker[AsyncSession],
+):
+    await cb.answer()
+    cleaning = CleaningDTO(
+        places=[
+            Place(
+                name="Бокс 1",
+                works=[
+                    Work(name="По направлению движения"),
+                    Work(name="Против направления движения"),
+                ],
+            ),
+            Place(
+                name="Бокс 2",
+                works=[
+                    Work(name="По направлению движения"),
+                    Work(name="Против направления движения"),
+                ],
+            ),
+            Place(name="Территория 1", works=[Work(name="Территория у ворот")]),
+            Place(
+                name="Территория 2",
+                works=[Work(name="Пылесос"), Work(name="Мойка ковров")],
+            ),
+            Place(
+                name="Операторская",
+                works=[Work(name="Общее фото помещения"), Work(name="Фото стола")],
+            ),
+            Place(
+                name="Техническое помещение",
+                works=[
+                    Work(name="Шкаф доз 1"),
+                    Work(name="Шкаф доз 2"),
+                    Work(name="Общее фото"),
+                ],
+            ),
+        ]
+    )
+    await state.update_data(cleaning=cleaning.to_dict())
+    await send_cleaning_menu(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
