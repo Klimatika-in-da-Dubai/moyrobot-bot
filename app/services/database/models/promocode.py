@@ -19,7 +19,7 @@ class Promocode(Base):
     __tablename__ = "promocode"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    date: Mapped[datetime] = mapped_column(default=datetime.now())
+    date: Mapped[datetime] = mapped_column(default=datetime.now)
     phone: Mapped[str]
     wash_mode: Mapped[WashMode] = mapped_column(Enum(WashMode))
     description: Mapped[str]

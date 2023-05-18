@@ -10,7 +10,7 @@ class Bonus(Base):
     __tablename__ = "bonus"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    date: Mapped[datetime] = mapped_column(default=datetime.now())
+    date: Mapped[datetime] = mapped_column(default=datetime.now)
     phone: Mapped[str]
     bonus_amount: Mapped[int]
     description: Mapped[str]

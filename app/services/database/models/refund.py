@@ -27,7 +27,7 @@ class Refund(Base):
     __tablename__ = "refund"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    date: Mapped[datetime] = mapped_column(default=datetime.now())
+    date: Mapped[datetime] = mapped_column(default=datetime.now)
     payment_device: Mapped[PaymentDevice]
     payment_method: Mapped[PaymentMethod]
     description: Mapped[str]
