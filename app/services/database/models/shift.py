@@ -23,7 +23,7 @@ class OpenShift(Base):
     id: Mapped[int] = mapped_column(
         ForeignKey("shift.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
-    date: Mapped[datetime] = mapped_column(default=datetime.now())
+    date: Mapped[datetime] = mapped_column(default=datetime.now)
     money_amount: Mapped[int] = mapped_column(default=0)
     antifreeze_count: Mapped[int] = mapped_column(default=0)
     chemistry_count: Mapped[int] = mapped_column(default=0)
@@ -42,7 +42,7 @@ class CloseShift(Base):
     id: Mapped[int] = mapped_column(
         ForeignKey("shift.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
-    date: Mapped[datetime] = mapped_column(default=datetime.now())
+    date: Mapped[datetime] = mapped_column(default=datetime.now)
     money_amount: Mapped[int] = mapped_column(default=0, nullable=False)
     antifreeze_count: Mapped[int] = mapped_column(default=0)
     chemistry_count: Mapped[int] = mapped_column(default=0)
