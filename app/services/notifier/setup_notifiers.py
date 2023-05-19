@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.notifier.antifreeze import AntifreezeNotifier
 from app.services.notifier.base import Notifier
 from app.services.notifier.bonus import BonusNotifier
+from app.services.notifier.cleaning import CleaningNotifier
 from app.services.notifier.manual_start.alerter import ManualStartAlerter
 
 from app.services.notifier.manual_start.notifier import ManualStartNotifier
@@ -24,6 +25,7 @@ def setup_common_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifi
         ManualStartReminder(bot, session),
         AntifreezeNotifier(bot, session),
         RefundNotifier(bot, session),
+        CleaningNotifier(bot, session),
     ]
     return notifiers
 
