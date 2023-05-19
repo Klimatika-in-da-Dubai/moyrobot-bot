@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
+from app.core.keyboards.operator.cleaning.cleaning import send_cleaning_menu
 from app.core.keyboards.operator.cleaning.place import (
     send_place_menu,
 )
@@ -10,7 +11,7 @@ from app.core.keyboards.operator.cleaning.work import WorkMenuCB, WorkMenuTarget
 
 from app.core.states.operator import OperatorMenu
 from app.services.database.dto.cleaning import CleaningDTO
-from app.utils.cleaning import get_place_id, get_work_id
+from app.utils.cleaning import get_current_place, get_place_id, get_work_id
 
 
 work_router = Router()
@@ -34,6 +35,11 @@ async def message_work_photo(
     work = cleaning.places[place_id].works[work_id]
     work.photo_file_id = message.photo[-1].file_id  # type: ignore
     await state.update_data(cleaning=cleaning.to_dict())
+
+    place = await get_current_place(state)
+    if place.is_filled():
+        await send_cleaning_menu(message.answer, state, session)
+        return
     await send_place_menu(message.answer, state, session)
 
 

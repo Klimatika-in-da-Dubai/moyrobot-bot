@@ -26,10 +26,8 @@ class Cleaning(Base):
 
     __tablename__ = "cleaning"
 
-    id: Mapped[int] = mapped_column(
-        BigInteger, primary_key=True, unique=True, autoincrement=False
-    )
-    date: Mapped[datetime]
-    cleaning: Mapped[JSON]
-    approved: Mapped[bool] = mapped_column(default=False)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    date: Mapped[datetime] = mapped_column(default=datetime.now)
+    cleaning: Mapped[dict] = mapped_column(JSON)
+    approved: Mapped[bool] = mapped_column(nullable=True)
     notified: Mapped[bool] = mapped_column(default=False)

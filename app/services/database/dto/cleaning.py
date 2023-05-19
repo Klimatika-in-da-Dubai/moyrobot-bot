@@ -38,8 +38,11 @@ class CleaningDTO:
     @staticmethod
     def from_dict(data: dict):
         cleaning_data = data["cleaning"]
-        places_data = cleaning_data["places"]
+        return CleaningDTO.from_db(cleaning_data)
 
+    @staticmethod
+    def from_db(data: dict):
+        places_data = data["places"]
         places = []
         for place in places_data:
             works = []
