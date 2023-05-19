@@ -35,6 +35,16 @@ class OperatorMenu(StatesGroup):
             payment_amount = State()
             bonus = State()
 
+    class Cleaning(StatesGroup):
+        menu = State()
+
+        class Place(StatesGroup):
+            menu = State()
+
+            class Work(StatesGroup):
+                menu = State()
+                photo = State()
+
     class Promocode(StatesGroup):
         menu = State()
         phone = State()

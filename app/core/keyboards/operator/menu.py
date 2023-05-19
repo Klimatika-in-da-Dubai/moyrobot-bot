@@ -15,6 +15,7 @@ class OperatorMenuTarget(IntEnum):
     OPEN_SHIFT = auto()
     CLOSE_SHIFT = auto()
     MANUAL_START = auto()
+    CLEANING = auto()
     BONUS = auto()
     PROMOCODE = auto()
     REFUND = auto()
@@ -43,6 +44,14 @@ def get_opened_operator_menu_keyboard() -> types.InlineKeyboardMarkup:
             text="Отчитаться по ручному запуску",
             callback_data=OperatorMenuCB(
                 action=Action.OPEN, target=OperatorMenuTarget.MANUAL_START
+            ).pack(),
+        )
+    )
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Уборка",
+            callback_data=OperatorMenuCB(
+                action=Action.OPEN, target=OperatorMenuTarget.CLEANING
             ).pack(),
         )
     )
