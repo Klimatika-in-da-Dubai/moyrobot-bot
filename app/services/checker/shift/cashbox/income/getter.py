@@ -8,7 +8,7 @@ class IncomeGetter:
     def __init__(self, income_objects: list[IncomeObject]):
         self.income_objects = income_objects
 
-    async def get_outcome(self, shift: Shift) -> int:
+    async def get_income(self, shift: Shift) -> int:
         tasks = [
             asyncio.create_task(obj.get_income(shift)) for obj in self.income_objects
         ]
