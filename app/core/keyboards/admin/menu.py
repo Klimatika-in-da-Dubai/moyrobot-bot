@@ -7,6 +7,7 @@ from app.core.keyboards.base import Action
 
 class AdminMenuTarget(IntEnum):
     NONE = auto()
+    MONEY_COLLECTION = auto()
     USER = auto()
 
 
@@ -23,6 +24,14 @@ def get_admin_menu_keyboard() -> types.InlineKeyboardMarkup:
             text="Пользователи",
             callback_data=AdminMenuCB(
                 action=Action.OPEN, target=AdminMenuTarget.USER
+            ).pack(),
+        )
+    )
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Инкассация",
+            callback_data=AdminMenuCB(
+                action=Action.ENTER_TEXT, target=AdminMenuTarget.MONEY_COLLECTION
             ).pack(),
         )
     )

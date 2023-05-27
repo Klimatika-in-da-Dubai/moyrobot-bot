@@ -22,3 +22,6 @@ class AdminMenu(StatesGroup):
             id = State()
             name = State()
             role = State()
+
+    class MoneyCollection(StatesGroup):
+        money_collection = State()

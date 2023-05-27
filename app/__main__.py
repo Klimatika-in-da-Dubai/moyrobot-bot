@@ -9,6 +9,7 @@ from app.core.middlewares.db import DbSessionMiddleware
 from app.services.database.connector import setup_get_pool
 from app.services.notifier.setup_notifiers import (
     setup_common_notifiers,
+    setup_monthly_report_notifiers,
     setup_promocode_and_bonus_notifiers,
     setup_shifts_notifiers,
 )
@@ -49,8 +50,15 @@ async def main():
     common_notifiers = setup_common_notifiers(bot, session)
     bonus_promo_notifiers = setup_promocode_and_bonus_notifiers(bot, session)
     shift_notifier = setup_shifts_notifiers(bot, session)
+    monthly_report_notifiers = setup_monthly_report_notifiers(bot, session)
     scheduler = get_scheduler(
-        bot, parser, session, common_notifiers, bonus_promo_notifiers, shift_notifier
+        bot,
+        parser,
+        session,
+        common_notifiers,
+        bonus_promo_notifiers,
+        shift_notifier,
+        monthly_report_notifiers,
     )
 
     setup_routers(dp)
