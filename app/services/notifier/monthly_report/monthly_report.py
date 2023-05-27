@@ -98,8 +98,9 @@ class MonthlyReportNotifier(Notifier):
         df = pd.DataFrame(data=report_rows)
         date = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
         name = f"monthly_report_{date}.xlsx"
-        df.to_excel(name)
-        return name
+        path = "./monthly_reports/"
+        df.to_excel(path + name)
+        return path + name
 
     async def make_notified(self, object) -> None:
         pass
@@ -107,4 +108,3 @@ class MonthlyReportNotifier(Notifier):
     async def send_notify(self, id: int, report_path: str) -> None:
         report = FSInputFile(report_path, filename="Полумесячный отчёт.xlsx")
         await self._bot.send_document(id, document=report)
-        os.remove(report_path)
