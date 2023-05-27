@@ -135,3 +135,4 @@ alembic.ini
 .vscode
 .idea
 scripts
+monthly_reports/monthly_report*
