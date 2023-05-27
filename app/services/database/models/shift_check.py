@@ -9,5 +9,7 @@ class ShiftCheck(Base):
     id: Mapped[int] = mapped_column(
         ForeignKey("shift.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
+    money_expected: Mapped[int]
+    money_actual: Mapped[int]
     money_difference: Mapped[int]
     notified: Mapped[bool] = mapped_column(default=False)

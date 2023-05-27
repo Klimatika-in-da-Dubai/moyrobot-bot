@@ -9,6 +9,9 @@ from app.services.scheduler.notifiers import notify
 from app.services.scheduler.update_db import update_db
 
 
+notify_monthly_report = notify
+
+
 def get_scheduler(
     bot: Bot,
     parser: Parser,
@@ -16,11 +19,15 @@ def get_scheduler(
     common_notifiers: list[Notifier],
     bonus_promo_notifiers: list[Notifier],
     shift_notifier: list[Notifier],
+    monthly_report_notifier: list[Notifier],
 ) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler()
     scheduler.add_job(update_db, "interval", seconds=30, args=(parser, session))
     scheduler.add_job(notify, "interval", seconds=10, args=(common_notifiers,))
     scheduler.add_job(notify, "cron", hour="9", args=(bonus_promo_notifiers,))
     scheduler.add_job(notify, "interval", seconds=10, args=(shift_notifier,))
+    scheduler.add_job(
+        notify_monthly_report, "cron", day="1,16", args=(monthly_report_notifier,)
+    )
 
     return scheduler

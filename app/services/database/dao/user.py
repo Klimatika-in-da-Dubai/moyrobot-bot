@@ -1,7 +1,8 @@
-from typing import List, Sequence
+from typing import Optional
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import select
 from app.services.database.dao.base import BaseDAO
+from app.services.database.models.salary import Salary
 from app.services.database.models.user import Role, User, UserRole
 
 
@@ -37,6 +38,14 @@ class UserDAO(BaseDAO[User]):
             )
             roles_list = roles.scalars().all()
             return list(roles_list)
+
+    async def get_salary(self, user: User) -> int:
+        async with self._session() as session:
+            result = await session.execute(
+                select(Salary.salary).where(Salary.user_id == user.id)
+            )
+
+            return result.scalar()  # type: ignore
 
     async def get_operators(self) -> list[User]:
         async with self._session() as session:

@@ -15,6 +15,7 @@ class Shift(Base):
     close_date: Mapped[datetime] = mapped_column(nullable=True)
     closed_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"), nullable=True)
     notified: Mapped[bool] = mapped_column(default=False)
+    monthly_reported: Mapped[bool] = mapped_column(default=False)
 
 
 class OpenShift(Base):
