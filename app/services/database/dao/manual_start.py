@@ -62,6 +62,18 @@ class ManualStartDAO(BaseDAO[ManualStart]):
 
             return manual_starts.scalars().all()
 
+    async def get_alerted_between_time(
+        self, begin: datetime.datetime, end: datetime.datetime
+    ) -> Sequence[ManualStart]:
+        async with self._session() as session:
+            manual_starts = await session.execute(
+                select(ManualStart)
+                .where(ManualStart.report_alerted.is_(True))
+                .filter(ManualStart.date.between(begin, end))
+            )
+
+            return manual_starts.scalars().all()
+
     async def get_unnotified(self) -> Sequence[ManualStart]:
         async with self._session() as session:
             manual_starts = await session.execute(

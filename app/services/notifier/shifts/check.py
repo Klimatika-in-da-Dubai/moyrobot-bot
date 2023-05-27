@@ -29,8 +29,8 @@ class ShiftCheckNotifier(Notifier):
         return (
             f"Проверка смены\n"
             f"*ID смены:* {shift_check.id}\n"
-            f"*Ожидамое кол\\-во денег:* {shift_check.money_expected}"
-            f"*Фактическое кол\\-во денег:* {shift_check.money_actual}"
+            f"*Ожидамое кол\\-во денег:* {shift_check.money_expected}\n"
+            f"*Фактическое кол\\-во денег:* {shift_check.money_actual}\n"
             f"*Разница в кассе:* {escape_chars(str(shift_check.money_difference))}"
         )
 

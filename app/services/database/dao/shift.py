@@ -26,10 +26,26 @@ class ShiftDAO(BaseDAO[Shift]):
             )
             return shifts.scalars().all()
 
+    async def get_monthly_unreported(self) -> Sequence[Shift]:
+        async with self._session() as session:
+            shifts = await session.execute(
+                select(Shift)
+                .where(Shift.monthly_reported.is_(False))
+                .where(Shift.close_date.is_not(None))
+            )
+            return shifts.scalars().all()
+
     async def make_notified(self, shift: Shift):
         async with self._session() as session:
             await session.execute(
                 update(Shift).where(Shift.id == shift.id).values(notified=True)
+            )
+            await session.commit()
+
+    async def make_monthly_reported(self, shift: Shift):
+        async with self._session() as session:
+            await session.execute(
+                update(Shift).where(Shift.id == shift.id).values(monthly_reported=True)
             )
             await session.commit()
 

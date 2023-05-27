@@ -8,6 +8,7 @@ from app.services.database.base import Base
 
 
 class MailingType(IntEnum):
+    MONTHLY_REPORT = auto()
     MANUAL_START_REPORT_ALERT = auto()
     MANUAL_START_REPORT_REMIND = auto()
     MANUAL_START = auto()

@@ -10,6 +10,7 @@ from app.services.notifier.manual_start.alerter import ManualStartAlerter
 
 from app.services.notifier.manual_start.notifier import ManualStartNotifier
 from app.services.notifier.manual_start.reminder import ManualStartReminder
+from app.services.notifier.monthly_report.monthly_report import MonthlyReportNotifier
 from app.services.notifier.promocode import PromocodeNotifier
 from app.services.notifier.refund import RefundNotifier
 from app.services.notifier.shifts.check import ShiftCheckNotifier
@@ -45,3 +46,9 @@ def setup_shifts_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifi
         ShiftDifferenceNotifier(bot, session),
     ]
     return notifiers
+
+
+def setup_monthly_report_notifiers(
+    bot: Bot, session: async_sessionmaker
+) -> list[Notifier]:
+    return [MonthlyReportNotifier(bot, session)]
