@@ -1,23 +1,29 @@
 from typing import Any
 from aiogram import Router, types, F
+from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 import logging
 from app.core.filters.admin import isAdminCB
+from app.core.keyboards.admin.users.mailing import send_mailing_selection
 
 from app.core.states.admin import AdminMenu
-from app.core.keyboards.base import Action
+from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
 from app.core.keyboards.admin.users.menu import get_users_keyboard
 
 
-from app.core.keyboards.admin.users.add import (
+from app.core.keyboards.admin.users.add.add import (
     AddUserCB,
     AddUserTarget,
     get_add_user_keyboard,
     get_roles_keyboard,
 )
+from app.services.database.dao.mailing import MailingDAO
+from app.services.database.dao.salary import SalaryDAO
 from app.services.database.dao.user import UserDAO
+from app.services.database.models.mailing import Mailing
+from app.services.database.models.salary import Salary
 from app.services.database.models.user import Role, User, UserRole
 
 add_user_router = Router()
@@ -62,6 +68,58 @@ async def cb_enter_name(cb: types.CallbackQuery, state: FSMContext):
 async def message_user_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
     await send_add_user_menu(message, state)
+
+
+@add_user_router.callback_query(
+    AdminMenu.Users.Add.menu,
+    isAdminCB(),
+    AddUserCB.filter(
+        (F.target == AddUserTarget.SALARY) & (F.action == Action.ENTER_TEXT)
+    ),
+)
+async def cb_enter_salary(cb: types.CallbackQuery, state: FSMContext):
+    await cb.answer()
+    await state.set_state(AdminMenu.Users.Add.salary)
+    await cb.message.edit_text(  # type: ignore
+        text="Введите зарплату за смену для работника",
+        reply_markup=get_cancel_keyboard(),
+    )
+
+
+@add_user_router.message(AdminMenu.Users.Add.salary, F.text)
+async def message_salary(message: types.Message, state: FSMContext):
+    if message.text is None:
+        await message.answer("Нет текста в сообщении")
+        return
+
+    if not message.text.isnumeric():
+        await message.edit_text(
+            text="Введите число", reply_markup=get_cancel_keyboard()
+        )
+        return
+
+    if int(message.text) < 0:
+        await message.edit_text(
+            text="Зарплата не может быть отрицательной",
+            reply_markup=get_cancel_keyboard(),
+        )
+        return
+
+    await state.update_data(salary=int(message.text))
+    await send_add_user_menu(message, state)
+
+
+@add_user_router.callback_query(
+    AdminMenu.Users.Add.menu,
+    isAdminCB(),
+    AddUserCB.filter((F.target == AddUserTarget.MAILING) & (F.action == Action.OPEN)),
+)
+async def cb_open_mailing_selection(cb: types.CallbackQuery, state: FSMContext):
+    await cb.answer()
+    data = await state.get_data()
+    if data.get("mailings") is None:
+        await state.update_data(mailings=[])
+    await send_mailing_selection(cb.message.edit_text, state)  # type: ignore
 
 
 @add_user_router.callback_query(
@@ -137,6 +195,16 @@ async def cb_back(cb: types.CallbackQuery, state: FSMContext):
 
 
 @add_user_router.callback_query(
+    or_f(AdminMenu.Users.Add.salary),
+    isAdminCB(),
+    CancelCB.filter(F.action == Action.CANCEL),
+)
+async def cb_cancel(cb: types.CallbackQuery, state: FSMContext):
+    await cb.answer()
+    await edit_text_add_user_menu(cb.message, state)  # type: ignore
+
+
+@add_user_router.callback_query(
     AdminMenu.Users.Add.menu,
     isAdminCB(),
     AddUserCB.filter(F.action == Action.ENTER),
@@ -154,10 +222,20 @@ async def cb_enter(
     logger.info(
         "Admin with id %s, added user with id %s", cb.message.chat.id, data.get("id")  # type: ignore
     )
-    user = User(id=data.get("id"), name=data.get("name"))
-    user_roles = [UserRole(id=data.get("id"), role=role) for role in data.get("roles")]  # type: ignore
+    id = data.get("id")
+    user = User(id=id, name=data.get("name"))
+    user_roles = [UserRole(id=id, role=role) for role in data.get("roles")]  # type: ignore
+    mailings = [Mailing(id=id, type=mailing_type) for mailing_type in data.get("mailings")]  # type: ignore
+    salary = Salary(user_id=id, salary=data.get("salary"))
+
     userdao = UserDAO(session=session)
+    mailingdao = MailingDAO(session=session)
+    salarydao = SalaryDAO(session=session)
     await userdao.add_user_with_roles(user, user_roles)
+
+    await salarydao.add_salary(salary)
+    for mailing in mailings:
+        await mailingdao.add_mailing(mailing)
 
     await cb_back(cb, state)
 
@@ -166,12 +244,15 @@ def is_correct_data(data: dict[str, Any]):
     id = data.get("id")
     name = data.get("name")
     roles = data.get("roles")
+    salary = data.get("salary")
 
     if id is None or id == "":
         return False
     if name is None or name == "":
         return False
     if roles is None or len(roles) == 0:
+        return False
+    if salary is None:
         return False
     return True
 

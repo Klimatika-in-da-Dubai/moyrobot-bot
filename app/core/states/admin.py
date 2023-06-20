@@ -21,7 +21,24 @@ class AdminMenu(StatesGroup):
             menu = State()
             id = State()
             name = State()
+            salary = State()
+            mailing = State()
             role = State()
+
+        class List(StatesGroup):
+            menu = State()
+
+            class Selected(StatesGroup):
+                menu = State()
+                delete = State()
+
+                class Change(StatesGroup):
+                    menu = State()
+                    id = State()
+                    name = State()
+                    salary = State()
+                    mailing = State()
+                    role = State()
 
     class MoneyCollection(StatesGroup):
         money_collection = State()

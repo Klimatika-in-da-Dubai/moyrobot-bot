@@ -1,6 +1,8 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.admin import isAdminCB
+from app.core.keyboards.admin.users.list.menu import send_users_list_menu
 
 
 from app.core.states.admin import AdminMenu
@@ -9,7 +11,7 @@ from app.core.keyboards.base import Action
 from app.core.keyboards.admin.menu import get_admin_menu_keyboard
 
 from app.core.keyboards.admin.users.menu import UsersCB
-from app.core.keyboards.admin.users.add import get_add_user_keyboard
+from app.core.keyboards.admin.users.add.add import get_add_user_keyboard
 
 
 menu_router = Router()
@@ -20,9 +22,10 @@ menu_router = Router()
     isAdminCB(),
     UsersCB.filter(F.action == Action.LIST),
 )
-async def cb_open_users_list(cb: types.CallbackQuery, state: FSMContext):
-    await cb.answer(text="В разработке", show_alert=True)
-    ...
+async def cb_open_users_list(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await send_users_list_menu(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
@@ -36,16 +39,6 @@ async def cb_add_user(cb: types.CallbackQuery, state: FSMContext):
     await cb.message.edit_text(  # type: ignore
         text="Добавить пользователя", reply_markup=await get_add_user_keyboard(state)
     )
-
-
-@menu_router.callback_query(
-    AdminMenu.Users.menu,
-    isAdminCB(),
-    UsersCB.filter(F.action == Action.DELETE),
-)
-async def cb_delete_user(cb: types.CallbackQuery, state: FSMContext):
-    await cb.answer(text="В разработке", show_alert=True)
-    ...
 
 
 @menu_router.callback_query(
