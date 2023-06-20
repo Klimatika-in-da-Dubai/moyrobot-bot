@@ -157,6 +157,8 @@ async def cb_select_role(
             selected_role = Role.MODERATOR
         case AddUserTarget.ADMIN_ROLE:
             selected_role = Role.ADMIN
+        case AddUserTarget.WORK_ACCOUNT_ROLE:
+            selected_role = Role.WORK_ACCOUNT
 
     if selected_role is None:
         await cb.message.edit_text("Выберете роли пользователя", reply_markup=await get_roles_keyboard(state))  # type: ignore

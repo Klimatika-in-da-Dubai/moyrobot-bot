@@ -19,6 +19,7 @@ class AddUserTarget(IntEnum):
     OPERATOR_ROLE = auto()
     MODERATOR_ROLE = auto()
     ADMIN_ROLE = auto()
+    WORK_ACCOUNT_ROLE = auto()
 
 
 class AddUserCB(CallbackData, prefix="amenu_add_user"):
@@ -101,6 +102,7 @@ async def get_roles_keyboard(state: FSMContext) -> types.InlineKeyboardMarkup:
     op_role_emoji_status = "✅" if Role.OPERATOR in user_roles else "❌"
     mod_role_emoji_status = "✅" if Role.MODERATOR in user_roles else "❌"
     adm_role_emoji_status = "✅" if Role.ADMIN in user_roles else "❌"
+    work_role_emoji_status = "✅" if Role.WORK_ACCOUNT in user_roles else "❌"
 
     builder.row(
         types.InlineKeyboardButton(
@@ -123,6 +125,14 @@ async def get_roles_keyboard(state: FSMContext) -> types.InlineKeyboardMarkup:
             text=f"Админ {adm_role_emoji_status}",
             callback_data=AddUserCB(
                 action=Action.SELECT, target=AddUserTarget.ADMIN_ROLE
+            ).pack(),
+        )
+    )
+    builder.row(
+        types.InlineKeyboardButton(
+            text=f"Рабочий аккаунт {work_role_emoji_status}",
+            callback_data=AddUserCB(
+                action=Action.SELECT, target=AddUserTarget.WORK_ACCOUNT_ROLE
             ).pack(),
         )
     )

@@ -160,6 +160,8 @@ async def cb_select_role(
             selected_role = Role.MODERATOR
         case ChangeUserTarget.ADMIN_ROLE:
             selected_role = Role.ADMIN
+        case ChangeUserTarget.WORK_ACCOUNT_ROLE:
+            selected_role = Role.WORK_ACCOUNT
 
     if selected_role is None:
         await cb.message.edit_text("Выберете роли пользователя", reply_markup=await get_roles_keyboard(state))  # type: ignore
@@ -237,7 +239,7 @@ async def cb_enter(
     for mailing in mailings:
         await mailingdao.add_mailing(mailing)
 
-    await cb_back(cb, state)
+    await cb_back(cb, state, session)
 
 
 def is_correct_data(data: dict[str, Any]):
