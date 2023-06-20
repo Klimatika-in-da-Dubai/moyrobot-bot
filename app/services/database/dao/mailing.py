@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.mailing import GroupMailing, Mailing, MailingType
+from app.services.database.models.user import User
 
 
 class MailingDAO(BaseDAO[Mailing]):
@@ -22,8 +23,20 @@ class MailingDAO(BaseDAO[Mailing]):
 
     async def get_mailing_ids(self, type: MailingType):
         async with self._session() as session:
-            ids = await session.execute(select(Mailing.id).where(Mailing.type == type))
+            ids = await session.execute(
+                select(Mailing.id)
+                .join(User)
+                .where(User.active.is_(True))
+                .where(Mailing.type == type)
+            )
             return ids.scalars().all()
+
+    async def get_user_mailings(self, user: User):
+        async with self._session() as session:
+            mailings = await session.execute(
+                select(Mailing.type).where(User.id == user.id)
+            )
+            return mailings.scalars().all()
 
 
 class GroupMailingDAO(BaseDAO[GroupMailing]):
