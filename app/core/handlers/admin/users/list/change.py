@@ -190,7 +190,9 @@ async def cb_roles_back(cb: types.CallbackQuery, state: FSMContext):
     isAdminCB(),
     ChangeUserCB.filter(F.action == Action.BACK),
 )
-async def cb_back(cb: types.CallbackQuery, state: FSMContext):
+async def cb_back(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
     await cb.answer()
     await send_selected_user_menu(cb.message.edit_text, state, session)  # type: ignore
 
