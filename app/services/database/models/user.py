@@ -21,6 +21,7 @@ class User(Base):
         BigInteger, primary_key=True, unique=True, autoincrement=False
     )
     name: Mapped[str]
+    active: Mapped[bool] = mapped_column(default=True)
 
 
 class UserRole(Base):
