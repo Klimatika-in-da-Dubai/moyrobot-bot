@@ -25,7 +25,9 @@ SPECIAL_CHARS = [
 ]
 
 
-def escape_chars(text: str) -> str:
+def escape_chars(text: str | None) -> str:
+    if text is None:
+        return ""
     for char in SPECIAL_CHARS:
         text = text.replace(char, "\\" + char)
     return text
