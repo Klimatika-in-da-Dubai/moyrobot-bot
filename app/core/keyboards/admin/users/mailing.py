@@ -120,18 +120,6 @@ async def get_mailing_buttons(state: FSMContext) -> list[ButtonInfo]:
             mailing_type=MailingType.REFUND,
             mailing_emoji=await get_mailing_emoji(state, MailingType.REFUND),
         ),
-        ButtonInfo(
-            description="Проверка оплаты картой",
-            mailing_type=MailingType.PAYMENT_CHECK,
-            mailing_emoji=await get_mailing_emoji(state, MailingType.PAYMENT_CHECK),
-        ),
-        ButtonInfo(
-            description="Проверка оплаты картой тревога",
-            mailing_type=MailingType.PAYMENT_CHECK_ALERT,
-            mailing_emoji=await get_mailing_emoji(
-                state, MailingType.PAYMENT_CHECK_ALERT
-            ),
-        ),
     ]
 
 

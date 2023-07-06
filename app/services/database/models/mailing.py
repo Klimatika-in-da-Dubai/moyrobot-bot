@@ -20,8 +20,6 @@ class MailingType(IntEnum):
     PROMOCODE = auto()
     BONUS = auto()
     REFUND = auto()
-    PAYMENT_CHECK = auto()
-    PAYMENT_CHECK_ALERT = auto()
 
 
 class Mailing(Base):

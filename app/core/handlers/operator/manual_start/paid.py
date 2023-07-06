@@ -22,6 +22,7 @@ from app.core.keyboards.payment_method import PaymentMethodCB, PaymentMethodTarg
 from app.core.states.operator import OperatorMenu
 
 from app.services.database.dao.manual_start import ManualStartDAO
+from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
     ManualStartType,
     PaidManualStart,
@@ -142,10 +143,7 @@ async def cb_enter(
 
     await table_add_paid_manual_start(state, session)
     await state.clear()
-    await cb.message.edit_text(  # type: ignore
-        "Хотите начислить бонусы", reply_markup=get_yes_no_keyboard()
-    )
-    await state.set_state(OperatorMenu.ManualStart.PaidManualStart.bonus)
+    await send_bonus_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 async def table_add_paid_manual_start(state: FSMContext, session: async_sessionmaker):
