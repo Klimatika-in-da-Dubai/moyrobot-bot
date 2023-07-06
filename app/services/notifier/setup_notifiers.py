@@ -11,8 +11,6 @@ from app.services.notifier.manual_start.alerter import ManualStartAlerter
 from app.services.notifier.manual_start.notifier import ManualStartNotifier
 from app.services.notifier.manual_start.reminder import ManualStartReminder
 from app.services.notifier.monthly_report.monthly_report import MonthlyReportNotifier
-from app.services.notifier.payment_check.alert import PaymentCheckAlertNotifier
-from app.services.notifier.payment_check.payment_check import PaymentCheckNotifier
 from app.services.notifier.promocode import PromocodeNotifier
 from app.services.notifier.refund import RefundNotifier
 from app.services.notifier.shifts.check import ShiftCheckNotifier
@@ -54,9 +52,3 @@ def setup_monthly_report_notifiers(
     bot: Bot, session: async_sessionmaker
 ) -> list[Notifier]:
     return [MonthlyReportNotifier(bot, session)]
-
-
-def setup_payment_check_notifiers(
-    bot: Bot, session: async_sessionmaker
-) -> list[Notifier]:
-    return [PaymentCheckNotifier(bot, session), PaymentCheckAlertNotifier(bot, session)]
