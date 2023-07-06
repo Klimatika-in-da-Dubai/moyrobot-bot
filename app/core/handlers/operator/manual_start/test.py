@@ -15,13 +15,8 @@ from app.core.keyboards.operator.manual_start.test import (
     send_test_manual_start_keyboard,
 )
 from app.core.states.operator import OperatorMenu
-from app.services.database.dao.mailing import (
-    get_mailing_ids,
-)
 from app.services.database.dao.manual_start import ManualStartDAO
-from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStartType, TestManualStart
-from app.utils.text import escape_chars
 
 test_manual_start_router = Router()
 

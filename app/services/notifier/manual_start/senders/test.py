@@ -33,6 +33,8 @@ class TestManualStartSender(TypedManualStartSender):
     ):
         text = self.get_text(manual_start, typed_manual_start)
         try:
-            await self._bot.send_message(id, text=text)
+            await self._bot.send_photo(
+                id, photo=typed_manual_start.photo_file_id, caption=text
+            )
         except Exception:
             logging.error("Can't send report to chat with id %s", id)
