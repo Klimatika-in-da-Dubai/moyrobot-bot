@@ -16,6 +16,7 @@ from app.utils.text import escape_chars
 class PaidManualStartTarget(IntEnum):
     PAYMENT_METHOD = auto()
     PAYMENT_AMOUNT = auto()
+    PHOTO = auto()
     NONE = auto()
 
 
@@ -43,6 +44,15 @@ def get_paid_manual_start_keyboard() -> types.InlineKeyboardMarkup:
             callback_data=PaidManualStartCB(
                 action=Action.ENTER_TEXT,
                 target=PaidManualStartTarget.PAYMENT_AMOUNT,
+            ).pack(),
+        )
+    )
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Фото",
+            callback_data=PaidManualStartCB(
+                action=Action.ADD_PHOTO, target=PaidManualStartTarget.PHOTO
             ).pack(),
         )
     )

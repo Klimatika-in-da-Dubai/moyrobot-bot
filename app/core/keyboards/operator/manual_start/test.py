@@ -14,6 +14,7 @@ from app.utils.text import escape_chars
 class TestManualStartTarget(IntEnum):
     NONE = auto()
     DESCRIPTION = auto()
+    PHOTO = auto()
 
 
 class TestManualStartCB(CallbackData, prefix="test_mstart"):
@@ -29,6 +30,14 @@ def get_test_manual_start_keyboard() -> types.InlineKeyboardMarkup:
             text="Причина запуска",
             callback_data=TestManualStartCB(
                 action=Action.ENTER_TEXT, target=TestManualStartTarget.DESCRIPTION
+            ).pack(),
+        )
+    )
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Фото",
+            callback_data=TestManualStartCB(
+                action=Action.ADD_PHOTO, target=TestManualStartTarget.PHOTO
             ).pack(),
         )
     )

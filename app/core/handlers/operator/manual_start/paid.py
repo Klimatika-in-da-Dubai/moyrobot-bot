@@ -1,4 +1,3 @@
-import logging
 from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -30,6 +29,32 @@ from app.services.database.models.manual_start import (
 
 
 paid_manual_start_router = Router()
+
+
+@paid_manual_start_router.callback_query(
+    OperatorMenu.ManualStart.PaidManualStart.menu,
+    isOperatorCB(),
+    PaidManualStartCB.filter(
+        (F.action == Action.ADD_PHOTO) & (F.target == PaidManualStartTarget.PHOTO),
+    ),
+)
+async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
+    await cb.answer()
+    await state.set_state(OperatorMenu.ManualStart.PaidManualStart.photo)
+    await cb.message.edit_text(  # type: ignore
+        "Сделайте фотографию так, чтобы было хорошо видно номер автомобиля"
+    )
+
+
+@paid_manual_start_router.message(
+    OperatorMenu.ManualStart.PaidManualStart.photo, F.photo
+)
+async def message_photo(
+    message: types.Message, state: FSMContext, session: async_sessionmaker
+):
+    photo_file_id = message.photo[-1].file_id  # type: ignore
+    await state.update_data(photo_file_id=photo_file_id)
+    await send_paid_manual_start_keyboard(message.answer, state, session)
 
 
 @paid_manual_start_router.callback_query(
@@ -153,9 +178,13 @@ async def table_add_paid_manual_start(state: FSMContext, session: async_sessionm
     id = data.get("id")
     payment_method = data.get("payment_method")
     payment_amount = data.get("payment_amount")
+    photo_file_id = data.get("photo_file_id")
 
     paid_manual_start = PaidManualStart(
-        id=id, payment_method=payment_method, payment_amount=payment_amount
+        id=id,
+        payment_method=payment_method,
+        payment_amount=payment_amount,
+        photo_file_id=photo_file_id,
     )
     manual_start_dao = ManualStartDAO(session)
     await manual_start_dao.report_typed_manual_start(
@@ -190,7 +219,7 @@ def check_data(data) -> bool:
     id = data.get("id")
     payment_method = data.get("payment_method")
     payment_amount = data.get("payment_amount")
-
+    photo_file_id = data.get("photo_file_id")
     if id is None or id == "":
         return False
 
@@ -200,4 +229,6 @@ def check_data(data) -> bool:
     if payment_amount is None:
         return False
 
+    if photo_file_id is None:
+        return False
     return True

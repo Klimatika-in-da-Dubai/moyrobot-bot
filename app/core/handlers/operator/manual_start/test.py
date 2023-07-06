@@ -30,6 +30,32 @@ test_manual_start_router = Router()
     OperatorMenu.ManualStart.TestManualStart.menu,
     isOperatorCB(),
     TestManualStartCB.filter(
+        (F.action == Action.ADD_PHOTO) & (F.target == TestManualStartTarget.PHOTO),
+    ),
+)
+async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
+    await cb.answer()
+    await state.set_state(OperatorMenu.ManualStart.TestManualStart.photo)
+    await cb.message.edit_text(  # type: ignore
+        "Сделайте фотографию так, чтобы было хорошо видно номер автомобиля"
+    )
+
+
+@test_manual_start_router.message(
+    OperatorMenu.ManualStart.TestManualStart.photo, F.photo
+)
+async def message_photo(
+    message: types.Message, state: FSMContext, session: async_sessionmaker
+):
+    photo_file_id = message.photo[-1].file_id  # type: ignore
+    await state.update_data(photo_file_id=photo_file_id)
+    await send_test_manual_start_keyboard(message.answer, state, session)
+
+
+@test_manual_start_router.callback_query(
+    OperatorMenu.ManualStart.TestManualStart.menu,
+    isOperatorCB(),
+    TestManualStartCB.filter(
         (F.action == Action.ENTER_TEXT)
         & (F.target == TestManualStartTarget.DESCRIPTION)
     ),
@@ -86,8 +112,10 @@ async def table_add_test_manual_start(state: FSMContext, session: async_sessionm
     data = await state.get_data()
     id = data.get("id")
     description = data.get("description")
-
-    test_manual_start = TestManualStart(id=id, description=description)
+    photo_file_id = data.get("photo_file_id")
+    test_manual_start = TestManualStart(
+        id=id, description=description, photo_file_id=photo_file_id
+    )
     manual_start_dao = ManualStartDAO(session)
 
     await manual_start_dao.report_typed_manual_start(
@@ -98,11 +126,13 @@ async def table_add_test_manual_start(state: FSMContext, session: async_sessionm
 def check_data(data) -> bool:
     id = data.get("id")
     description = data.get("description")
+    photo_file_id = data.get("photo_file_id")
 
     if id is None:
         return False
 
     if description is None or description == "":
         return False
-
+    if photo_file_id is None:
+        return False
     return True
