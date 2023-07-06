@@ -42,6 +42,7 @@ class TestManualStart(Base):
         primary_key=True,
         unique=True,
     )
+    photo_file_id: Mapped[str]
     description: Mapped[str]
 
 
@@ -51,6 +52,7 @@ class ServiceManualStart(Base):
     id: Mapped[str] = mapped_column(
         ForeignKey("manual_start.id", ondelete="CASCADE"), primary_key=True, unique=True
     )
+    photo_file_id: Mapped[str]
     description: Mapped[str]
 
 
@@ -76,3 +78,4 @@ class PaidManualStart(Base):
     )
     payment_method: Mapped[PaymentMethod]
     payment_amount: Mapped[int]
+    photo_file_id: Mapped[str]
