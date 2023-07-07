@@ -34,7 +34,7 @@ class MailingDAO(BaseDAO[Mailing]):
     async def get_user_mailings(self, user: User):
         async with self._session() as session:
             mailings = await session.execute(
-                select(Mailing.type).where(User.id == user.id)
+                select(Mailing.type).where(Mailing.id == user.id)
             )
             return mailings.scalars().all()
 

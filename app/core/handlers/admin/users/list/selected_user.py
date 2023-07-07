@@ -107,5 +107,5 @@ async def cb_back(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await state.update_data(selected_user=None)
+    await state.clear()
     await send_users_list_menu(cb.message.edit_text, state, session)  # type: ignore
