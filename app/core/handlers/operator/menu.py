@@ -1,3 +1,4 @@
+from datetime import datetime
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -20,7 +21,10 @@ from app.core.keyboards.operator.promocode.menu import send_promocode_keyboard
 from app.core.keyboards.operator.refund.menu import send_refund_keyboard
 from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.cleaning import CleaningDAO
+from app.services.database.dao.shift import OpenShiftDAO, ShiftDAO
 from app.services.database.dto.cleaning import CleaningDTO, Place, Work
+from app.services.database.models.shift import OpenShift, Shift
 
 menu_router = Router(name="operator-menu-router")
 
@@ -51,8 +55,30 @@ async def cb_open_shift(
 async def cb_close_shift(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
+    if not await is_shift_with_cleaning(session):
+        await cb.answer(
+            text="Перед закрытием смены вам необходимо сделать уборку\nСделайте уборку нажав кнопку уборка в меню оператора",
+            show_alert=True,
+        )
+        return
     await cb.answer()
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+
+
+async def is_shift_with_cleaning(session: async_sessionmaker):
+    shiftdao = ShiftDAO(session)
+    openshiftdao = OpenShiftDAO(session)
+    cleaningdao = CleaningDAO(session)
+    shift: Shift = await shiftdao.get_last_shift()
+    if shift is None:
+        raise ValueError("Shift is None")
+    openshift: OpenShift = await openshiftdao.get_by_id(shift.id)  # type: ignore
+    cleanings = await cleaningdao.get_cleanings_between_time(
+        openshift.date, datetime.now()
+    )
+    if len(list(cleanings)) == 0:
+        return False
+    return True
 
 
 @menu_router.callback_query(

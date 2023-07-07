@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Sequence
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -36,3 +37,12 @@ class CleaningDAO(BaseDAO[Cleaning]):
                 .values(approved=value)
             )
             await session.commit()
+
+    async def get_cleanings_between_time(
+        self, start: datetime, end: datetime
+    ) -> Sequence[Cleaning]:
+        async with self._session() as session:
+            results = await session.execute(
+                select(Cleaning).where(Cleaning.date.between(start, end))
+            )
+            return results.scalars().all()
