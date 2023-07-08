@@ -34,3 +34,47 @@ async def get_current_work(state: FSMContext) -> Work:
     place_id = await get_place_id(state)
     work_id = await get_work_id(state)
     return cleaning.places[place_id].works[work_id]
+
+
+async def is_cleaning_exists(state: FSMContext) -> bool:
+    data = await state.get_data()
+    return data.get("cleaning") is not None
+
+
+async def add_cleaning_to_state(state: FSMContext) -> None:
+    cleaning = CleaningDTO(
+        places=[
+            Place(
+                name="Бокс 1",
+                works=[
+                    Work(name="По направлению движения"),
+                    Work(name="Против направления движения"),
+                ],
+            ),
+            Place(
+                name="Бокс 2",
+                works=[
+                    Work(name="По направлению движения"),
+                    Work(name="Против направления движения"),
+                ],
+            ),
+            Place(name="Территория 1", works=[Work(name="Территория у ворот")]),
+            Place(
+                name="Территория 2",
+                works=[Work(name="Пылесос"), Work(name="Мойка ковров")],
+            ),
+            Place(
+                name="Операторская",
+                works=[Work(name="Общее фото помещения"), Work(name="Фото стола")],
+            ),
+            Place(
+                name="Техническое помещение",
+                works=[
+                    Work(name="Шкаф доз 1"),
+                    Work(name="Шкаф доз 2"),
+                    Work(name="Общее фото"),
+                ],
+            ),
+        ]
+    )
+    await state.update_data(cleaning=cleaning.to_dict())

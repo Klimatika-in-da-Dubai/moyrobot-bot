@@ -46,7 +46,6 @@ async def cb_back(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
-    await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -67,5 +66,5 @@ async def cb_enter(
     cleaningdao = CleaningDAO(session)
     cleaning = Cleaning(cleaning=cleaningdto.to_dict())
     await cleaningdao.add_cleaning(cleaning)
-    await state.clear()
+    await state.update_data(cleaning=None)
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore

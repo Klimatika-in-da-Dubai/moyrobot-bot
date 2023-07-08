@@ -25,6 +25,7 @@ from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dao.shift import OpenShiftDAO, ShiftDAO
 from app.services.database.dto.cleaning import CleaningDTO, Place, Work
 from app.services.database.models.shift import OpenShift, Shift
+from app.utils.cleaning import add_cleaning_to_state, is_cleaning_exists
 
 menu_router = Router(name="operator-menu-router")
 
@@ -110,42 +111,8 @@ async def cb_cleaning_open(
     session: async_sessionmaker[AsyncSession],
 ):
     await cb.answer()
-    cleaning = CleaningDTO(
-        places=[
-            Place(
-                name="Бокс 1",
-                works=[
-                    Work(name="По направлению движения"),
-                    Work(name="Против направления движения"),
-                ],
-            ),
-            Place(
-                name="Бокс 2",
-                works=[
-                    Work(name="По направлению движения"),
-                    Work(name="Против направления движения"),
-                ],
-            ),
-            Place(name="Территория 1", works=[Work(name="Территория у ворот")]),
-            Place(
-                name="Территория 2",
-                works=[Work(name="Пылесос"), Work(name="Мойка ковров")],
-            ),
-            Place(
-                name="Операторская",
-                works=[Work(name="Общее фото помещения"), Work(name="Фото стола")],
-            ),
-            Place(
-                name="Техническое помещение",
-                works=[
-                    Work(name="Шкаф доз 1"),
-                    Work(name="Шкаф доз 2"),
-                    Work(name="Общее фото"),
-                ],
-            ),
-        ]
-    )
-    await state.update_data(cleaning=cleaning.to_dict())
+    if not await is_cleaning_exists(state):
+        await add_cleaning_to_state(state)
     await send_cleaning_menu(cb.message.edit_text, state, session)  # type: ignore
 
 
