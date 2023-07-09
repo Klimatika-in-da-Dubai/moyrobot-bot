@@ -3,13 +3,16 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.handlers import handlers_router
 from app.core.middlewares.db import DbSessionMiddleware
 from app.services.database.connector import setup_get_pool
+from app.services.database.dao import payment_check
 from app.services.notifier.setup_notifiers import (
     setup_common_notifiers,
     setup_monthly_report_notifiers,
+    setup_payment_check_notifiers,
     setup_promocode_and_bonus_notifiers,
     setup_shifts_notifiers,
 )
@@ -35,6 +38,25 @@ def get_parser(config: Config) -> Parser:
     return Parser(sessions)
 
 
+def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
+    common_notifiers = setup_common_notifiers(bot, session)
+    bonus_promo_notifiers = setup_promocode_and_bonus_notifiers(bot, session)
+    shift_notifier = setup_shifts_notifiers(bot, session)
+    monthly_report_notifiers = setup_monthly_report_notifiers(bot, session)
+    payment_check_notifiers = setup_payment_check_notifiers(bot, session)
+
+    return get_scheduler(
+        bot,
+        parser,
+        session,
+        common_notifiers,
+        bonus_promo_notifiers,
+        shift_notifier,
+        monthly_report_notifiers,
+        payment_check_notifiers,
+    )
+
+
 async def main():
     logging.basicConfig(
         format=f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s",
@@ -46,21 +68,7 @@ async def main():
     session = await setup_get_pool(config.db.uri)
     parser = get_parser(config)
     dp = Dispatcher(storage=RedisStorage.from_url(config.redis.url))
-
-    common_notifiers = setup_common_notifiers(bot, session)
-    bonus_promo_notifiers = setup_promocode_and_bonus_notifiers(bot, session)
-    shift_notifier = setup_shifts_notifiers(bot, session)
-    monthly_report_notifiers = setup_monthly_report_notifiers(bot, session)
-    scheduler = get_scheduler(
-        bot,
-        parser,
-        session,
-        common_notifiers,
-        bonus_promo_notifiers,
-        shift_notifier,
-        monthly_report_notifiers,
-    )
-
+    scheduler = setup_scheduler(bot, session, parser)
     setup_routers(dp)
     setup_middlewares(dp, session)
     try:
