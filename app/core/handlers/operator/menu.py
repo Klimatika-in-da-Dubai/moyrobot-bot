@@ -1,3 +1,4 @@
+from datetime import datetime
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -20,7 +21,11 @@ from app.core.keyboards.operator.promocode.menu import send_promocode_keyboard
 from app.core.keyboards.operator.refund.menu import send_refund_keyboard
 from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.states.operator import OperatorMenu
+from app.services.database.dao.cleaning import CleaningDAO
+from app.services.database.dao.shift import OpenShiftDAO, ShiftDAO
 from app.services.database.dto.cleaning import CleaningDTO, Place, Work
+from app.services.database.models.shift import OpenShift, Shift
+from app.utils.cleaning import add_cleaning_to_state, is_cleaning_exists
 
 menu_router = Router(name="operator-menu-router")
 
@@ -51,8 +56,30 @@ async def cb_open_shift(
 async def cb_close_shift(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
+    if not await is_shift_with_cleaning(session):
+        await cb.answer(
+            text="Перед закрытием смены вам необходимо сделать уборку\nСделайте уборку нажав кнопку уборка в меню оператора",
+            show_alert=True,
+        )
+        return
     await cb.answer()
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+
+
+async def is_shift_with_cleaning(session: async_sessionmaker):
+    shiftdao = ShiftDAO(session)
+    openshiftdao = OpenShiftDAO(session)
+    cleaningdao = CleaningDAO(session)
+    shift: Shift = await shiftdao.get_last_shift()
+    if shift is None:
+        raise ValueError("Shift is None")
+    openshift: OpenShift = await openshiftdao.get_by_id(shift.id)  # type: ignore
+    cleanings = await cleaningdao.get_cleanings_between_time(
+        openshift.date, datetime.now()
+    )
+    if len(list(cleanings)) == 0:
+        return False
+    return True
 
 
 @menu_router.callback_query(
@@ -84,42 +111,8 @@ async def cb_cleaning_open(
     session: async_sessionmaker[AsyncSession],
 ):
     await cb.answer()
-    cleaning = CleaningDTO(
-        places=[
-            Place(
-                name="Бокс 1",
-                works=[
-                    Work(name="По направлению движения"),
-                    Work(name="Против направления движения"),
-                ],
-            ),
-            Place(
-                name="Бокс 2",
-                works=[
-                    Work(name="По направлению движения"),
-                    Work(name="Против направления движения"),
-                ],
-            ),
-            Place(name="Территория 1", works=[Work(name="Территория у ворот")]),
-            Place(
-                name="Территория 2",
-                works=[Work(name="Пылесос"), Work(name="Мойка ковров")],
-            ),
-            Place(
-                name="Операторская",
-                works=[Work(name="Общее фото помещения"), Work(name="Фото стола")],
-            ),
-            Place(
-                name="Техническое помещение",
-                works=[
-                    Work(name="Шкаф доз 1"),
-                    Work(name="Шкаф доз 2"),
-                    Work(name="Общее фото"),
-                ],
-            ),
-        ]
-    )
-    await state.update_data(cleaning=cleaning.to_dict())
+    if not await is_cleaning_exists(state):
+        await add_cleaning_to_state(state)
     await send_cleaning_menu(cb.message.edit_text, state, session)  # type: ignore
 
 

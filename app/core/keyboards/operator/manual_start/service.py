@@ -13,6 +13,7 @@ from app.utils.text import escape_chars
 
 class ServiceManualStartTarget(IntEnum):
     DESCRIPTION = auto()
+    PHOTO = auto()
     NONE = auto()
 
 
@@ -32,6 +33,16 @@ def get_service_manual_start_keyboard() -> types.InlineKeyboardMarkup:
             ).pack(),
         )
     )
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Фото",
+            callback_data=ServiceManualStartCB(
+                action=Action.ADD_PHOTO, target=ServiceManualStartTarget.PHOTO
+            ).pack(),
+        )
+    )
+
     builder.row(
         types.InlineKeyboardButton(
             text="Назад",

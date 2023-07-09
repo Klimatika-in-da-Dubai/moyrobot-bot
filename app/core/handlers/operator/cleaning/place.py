@@ -1,4 +1,4 @@
-from aiogram import Bot, Router, F, types
+from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.operator import isOperatorCB
@@ -10,7 +10,6 @@ from app.core.keyboards.operator.cleaning.place import (
     PlaceMenuCB,
     PlaceMenuTarget,
 )
-from app.core.keyboards.operator.cleaning.work import send_work_menu
 
 from app.core.states.operator import OperatorMenu
 from app.utils.cleaning import get_current_work
@@ -58,7 +57,7 @@ async def cb_work_open(
     await cb.message.delete()  # type: ignore
     await cb.message.answer_photo(  # type: ignore
         photo=work.photo_file_id,
-        caption="Можете изменить фото уборки",
+        caption="Можете изменить фото уборки\n\\(Для этого отправьте фото\\)",
         reply_markup=get_cancel_keyboard(),
     )
 

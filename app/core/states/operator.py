@@ -18,10 +18,12 @@ class OperatorMenu(StatesGroup):
 
         class TestManualStart(StatesGroup):
             menu = State()
+            photo = State()
             description = State()
 
         class ServiceManualStart(StatesGroup):
             menu = State()
+            photo = State()
             description = State()
 
         class RewashManualStart(StatesGroup):
@@ -33,6 +35,7 @@ class OperatorMenu(StatesGroup):
             menu = State()
             payment_method = State()
             payment_amount = State()
+            photo = State()
             bonus = State()
 
     class Cleaning(StatesGroup):
