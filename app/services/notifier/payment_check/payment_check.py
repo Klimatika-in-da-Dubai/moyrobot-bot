@@ -38,9 +38,11 @@ class PaymentCheckNotifier(Notifier):
             filter(lambda x: x.payment_method is PaymentMethod.CARD, manual_starts)
         )
         date = payment_check.start_check.strftime("%d.%m.%Y")
-        text = f"Ручные запуски, оплата через эквайринг картой\nЗа {escape_chars(date)}"
+        text = (
+            f"Ручные запуски, оплата через эквайринг картой\nЗа {escape_chars(date)}\n\n"
+        )
         if len(list(card_manual_starts)) == 0:
-            text += "\nНи одной оплаты картой\n"
+            text += "Ни одной оплаты картой\n"
             return text
 
         for manual_start in card_manual_starts:
