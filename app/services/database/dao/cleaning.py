@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Sequence
-from sqlalchemy import select, update
+from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy import func
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.cleaning import Cleaning
 
@@ -46,3 +47,11 @@ class CleaningDAO(BaseDAO[Cleaning]):
                 select(Cleaning).where(Cleaning.date.between(start, end))
             )
             return results.scalars().all()
+
+    async def photo_hash_already_exists(self, hash: str) -> bool:
+        async with self._session() as session:
+            query = text(
+                "SELECT (jsonb_array_elements(jsonb_array_elements((cleaning::jsonb)->'places')->'works')->'photo_hash')::text FROM cleaning;"
+            )
+            result = await session.execute(query)
+            return f'"{hash}"' in result.scalars().all()

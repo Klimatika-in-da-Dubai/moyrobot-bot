@@ -5,9 +5,14 @@ from dataclasses import dataclass, field
 class Work:
     name: str
     photo_file_id: str = ""
+    photo_hash: str = ""
 
     def to_dict(self):
-        return {"name": self.name, "photo_file_id": self.photo_file_id}
+        return {
+            "name": self.name,
+            "photo_file_id": self.photo_file_id,
+            "photo_hash": self.photo_hash,
+        }
 
     def is_filled(self) -> bool:
         return self.photo_file_id != ""
@@ -50,7 +55,11 @@ class CleaningDTO:
 
             for work in works_data:
                 works.append(
-                    Work(name=work["name"], photo_file_id=work["photo_file_id"])
+                    Work(
+                        name=work["name"],
+                        photo_file_id=work["photo_file_id"],
+                        photo_hash=work["photo_hash"],
+                    )
                 )
             places.append(Place(name=place["name"], works=works))
 
