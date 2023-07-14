@@ -47,6 +47,7 @@ class MonthlyReportNotifier(Notifier):
         operator: User = await self._userdao.get_by_id(shift.opened_by_id)  # type: ignore
         fine = await self.get_fine(shift, shift_check)
         salary = await self._userdao.get_salary(operator)
+        salary = 0 if salary is None else salary
         info = {}
 
         info["Оператор"] = await self._userdao.get_user_name_by_id(shift.opened_by_id)

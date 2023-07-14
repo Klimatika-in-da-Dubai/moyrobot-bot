@@ -49,7 +49,14 @@ def get_scheduler(
     scheduler.add_job(notify, "interval", seconds=10, args=(common_notifiers,))
 
     scheduler.add_job(notify, "cron", hour="9", args=(bonus_promo_notifiers,))
-    scheduler.add_job(notify, "interval", minutes=10, args=(payment_check_notifiers,))
+    scheduler.add_job(
+        notify,
+        "cron",
+        day_of_week="0-4",
+        hour="9-18",
+        minute="*",
+        args=(payment_check_notifiers,),
+    )
 
     scheduler.add_job(notify, "interval", seconds=10, args=(shift_notifiers,))
     scheduler.add_job(notify, "cron", day="1,16", args=(monthly_report_notifiers,))

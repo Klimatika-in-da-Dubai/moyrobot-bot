@@ -13,6 +13,7 @@ from app.services.database.models.manual_start import (
 from app.services.database.models.payment_check import PaymentCheck
 from app.services.database.models.utils import PaymentMethod
 from app.services.notifier.base import Notifier
+from app.utils.text import escape_chars
 
 
 class PaymentCheckNotifier(Notifier):
@@ -33,8 +34,9 @@ class PaymentCheckNotifier(Notifier):
         card_manual_starts = await self.get_card_manual_starts(payment_check)
 
         text = "Ручные запуски, оплата через эквайринг картой\n"
+
         if len(list(card_manual_starts)) == 0:
-            text += "\nЗа прошедший день ни одной оплаты картой\n"
+            text += "Ни одной оплаты картой\n"
             return text
 
         for manual_start in card_manual_starts:

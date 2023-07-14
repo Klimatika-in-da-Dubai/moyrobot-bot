@@ -29,7 +29,7 @@ class PaymentCheckDAO(BaseDAO[PaymentCheck]):
                         and_(
                             PaymentCheck.checked.is_(False),
                             datetime.now() - PaymentCheck.last_notification
-                            >= timedelta(seconds=1),
+                            >= timedelta(hours=1),
                         ),
                     )
                 )
