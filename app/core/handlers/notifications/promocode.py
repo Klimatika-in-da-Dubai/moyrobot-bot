@@ -12,10 +12,10 @@ from app.services.database.dao.promocode_check import PromocodeCheckDAO
 from app.services.database.models.promocode_check import PromocodeCheck
 
 
-card_payment_router = Router()
+promocode_router = Router()
 
 
-@card_payment_router.callback_query(
+@promocode_router.callback_query(
     PromocodeNotificationCB.filter(
         (F.target == PromocodeNotificationTarget.APPROVE) & (F.action == Action.SELECT)
     )
@@ -36,7 +36,7 @@ async def cb_approve_promocode_check(
     await cb.message.edit_reply_markup(reply_markup=get_approve_keyboard())  # type: ignore
 
 
-@card_payment_router.callback_query(
+@promocode_router.callback_query(
     PromocodeNotificationCB.filter(
         (F.target == PromocodeNotificationTarget.REMIND) & (F.action == Action.SELECT)
     )

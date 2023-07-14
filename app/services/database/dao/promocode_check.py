@@ -29,7 +29,7 @@ class PromocodeCheckDAO(BaseDAO[PromocodeCheck]):
                         and_(
                             PromocodeCheck.checked.is_(False),
                             datetime.now() - PromocodeCheck.last_notification
-                            >= timedelta(seconds=1),
+                            >= timedelta(hours=1),
                         ),
                     )
                 )

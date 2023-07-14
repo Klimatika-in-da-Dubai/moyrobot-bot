@@ -11,7 +11,7 @@ class BonusNotificationTarget(IntEnum):
     REMIND = auto()
 
 
-class BonusNotificationCB(CallbackData, prefix="card_payment_check"):
+class BonusNotificationCB(CallbackData, prefix="bonus_check"):
     action: Action
     target: BonusNotificationTarget
     id: int

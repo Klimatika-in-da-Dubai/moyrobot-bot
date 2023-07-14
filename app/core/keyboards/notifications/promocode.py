@@ -11,7 +11,7 @@ class PromocodeNotificationTarget(IntEnum):
     REMIND = auto()
 
 
-class PromocodeNotificationCB(CallbackData, prefix="card_payment_check"):
+class PromocodeNotificationCB(CallbackData, prefix="promocode_check"):
     action: Action
     target: PromocodeNotificationTarget
     id: int

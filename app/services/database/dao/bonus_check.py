@@ -29,7 +29,7 @@ class BonusCheckDAO(BaseDAO[BonusCheck]):
                         and_(
                             BonusCheck.checked.is_(False),
                             datetime.now() - BonusCheck.last_notification
-                            >= timedelta(seconds=1),
+                            >= timedelta(hours=1),
                         ),
                     )
                 )

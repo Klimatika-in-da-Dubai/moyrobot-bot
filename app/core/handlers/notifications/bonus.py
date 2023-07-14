@@ -12,10 +12,10 @@ from app.services.database.dao.bonus_check import BonusCheckDAO
 from app.services.database.models.bonus_check import BonusCheck
 
 
-card_payment_router = Router()
+bonus_router = Router()
 
 
-@card_payment_router.callback_query(
+@bonus_router.callback_query(
     BonusNotificationCB.filter(
         (F.target == BonusNotificationTarget.APPROVE) & (F.action == Action.SELECT)
     )
@@ -36,7 +36,7 @@ async def cb_approve_bonus_check(
     await cb.message.edit_reply_markup(reply_markup=get_approve_keyboard())  # type: ignore
 
 
-@card_payment_router.callback_query(
+@bonus_router.callback_query(
     BonusNotificationCB.filter(
         (F.target == BonusNotificationTarget.REMIND) & (F.action == Action.SELECT)
     )

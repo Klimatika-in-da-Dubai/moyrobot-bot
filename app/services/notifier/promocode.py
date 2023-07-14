@@ -87,7 +87,7 @@ class PromocodeCheckNotifier(Notifier):
         phone = escape_chars(format_phone(promocode.phone))
         wash_mode = promocode.wash_mode
 
-        return f"*Телефон:* {phone} *Режим:* {wash_mode} "
+        return f"*Телефон:* {phone} *Режим:* {wash_mode}\n"
 
     @override
     async def send_notify(self, id: int, promocode_check: PromocodeCheck) -> None:
