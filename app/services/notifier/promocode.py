@@ -1,9 +1,7 @@
 from collections.abc import Sequence
-import datetime
 from typing_extensions import override
 from aiogram import Bot
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from app.core.handlers.notifications import promocode
 from app.core.keyboards.notifications.promocode import get_promocode_check_keyboard
 from app.services.database.dao.promocode import PromocodeDAO
 from app.services.database.dao.promocode_check import PromocodeCheckDAO
@@ -89,7 +87,7 @@ class PromocodeCheckNotifier(Notifier):
         phone = escape_chars(format_phone(promocode.phone))
         wash_mode = promocode.wash_mode
 
-        return f"*Телефон:* {phone} " f"*Режим:* {wash_mode} "
+        return f"*Телефон:* {phone} *Режим:* {wash_mode} "
 
     @override
     async def send_notify(self, id: int, promocode_check: PromocodeCheck) -> None:

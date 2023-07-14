@@ -66,7 +66,7 @@ class BonusCheckNotifier(Notifier):
         text = f"Бонусы за\n{start_date} \\- {end_date}\n\n"
 
         if len(bonuses) == 0:
-            text += "Ни одного промокода к зачислению"
+            text += "Ни одного бонуса к зачислению"
             return text
 
         for bonus in bonuses:
