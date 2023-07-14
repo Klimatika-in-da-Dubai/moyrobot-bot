@@ -111,9 +111,19 @@ async def get_mailing_buttons(state: FSMContext) -> list[ButtonInfo]:
             mailing_emoji=await get_mailing_emoji(state, MailingType.PROMOCODE),
         ),
         ButtonInfo(
+            description="Недельная рассылка промокодов",
+            mailing_type=MailingType.PROMOCODE_CHECK,
+            mailing_emoji=await get_mailing_emoji(state, MailingType.PROMOCODE_CHECK),
+        ),
+        ButtonInfo(
             description="Выдача бонуса",
             mailing_type=MailingType.BONUS,
             mailing_emoji=await get_mailing_emoji(state, MailingType.BONUS),
+        ),
+        ButtonInfo(
+            description="Недельная рассылка бонусов",
+            mailing_type=MailingType.BONUS_CHECK,
+            mailing_emoji=await get_mailing_emoji(state, MailingType.BONUS_CHECK),
         ),
         ButtonInfo(
             description="Отчёт о возврате",

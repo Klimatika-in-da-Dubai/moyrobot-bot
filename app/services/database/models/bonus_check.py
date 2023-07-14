@@ -15,7 +15,7 @@ class BonusCheck(Base):
     )
     start_check: Mapped[datetime]
     end_check: Mapped[datetime]
-    count_manual_starts: Mapped[int]
+    count_bonuses: Mapped[int]
     last_notification: Mapped[datetime] = mapped_column(default=datetime.now)
     count_notifications: Mapped[int] = mapped_column(default=0)
     checked: Mapped[bool] = mapped_column(default=False)

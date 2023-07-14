@@ -10,6 +10,7 @@ from app.core.middlewares.db import DbSessionMiddleware
 from app.services.database.connector import setup_get_pool
 from app.services.database.dao import payment_check
 from app.services.notifier.setup_notifiers import (
+    setup_bonus_promo_check_notifiers,
     setup_common_notifiers,
     setup_monthly_report_notifiers,
     setup_payment_check_notifiers,
@@ -44,6 +45,7 @@ def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
     shift_notifier = setup_shifts_notifiers(bot, session)
     monthly_report_notifiers = setup_monthly_report_notifiers(bot, session)
     payment_check_notifiers = setup_payment_check_notifiers(bot, session)
+    bonus_promo_check_notifiers = setup_bonus_promo_check_notifiers(bot, session)
 
     return get_scheduler(
         bot,
@@ -54,6 +56,7 @@ def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
         shift_notifier,
         monthly_report_notifiers,
         payment_check_notifiers,
+        bonus_promo_check_notifiers,
     )
 
 

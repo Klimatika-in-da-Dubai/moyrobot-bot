@@ -8,6 +8,8 @@ from app.core.keyboards.notifications.promocode import (
     get_approve_keyboard,
     get_remind_keyboard,
 )
+from app.services.database.dao.promocode_check import PromocodeCheckDAO
+from app.services.database.models.promocode_check import PromocodeCheck
 
 
 card_payment_router = Router()
@@ -18,15 +20,19 @@ card_payment_router = Router()
         (F.target == PromocodeNotificationTarget.APPROVE) & (F.action == Action.SELECT)
     )
 )
-async def cb_approve_card_payment_check(
+async def cb_approve_promocode_check(
     cb: types.CallbackQuery,
     callback_data: PromocodeNotificationCB,
     session: async_sessionmaker,
 ):
     cb.answer()
-    # Code for approving
-    # ...
 
+    promocode_check_dao = PromocodeCheckDAO(session)
+    promocode_check = await promocode_check_dao.get_by_id(callback_data.id)
+    if not isinstance(promocode_check, PromocodeCheck):
+        await cb.message.edit_text("Произошла ошибка в базе данных")  # type: ignore
+
+    await promocode_check_dao.make_checked(promocode_check)
     await cb.message.edit_reply_markup(reply_markup=get_approve_keyboard())  # type: ignore
 
 
@@ -35,14 +41,16 @@ async def cb_approve_card_payment_check(
         (F.target == PromocodeNotificationTarget.REMIND) & (F.action == Action.SELECT)
     )
 )
-async def cb_remind_card_payment_check(
+async def cb_remind_promocode_check(
     cb: types.CallbackQuery,
     callback_data: PromocodeNotificationCB,
     session: async_sessionmaker,
 ):
     cb.answer()
 
-    # Code for remind
-    # ...
+    promocode_check_dao = PromocodeCheckDAO(session)
+    promocode_check = await promocode_check_dao.get_by_id(callback_data.id)
+    if not isinstance(promocode_check, PromocodeCheck):
+        await cb.message.edit_text("Произошла ошибка в базе данных")  # type: ignore
 
     await cb.message.edit_reply_markup(reply_markup=get_remind_keyboard())  # type: ignore

@@ -17,7 +17,7 @@ class BonusNotificationCB(CallbackData, prefix="card_payment_check"):
     id: int
 
 
-def get_card_payment_check_keyboard(id: int) -> types.InlineKeyboardMarkup:
+def get_bonus_check_keyboard(id: int) -> types.InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.row(
