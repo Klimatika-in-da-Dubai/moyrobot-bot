@@ -33,6 +33,13 @@ class BonusDAO(BaseDAO[Bonus]):
             )
             return bonuses.scalars().all()
 
+    async def get_between_time(self, begin: datetime, end: datetime) -> Sequence[Bonus]:
+        async with self._session() as session:
+            bonuses = await session.execute(
+                select(Bonus).filter(Bonus.date.between(begin, end))
+            )
+            return bonuses.scalars().all()
+
     async def make_notified(self, bonus: Bonus):
         async with self._session() as session:
             await session.execute(

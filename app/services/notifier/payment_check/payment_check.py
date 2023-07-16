@@ -31,16 +31,10 @@ class PaymentCheckNotifier(Notifier):
         await self._dao.make_notified(payment_check)
 
     async def get_text(self, payment_check: PaymentCheck):
-        manual_starts = await self._manual_start_dao.get_typed_between_time(
-            ManualStartType.PAID, payment_check.start_check, payment_check.end_check
-        )
-        card_manual_starts = list(
-            filter(lambda x: x.payment_method is PaymentMethod.CARD, manual_starts)
-        )
-        date = payment_check.start_check.strftime("%d.%m.%Y")
-        text = (
-            f"Ручные запуски, оплата через эквайринг картой\nЗа {escape_chars(date)}\n\n"
-        )
+        card_manual_starts = await self.get_card_manual_starts(payment_check)
+
+        text = "Ручные запуски, оплата через эквайринг картой\n"
+
         if len(list(card_manual_starts)) == 0:
             text += "Ни одной оплаты картой\n"
             return text
@@ -59,6 +53,16 @@ class PaymentCheckNotifier(Notifier):
             text += f"{time} \\- Терминал: {manual_start_info.terminal_id} \\- Режим: {manual_start_info.mode} \\- Сумма оплаты: {manual_start.payment_amount}\n"
 
         return text
+
+    async def get_card_manual_starts(
+        self, payment_check: PaymentCheck
+    ) -> list[ManualStart]:
+        manual_starts = await self._manual_start_dao.get_typed_between_time(
+            ManualStartType.PAID, payment_check.start_check, payment_check.end_check
+        )
+        return list(
+            filter(lambda x: x.payment_method is PaymentMethod.CARD, manual_starts)
+        )
 
     async def send_notify(self, id: int, payment_check: PaymentCheck):
         text = await self.get_text(payment_check)

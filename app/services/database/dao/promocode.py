@@ -33,6 +33,15 @@ class PromocodeDAO(BaseDAO[Promocode]):
             )
             return bonuses.scalars().all()
 
+    async def get_between_time(
+        self, begin: datetime.datetime, end: datetime.datetime
+    ) -> Sequence[Promocode]:
+        async with self._session() as session:
+            bonuses = await session.execute(
+                select(Promocode).filter(Promocode.date.between(begin, end))
+            )
+            return bonuses.scalars().all()
+
     async def make_notified(self, promocode: Promocode):
         async with self._session() as session:
             await session.execute(
