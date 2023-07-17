@@ -33,8 +33,8 @@ class PaymentCheckNotifier(Notifier):
     async def get_text(self, payment_check: PaymentCheck):
         card_manual_starts = await self.get_card_manual_starts(payment_check)
 
-        text = "Ручные запуски, оплата через эквайринг картой\n"
-
+        date = payment_check.start_check.strftime("%d.%m.%Y")
+        text = f"Ручные запуски, оплата через эквайринг картой\nЗа {escape_chars(date)}\n\n"
         if len(list(card_manual_starts)) == 0:
             text += "Ни одной оплаты картой\n"
             return text
