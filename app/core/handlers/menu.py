@@ -57,7 +57,7 @@ async def cb_open_operator_menu(
 @menu_router.callback_query(
     MenuCB.filter((F.role == Role.MODERATOR) & (F.action == Action.OPEN))
 )
-async def cb_open_moderator_menu(cb: types.CallbackQuery, state: FSMContext) -> None:
+async def cb_open_moderator_menu(cb: types.CallbackQuery) -> None:
     await cb.answer(text="В разработке", show_alert=True)
 
 

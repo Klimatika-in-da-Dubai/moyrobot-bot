@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 from app.services.database.base import Base
+from app.services.database.models.corporation import Corporation
 from app.services.database.models.utils import PaymentMethod
 
 
@@ -14,6 +15,7 @@ class ManualStartType(IntEnum):
     REWASH = auto()
     PAID = auto()
     SERVICE = auto()
+    CORPORATE = auto()
 
 
 class ManualStart(Base):
@@ -78,4 +80,17 @@ class PaidManualStart(Base):
     )
     payment_method: Mapped[PaymentMethod]
     payment_amount: Mapped[int]
+    photo_file_id: Mapped[str]
+
+
+class CorporateManualStart(Base):
+    __tablename__ = "corporate_manual_start"
+
+    id: Mapped[str] = mapped_column(
+        ForeignKey("manual_start.id", ondelete="CASCADE"),
+        primary_key=True,
+        unique=True,
+    )
+    corporation_id: Mapped[int] = mapped_column(ForeignKey("corporation.id"))
+    description: Mapped[str]
     photo_file_id: Mapped[str]

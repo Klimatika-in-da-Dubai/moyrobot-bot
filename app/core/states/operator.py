@@ -38,6 +38,12 @@ class OperatorMenu(StatesGroup):
             photo = State()
             bonus = State()
 
+        class CorporateManualStart(StatesGroup):
+            menu = State()
+            photo = State()
+            description = State()
+            corporation = State()
+
     class Cleaning(StatesGroup):
         menu = State()
 
