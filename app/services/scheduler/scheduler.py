@@ -26,6 +26,7 @@ def get_scheduler(
         "cron",
         hour="6",
         args=(session,),
+        name="Creation payment_check",
     )
 
     scheduler.add_job(
@@ -34,6 +35,7 @@ def get_scheduler(
         day_of_week="0",
         hour="8",
         args=(session,),
+        name="Creation bonus_check",
     )
     scheduler.add_job(
         create_promocode_check_for_past_week,
@@ -41,12 +43,32 @@ def get_scheduler(
         day_of_week="0",
         hour="8",
         args=(session,),
+        name="Creation promocode_check",
     )
 
-    scheduler.add_job(update_db, "interval", seconds=30, args=(parser, session))
-    scheduler.add_job(notify, "interval", seconds=10, args=(common_notifiers,))
+    scheduler.add_job(
+        update_db,
+        "interval",
+        seconds=30,
+        args=(parser, session),
+        name="MoyRobotDB update",
+    )
+    scheduler.add_job(
+        notify,
+        "interval",
+        seconds=10,
+        args=(common_notifiers,),
+        name="Common notifiers",
+    )
 
-    scheduler.add_job(notify, "cron", hour="9", args=(bonus_promo_notifiers,))
+    scheduler.add_job(
+        notify,
+        "cron",
+        hour="9",
+        args=(bonus_promo_notifiers,),
+        name="Bonus and Promocode notifiers",
+    )
+
     scheduler.add_job(
         notify,
         "cron",
@@ -54,10 +76,20 @@ def get_scheduler(
         hour="9-18",
         minute="*",
         args=(payment_check_notifiers,),
+        name="Payment Chtck notifiers",
     )
 
-    scheduler.add_job(notify, "interval", seconds=10, args=(shift_notifiers,))
-    scheduler.add_job(notify, "cron", day="1,16", args=(monthly_report_notifiers,))
+    scheduler.add_job(
+        notify, "interval", seconds=10, args=(shift_notifiers,), name="Shift notifiers"
+    )
+
+    scheduler.add_job(
+        notify,
+        "cron",
+        day="1,16",
+        args=(monthly_report_notifiers,),
+        name="Monthly Report notifier",
+    )
 
     scheduler.add_job(
         notify,
@@ -66,5 +98,6 @@ def get_scheduler(
         hour="9-18",
         minute="*",
         args=(bonus_promo_check_notifiers,),
+        name="Bonus and Promocode check notifiers",
     )
     return scheduler
