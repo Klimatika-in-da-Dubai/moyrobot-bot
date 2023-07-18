@@ -24,6 +24,7 @@ class MailingType(IntEnum):
     REFUND = auto()
     PAYMENT_CHECK = auto()
     PAYMENT_CHECK_ALERT = auto()
+    MONEY_COLLECTION = auto()
 
 
 class Mailing(Base):

@@ -6,6 +6,7 @@ from app.services.database.dao.shift import CloseShiftDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.shift import CloseShift
 from app.services.notifier.base import Notifier
+from app.services.notifier.money_collection import MoneyCollectionNotifier
 from app.services.notifier.shifts.check import ShiftCheckNotifier
 from app.services.notifier.shifts.utils import get_text
 
@@ -16,12 +17,14 @@ class CloseShiftNotifier(Notifier):
         bot: Bot,
         session: async_sessionmaker,
     ) -> None:
+        before_notifiers = [MoneyCollectionNotifier(bot, session)]
         after_notifiers = [ShiftCheckNotifier(bot, session)]
         super().__init__(
             bot,
             session,
             MailingType.SHIFT,
             CloseShiftDAO(session),
+            before_notifiers=before_notifiers,
             after_notifiers=after_notifiers,
         )
         self._dao: CloseShiftDAO
