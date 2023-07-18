@@ -142,7 +142,7 @@ async def cb_corporations_menu_back(
     CorporateManualStartCB.filter(F.action == Action.ENTER),
 )
 async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     data = await state.get_data()
 
