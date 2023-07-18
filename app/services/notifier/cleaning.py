@@ -47,7 +47,7 @@ class CleaningNotifier(Notifier):
             start = i * photos_per_message
             end = i * photos_per_message + photos_per_message
             await self._bot.send_media_group(chat_id=id, media=media_group[start:end])
-            
+
         start = (count_messages - 1) * photos_per_message
         await self._bot.send_media_group(chat_id=id, media=media_group[start:])
         await self._bot.send_message(

@@ -15,6 +15,7 @@ from app.core.keyboards.menu import (
     send_menu_keyboard,
 )
 from app.core.states.admin import AdminMenu
+from app.services.database.dao.shift import ShiftDAO
 
 menu_router = Router()
 
@@ -46,6 +47,10 @@ async def cb_open_users_menu(
 async def cb_money_collection(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
+    if not await ShiftDAO(session).is_shift_opened():
+        await cb.answer("Нельзя производить инкассацию вне смены", show_alert=True)
+        return
+
     await cb.answer()
     await state.set_state(AdminMenu.MoneyCollection.money_collection)
     await cb.message.edit_text(  # type: ignore
