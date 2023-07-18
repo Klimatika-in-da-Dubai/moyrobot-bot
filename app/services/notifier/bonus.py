@@ -1,7 +1,6 @@
 from collections.abc import Sequence
 from typing_extensions import override
 from aiogram import Bot
-from aiogram.methods import send_message
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.notifications.bonus import get_bonus_check_keyboard
 from app.services.database.dao.bonus import BonusDAO
@@ -107,8 +106,9 @@ class BonusCheckNotifier(Notifier):
             end = i * parts_per_message + parts_per_message
             await self._bot.send_message(id, text="".join(parts[start:end]))
 
+        start = (messages_count - 1) * parts_per_message
         await self._bot.send_message(
             id,
-            text="".join(parts[(messages_count - 1) * parts_per_message :]),
+            text="".join(parts[start:]),
             reply_markup=get_bonus_check_keyboard(bonus_check.id),
         )

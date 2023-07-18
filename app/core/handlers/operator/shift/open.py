@@ -51,6 +51,10 @@ async def cb_enter(
     userdao = UserDAO(session)
 
     opened_by_id = await get_operator_id(state)
+    if opened_by_id is None:
+        await cb.answer("Ошибка в получении id оператора", show_alert=True)
+        return
+
     if await userdao.is_work_account(opened_by_id):
         await cb.answer("Выберите оператора", show_alert=True)
         return

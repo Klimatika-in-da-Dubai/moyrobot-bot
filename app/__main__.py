@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.handlers import handlers_router
 from app.core.middlewares.db import DbSessionMiddleware
 from app.services.database.connector import setup_get_pool
-from app.services.database.dao import payment_check
 from app.services.notifier.setup_notifiers import (
     setup_bonus_promo_check_notifiers,
     setup_common_notifiers,
@@ -48,7 +47,6 @@ def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
     bonus_promo_check_notifiers = setup_bonus_promo_check_notifiers(bot, session)
 
     return get_scheduler(
-        bot,
         parser,
         session,
         common_notifiers,
@@ -62,7 +60,8 @@ def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
 
 async def main():
     logging.basicConfig(
-        format=f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s",
+        format="%(asctime)s - [%(levelname)s] - %(name)s -"
+        "(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s",
         level=logging.DEBUG,
     )
 

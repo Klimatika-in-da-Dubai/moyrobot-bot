@@ -115,7 +115,7 @@ class ManualStartDAO(BaseDAO[ManualStart]):
 
     async def get_typed_manual_start(
         self, manual_start_id: str, type: ManualStartType
-    ) -> TestManualStart | ServiceManualStart | RewashManualStart | PaidManualStart | CorporateManualStart:
+    ) -> ManualStart:
         manual_start_table = self._match_manual_start_type(type)
         async with self._session() as session:
             manual_start = await session.execute(

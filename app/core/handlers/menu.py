@@ -67,7 +67,6 @@ async def cb_open_moderator_menu(cb: types.CallbackQuery) -> None:
 async def cb_open_admin_menu(
     cb: types.CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker[AsyncSession],
 ) -> None:
     await cb.answer()
 
