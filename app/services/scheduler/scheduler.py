@@ -1,4 +1,3 @@
-from aiogram import Bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.services.notifier.base import Notifier
@@ -12,7 +11,6 @@ from app.services.scheduler.update_db import update_db
 
 
 def get_scheduler(
-    bot: Bot,
     parser: Parser,
     session: async_sessionmaker[AsyncSession],
     common_notifiers: list[Notifier],

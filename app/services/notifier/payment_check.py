@@ -9,7 +9,6 @@ from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
     ManualStart,
     ManualStartType,
-    PaidManualStart,
 )
 from app.services.database.models.payment_check import PaymentCheck
 from app.services.database.models.utils import PaymentMethod
@@ -51,7 +50,10 @@ class PaymentCheckNotifier(Notifier):
                 continue
 
             time = manual_start_info.date.strftime("%H:%M")
-            text += f"{time} - Терминал: {manual_start_info.terminal_id} - Режим: {manual_start_info.mode}\n"
+            text += (
+                f"{time} - Терминал: {manual_start_info.terminal_id} - "
+                f"Режим: {manual_start_info.mode}\n"
+            )
         return text
 
     async def send_notify(self, id: int, payment_check: PaymentCheck):

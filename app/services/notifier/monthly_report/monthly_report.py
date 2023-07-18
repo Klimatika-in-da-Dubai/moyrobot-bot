@@ -1,8 +1,6 @@
 from datetime import datetime
-import os
 from aiogram import Bot
 from aiogram.types import FSInputFile
-from pathlib import Path
 import pandas as pd
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.dao.manual_start import ManualStartDAO
@@ -102,9 +100,6 @@ class MonthlyReportNotifier(Notifier):
         path = "./monthly_reports/"
         df.to_excel(path + name)
         return path + name
-
-    async def make_notified(self, object) -> None:
-        pass
 
     async def send_notify(self, id: int, report_path: str) -> None:
         report = FSInputFile(report_path, filename="Полумесячный отчёт.xlsx")

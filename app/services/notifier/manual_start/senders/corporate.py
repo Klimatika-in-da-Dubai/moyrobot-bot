@@ -18,7 +18,9 @@ class CorporateManualStartSender(TypedManualStartSender):
         super().__init__(bot, session, ManualStartType.CORPORATE)
         self._corporationdao = CorporationDAO(session)
 
-    async def get_text(self, manual_start: ManualStart, typed_manual_start: CorporateManualStart):  # type: ignore
+    async def get_text(
+        self, manual_start: ManualStart, typed_manual_start: CorporateManualStart
+    ):
         corporation_name = await self._corporationdao.get_name(
             typed_manual_start.corporation_id
         )

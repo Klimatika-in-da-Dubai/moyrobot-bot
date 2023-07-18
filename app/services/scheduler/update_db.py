@@ -9,7 +9,7 @@ async def update_db(parser: Parser, session: async_sessionmaker[AsyncSession]):
     manual_starts = await parser.get_manual_starts()
     manual_start_dao = ManualStartDAO(session)
     for manual_start in manual_starts:
-        db_manual_start: ManualStart = await manual_start_dao.get_by_id(
+        db_manual_start: ManualStart = await manual_start_dao.get_by_id(  # type: ignore
             id_=manual_start.id
         )
         if db_manual_start is None:
