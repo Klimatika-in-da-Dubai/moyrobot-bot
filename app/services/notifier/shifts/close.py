@@ -6,12 +6,24 @@ from app.services.database.dao.shift import CloseShiftDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.shift import CloseShift
 from app.services.notifier.base import Notifier
+from app.services.notifier.shifts.check import ShiftCheckNotifier
 from app.services.notifier.shifts.utils import get_text
 
 
 class CloseShiftNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker) -> None:
-        super().__init__(bot, session, MailingType.SHIFT, CloseShiftDAO(session))
+    def __init__(
+        self,
+        bot: Bot,
+        session: async_sessionmaker,
+    ) -> None:
+        after_notifiers = [ShiftCheckNotifier(bot, session)]
+        super().__init__(
+            bot,
+            session,
+            MailingType.SHIFT,
+            CloseShiftDAO(session),
+            after_notifiers=after_notifiers,
+        )
         self._dao: CloseShiftDAO
 
     @override
@@ -26,3 +38,7 @@ class CloseShiftNotifier(Notifier):
     async def send_notify(self, id: int, shift: CloseShift) -> None:
         text = get_text(shift)
         await self._bot.send_message(id, text)
+
+    @override
+    async def before_notify(self):
+        return await super().before_notify()

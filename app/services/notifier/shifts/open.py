@@ -6,12 +6,20 @@ from app.services.database.dao.shift import OpenShiftDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.shift import OpenShift
 from app.services.notifier.base import Notifier
+from app.services.notifier.shifts.difference import ShiftDifferenceNotifier
 from app.services.notifier.shifts.utils import get_text
 
 
 class OpenShiftNotifier(Notifier):
     def __init__(self, bot: Bot, session: async_sessionmaker) -> None:
-        super().__init__(bot, session, MailingType.SHIFT, OpenShiftDAO(session))
+        after_notifiers = [ShiftDifferenceNotifier(bot, session)]
+        super().__init__(
+            bot,
+            session,
+            MailingType.SHIFT,
+            OpenShiftDAO(session),
+            after_notifiers=after_notifiers,
+        )
         self._dao: OpenShiftDAO
 
     @override

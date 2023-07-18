@@ -15,9 +15,7 @@ from app.services.notifier.payment_check.alert import PaymentCheckAlertNotifier
 from app.services.notifier.payment_check.payment_check import PaymentCheckNotifier
 from app.services.notifier.promocode import PromocodeCheckNotifier, PromocodeNotifier
 from app.services.notifier.refund import RefundNotifier
-from app.services.notifier.shifts.check import ShiftCheckNotifier
 from app.services.notifier.shifts.close import CloseShiftNotifier
-from app.services.notifier.shifts.difference import ShiftDifferenceNotifier
 from app.services.notifier.shifts.open import OpenShiftNotifier
 
 
@@ -44,8 +42,6 @@ def setup_shifts_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifi
     notifiers = [
         OpenShiftNotifier(bot, session),
         CloseShiftNotifier(bot, session),
-        ShiftCheckNotifier(bot, session),
-        ShiftDifferenceNotifier(bot, session),
     ]
     return notifiers
 
