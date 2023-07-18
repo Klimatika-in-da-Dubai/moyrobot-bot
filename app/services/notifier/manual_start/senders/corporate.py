@@ -26,7 +26,7 @@ class CorporateManualStartSender(TypedManualStartSender):
             "Получен отчёт о ручном запуске\n"
             "\n"
             "Ручной запуск:\n"
-            "*Тип:* Перемывка\n"
+            "*Тип:* Корпоративный\n"
             f"*ID:* {escape_chars(manual_start.id)}\n"
             f"*Компания:* {escape_chars(corporation_name)}\n"
             f"*Причина:* {escape_chars(typed_manual_start.description)}"
