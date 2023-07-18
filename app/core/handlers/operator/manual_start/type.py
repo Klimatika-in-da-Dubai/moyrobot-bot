@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
+from app.core.keyboards.operator.manual_start.corporate import (
+    send_corporate_manual_start_keyboard,
+)
 from app.core.keyboards.operator.manual_start.type import (
     ManualStartReportCB,
     ManualStartReportTarget,
@@ -92,6 +95,23 @@ async def cb_paid_manual_start(
     await state.update_data(type=ManualStartType.PAID)
 
     await send_paid_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+@manual_start_type_router.callback_query(
+    OperatorMenu.ManualStart.type,
+    isOperatorCB(),
+    ManualStartReportCB.filter(
+        (F.action == Action.OPEN)
+        & (F.target == ManualStartReportTarget.CORPORATE_MANUAL_START)
+    ),
+)
+async def cb_corporation_manual_start(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await cb.answer()
+    await state.update_data(type=ManualStartType.CORPORATE)
+
+    await send_corporate_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
 @manual_start_type_router.callback_query(
