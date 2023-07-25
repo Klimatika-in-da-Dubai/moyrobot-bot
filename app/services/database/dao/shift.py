@@ -103,6 +103,18 @@ class OpenShiftDAO(BaseDAO[OpenShift]):
             )
             return bonuses.scalars().all()
 
+    async def get_by_id(self, id_: str | int) -> OpenShift | None:
+        return await super().get_by_id(id_)
+
+    async def get_last_unnotified(self) -> CloseShift:
+        async with self._session() as session:
+            shift = await session.execute(
+                select(OpenShift)
+                .where(OpenShift.notified.is_(False))
+                .order_by(OpenShift.date.desc())
+            )
+            return shift.scalar()
+
     async def make_notified(self, shift: OpenShift):
         async with self._session() as session:
             await session.execute(
@@ -131,6 +143,18 @@ class CloseShiftDAO(BaseDAO[CloseShift]):
                 select(CloseShift).where(CloseShift.notified == False)  # noqa: E712
             )
             return bonuses.scalars().all()
+
+    async def get_by_id(self, id_: str | int) -> CloseShift | None:
+        return await super().get_by_id(id_)
+
+    async def get_last_unnotified(self) -> CloseShift:
+        async with self._session() as session:
+            shift = await session.execute(
+                select(CloseShift)
+                .where(CloseShift.notified.is_(False))
+                .order_by(CloseShift.date.desc())
+            )
+            return shift.scalar()
 
     async def make_notified(self, shift: CloseShift):
         async with self._session() as session:
