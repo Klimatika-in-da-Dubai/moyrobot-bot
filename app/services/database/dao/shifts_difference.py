@@ -28,6 +28,17 @@ class ShiftsDifferenceDAO(BaseDAO[ShiftsDifference]):
             )
             return shift_checks.scalars().all()
 
+    async def get_by_ids(
+        self, closed_shift_id: int, opened_shift_id: int
+    ) -> ShiftsDifference:
+        async with self._session() as session:
+            shift_difference = await session.execute(
+                select(ShiftsDifference)
+                .where(ShiftsDifference.closed_shift_id == closed_shift_id)
+                .where(ShiftsDifference.opened_shift_id == opened_shift_id)
+            )
+            return shift_difference.scalar()
+
     async def make_notified(self, shifts_difference: ShiftsDifference):
         async with self._session() as session:
             await session.execute(

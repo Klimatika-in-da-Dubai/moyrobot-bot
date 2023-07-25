@@ -17,6 +17,7 @@ from app.services.notifier.promocode import PromocodeCheckNotifier, PromocodeNot
 from app.services.notifier.refund import RefundNotifier
 from app.services.notifier.shifts.close import CloseShiftNotifier
 from app.services.notifier.shifts.open import OpenShiftNotifier
+from app.services.notifier.shifts.shift_close_open import CloseOpenShiftNotifier
 
 
 def setup_common_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifier]:
@@ -39,11 +40,7 @@ def setup_promocode_and_bonus_notifiers(
 
 
 def setup_shifts_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifier]:
-    notifiers = [
-        OpenShiftNotifier(bot, session),
-        CloseShiftNotifier(bot, session),
-    ]
-    return notifiers
+    return [CloseOpenShiftNotifier(bot, session)]
 
 
 def setup_monthly_report_notifiers(

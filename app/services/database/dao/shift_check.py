@@ -26,6 +26,9 @@ class ShiftCheckDAO(BaseDAO[ShiftCheck]):
             )
             return shift_checks.scalars().all()
 
+    async def get_by_id(self, id_: str | int) -> ShiftCheck | None:
+        return await super().get_by_id(id_)
+
     async def make_notified(self, shift_check: ShiftCheck):
         async with self._session() as session:
             await session.execute(
