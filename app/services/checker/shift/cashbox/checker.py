@@ -9,7 +9,6 @@ from app.services.checker.shift.cashbox.outcome.object.money_collection import (
 )
 from app.services.checker.shift.checker import Checker
 from app.services.database.dao.shift import CloseShiftDAO, OpenShiftDAO
-from app.services.database.dao.shift_check import ShiftCheckDAO
 from app.services.database.models.shift import CloseShift, OpenShift, Shift
 from app.services.database.models.shift_check import ShiftCheck
 
@@ -34,5 +33,5 @@ class CashboxChecker(Checker):
         shift_check.money_expected = cashbox_start + income - outcome
         shift_check.money_actual = cashbox_end
         shift_check.money_difference = (
-            shift_check.money_expected - shift_check.money_actual
+            shift_check.money_actual - shift_check.money_expected
         )

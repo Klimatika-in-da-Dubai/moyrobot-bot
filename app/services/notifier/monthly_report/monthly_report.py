@@ -56,13 +56,13 @@ class MonthlyReportNotifier(Notifier):
         info["Недосдача"] = shift_check.money_difference
         info["Зарплата"] = salary
         info["Штраф"] = fine
-        info["Итог за день"] = salary - fine
+        info["Итог за день"] = salary + fine
         return info
 
     async def get_fine(self, shift: Shift, shift_check: ShiftCheck):
-        fine = shift_check.money_difference if shift_check.money_difference > 0 else 0
+        fine = shift_check.money_difference if shift_check.money_difference < 0 else 0
         fine += await self.get_fine_from_maual_starts(shift)
-        if fine < 0:
+        if fine > 0:
             return 0
         return fine
 
@@ -83,13 +83,13 @@ class MonthlyReportNotifier(Notifier):
     def get_fine_by_mode(self, mode: int):
         match mode:
             case 1:
-                return 250
+                return -250
             case 2:
-                return 450
+                return -450
             case 3:
-                return 550
+                return -550
             case 4:
-                return 650
+                return -650
             case _:
                 return 0
 
