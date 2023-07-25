@@ -83,7 +83,7 @@ class CloseOpenShiftNotifier(Notifier):
         if not isinstance(close_shift, CloseShift):
             raise ValueError("close shift is None")
 
-        return "Закрытие\n" + (await self.get_shift_text(shift, close_shift))
+        return "*Закрытие*\n" + (await self.get_shift_text(shift, close_shift))
 
     async def get_open_shift_text(self, shift: Shift) -> str:
         open_shift = await self._openshiftdao.get_by_id(shift.id)
@@ -91,7 +91,7 @@ class CloseOpenShiftNotifier(Notifier):
         if not isinstance(open_shift, OpenShift):
             raise ValueError("open shift is None")
 
-        return "Открытие\n" + (await self.get_shift_text(shift, open_shift))
+        return "*Открытие*\n" + (await self.get_shift_text(shift, open_shift))
 
     async def get_shift_text(
         self, shift: Shift, shift_info: CloseShift | OpenShift
@@ -106,12 +106,12 @@ class CloseOpenShiftNotifier(Notifier):
 
         antifreeze_sentence = ""
         if shift_info.antifreeze_count != 0:
-            antifreeze_sentence = f"*Антифриз*: {shift_info.antifreeze_count}\n"
+            antifreeze_sentence = f"Антифриз: {shift_info.antifreeze_count}\n"
 
         return (
-            f"*ФИО*: {names_text}\n"
-            f"*Деньги*: {money_text} ₽\n"
-            f"*Количество химии*: {chemistry_text}\n" + antifreeze_sentence
+            f"ФИО: {names_text}\n"
+            f"Деньги: {money_text} ₽\n"
+            f"Количество химии: {chemistry_text}\n" + antifreeze_sentence
         )
 
     async def get_money_check_text(self, info: CloseOpenShiftInfo) -> str:
@@ -127,12 +127,12 @@ class CloseOpenShiftNotifier(Notifier):
             raise ValueError("Some data is None")
 
         return (
-            "Проверка денег\n"
-            f"*Недостача за закрытую смену*: "
+            "*Проверка денег*\n"
+            f"Недостача за закрытую смену: "
             f"{escape_chars(str(shift_check.money_difference))} ₽\n"  # type: ignore
-            f"*Инкассация:* {escape_chars(str(money_collection))} ₽\n"
-            f"*Итого в кассе:* {escape_chars(str(shift_open.money_amount))} ₽\n"  # type: ignore
-            f"*Разница между сменами :* {escape_chars(str(money_difference.money_difference))} ₽\n"
+            f"Инкассация: {escape_chars(str(money_collection))} ₽\n"
+            f"Итого в кассе: {escape_chars(str(shift_open.money_amount))} ₽\n"  # type: ignore
+            f"Разница между сменами : {escape_chars(str(money_difference.money_difference))} ₽\n"
         )
 
     @override
