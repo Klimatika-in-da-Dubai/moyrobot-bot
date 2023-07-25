@@ -51,7 +51,8 @@ class CleaningDAO(BaseDAO[Cleaning]):
     async def photo_hash_already_exists(self, hash: str) -> bool:
         async with self._session() as session:
             query = text(
-                "SELECT (jsonb_array_elements(jsonb_array_elements((cleaning::jsonb)->'places')->'works')->'photo_hash')::text FROM cleaning;"
+                "SELECT (jsonb_array_elements(jsonb_array_elements((cleaning::jsonb)->'places')"
+                "->'works')->'photo_hash')::text FROM cleaning;"
             )
             result = await session.execute(query)
             return f'"{hash}"' in result.scalars().all()

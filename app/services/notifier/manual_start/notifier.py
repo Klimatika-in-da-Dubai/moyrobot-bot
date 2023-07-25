@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, assert_never
 from aiogram import Bot
 
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -9,6 +9,9 @@ from app.services.database.models.manual_start import (
     ManualStartType,
 )
 from app.services.notifier.base import Notifier
+from app.services.notifier.manual_start.senders.corporate import (
+    CorporateManualStartSender,
+)
 from app.services.notifier.manual_start.senders.paid import PaidManualStartSender
 from app.services.notifier.manual_start.senders.rewash import RewashManualStartSender
 from app.services.notifier.manual_start.senders.serivce import ServiceManualStartSender
@@ -25,6 +28,7 @@ class ManualStartNotifier(Notifier):
         self.service_sender = ServiceManualStartSender(bot, session)
         self.rewash_sender = RewashManualStartSender(bot, session)
         self.paid_sender = PaidManualStartSender(bot, session)
+        self.corporate_sender = CorporateManualStartSender(bot, session)
 
     async def get_objects_to_notify(self) -> Sequence[ManualStart]:
         return await self._dao.get_unnotified()
@@ -42,3 +46,7 @@ class ManualStartNotifier(Notifier):
                 await self.rewash_sender.send_notify(id, manual_start)
             case ManualStartType.PAID:
                 await self.paid_sender.send_notify(id, manual_start)
+            case ManualStartType.CORPORATE:
+                await self.corporate_sender.send_notify(id, manual_start)
+            case _ as never:
+                assert_never(never)

@@ -38,7 +38,7 @@ async def cb_operator_name(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     userdao = UserDAO(session)
-    if not await userdao.is_work_account(cb.message.chat.id):
+    if not await userdao.is_work_account(cb.message.chat.id):  # type: ignore
         await cb.answer("Вы не можете сменить оператора.", show_alert=True)
         return
     await cb.answer()

@@ -1,5 +1,4 @@
 from enum import IntEnum, auto
-from typing import Callable
 from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
@@ -16,6 +15,7 @@ class ManualStartReportTarget(IntEnum):
     SERVICE_MANUAL_START = auto()
     REWASH_MANUAL_START = auto()
     PAID_MANUAL_START = auto()
+    CORPORATE_MANUAL_START = auto()
     NONE = auto()
 
 
@@ -61,6 +61,15 @@ def get_manual_start_type_keyboard() -> types.InlineKeyboardMarkup:
     )
     builder.row(
         types.InlineKeyboardButton(
+            text="Корпоративный",
+            callback_data=ManualStartReportCB(
+                action=Action.OPEN,
+                target=ManualStartReportTarget.CORPORATE_MANUAL_START,
+            ).pack(),
+        )
+    )
+    builder.row(
+        types.InlineKeyboardButton(
             text="Назад",
             callback_data=ManualStartReportCB(
                 action=Action.BACK, target=ManualStartReportTarget.NONE
@@ -77,7 +86,9 @@ async def get_manual_start_text(state: FSMContext):
 
 
 async def send_manual_start_type_keyboard(
-    send_func: Callable, state: FSMContext, session: async_sessionmaker
+    send_func,
+    state: FSMContext,
+    session: async_sessionmaker,
 ):
     text = await get_manual_start_text(state)
     await state.set_state(OperatorMenu.ManualStart.type)

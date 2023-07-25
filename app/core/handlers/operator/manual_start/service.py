@@ -1,4 +1,3 @@
-import logging
 from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -17,7 +16,6 @@ from app.core.keyboards.operator.manual_start.service import (
 from app.core.states.operator import OperatorMenu
 
 from app.services.database.dao.manual_start import ManualStartDAO
-from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
     ManualStartType,
     ServiceManualStart,
@@ -93,7 +91,7 @@ async def cb_back(
     ServiceManualStartCB.filter((F.action == Action.ENTER)),
 )
 async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     data = await state.get_data()
 

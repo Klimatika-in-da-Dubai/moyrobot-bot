@@ -134,5 +134,5 @@ config.yml
 alembic.ini
 .vscode
 .idea
-scripts
+scripts/versions
 monthly_reports/monthly_report*

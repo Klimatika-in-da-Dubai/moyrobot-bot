@@ -1,4 +1,3 @@
-import logging
 from aiogram import Bot, Router, types, F
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -90,7 +89,7 @@ async def cb_back(
     TestManualStartCB.filter((F.action == Action.ENTER)),
 )
 async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker, bot: Bot
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     data = await state.get_data()
 

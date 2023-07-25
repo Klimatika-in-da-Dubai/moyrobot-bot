@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import IntEnum, auto
 from typing import Literal
 from aiogram import types
 from aiogram.fsm.context import FSMContext
@@ -141,6 +140,11 @@ async def get_mailing_buttons(state: FSMContext) -> list[ButtonInfo]:
             mailing_emoji=await get_mailing_emoji(
                 state, MailingType.PAYMENT_CHECK_ALERT
             ),
+        ),
+        ButtonInfo(
+            description="Инкассация",
+            mailing_type=MailingType.MONEY_COLLECTION,
+            mailing_emoji=await get_mailing_emoji(state, MailingType.MONEY_COLLECTION),
         ),
     ]
 

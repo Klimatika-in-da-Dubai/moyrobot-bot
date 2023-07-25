@@ -1,9 +1,10 @@
 import datetime
-from typing import Sequence
+from typing import Sequence, assert_never
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy import select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.manual_start import (
+    CorporateManualStart,
     ManualStartType,
     ManualStart,
     TestManualStart,
@@ -114,7 +115,7 @@ class ManualStartDAO(BaseDAO[ManualStart]):
 
     async def get_typed_manual_start(
         self, manual_start_id: str, type: ManualStartType
-    ) -> TestManualStart | ServiceManualStart | RewashManualStart | PaidManualStart:
+    ) -> ManualStart:
         manual_start_table = self._match_manual_start_type(type)
         async with self._session() as session:
             manual_start = await session.execute(
@@ -134,13 +135,18 @@ class ManualStartDAO(BaseDAO[ManualStart]):
                 return RewashManualStart
             case ManualStartType.PAID:
                 return PaidManualStart
+            case ManualStartType.CORPORATE:
+                return CorporateManualStart
+            case _ as never:
+                assert_never(never)
 
     async def report_typed_manual_start(
         self,
         typed_manual_start: TestManualStart
         | ServiceManualStart
         | RewashManualStart
-        | PaidManualStart,
+        | PaidManualStart
+        | CorporateManualStart,
         type: ManualStartType,
     ):
         async with self._session() as session:

@@ -20,6 +20,9 @@ from app.core.handlers.operator.manual_start.rewash import (
 from app.core.handlers.operator.manual_start.paid import (
     paid_manual_start_router,
 )
+from app.core.handlers.operator.manual_start.corporate import (
+    corporate_manual_start_router,
+)
 
 manual_start_router = Router()
 
@@ -30,4 +33,5 @@ manual_start_router.include_routers(
     service_manual_start_router,
     rewash_manual_start_router,
     paid_manual_start_router,
+    corporate_manual_start_router,
 )
