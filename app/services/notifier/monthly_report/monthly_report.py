@@ -17,7 +17,7 @@ from app.services.database.models.shift import Shift
 from app.services.database.models.shift_check import ShiftCheck
 from app.services.database.models.user import User
 from app.services.notifier.base import Notifier
-
+from UliPlot.XLSX import auto_adjust_xlsx_column_width
 
 month_name = {
     1: "Январь",
@@ -82,6 +82,8 @@ class MonthlyReportNotifier(Notifier):
 
         info["Оператор"] = operator.name
         info["Дата"] = shift.open_date.date()
+        info["Время открытия"] = shift.open_date.time().strftime("%H:%M:%S")
+        info["Время закрытия"] = shift.close_date.time().strftime("%H:%M:%S")
         info["Смена"] = self.get_shift_type(shift)
         info["Оклад"] = salary
         info["Плановая"] = shift_check.money_expected
@@ -138,7 +140,9 @@ class MonthlyReportNotifier(Notifier):
         date = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
         name = f"monthly_report_{date}.xlsx"
         path = "./monthly_reports/"
-        df.to_excel(path + name, index=False)
+        with pd.ExcelWriter(path + name) as writer:  # pyright: ignore
+            df.to_excel(writer, index=False, sheet_name="MySheet")
+            auto_adjust_xlsx_column_width(df, writer, sheet_name="MySheet", margin=1)
         return path + name
 
     async def send_notify(self, id: int, report_path: str) -> None:
