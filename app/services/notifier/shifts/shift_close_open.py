@@ -126,13 +126,16 @@ class CloseOpenShiftNotifier(Notifier):
         if not all([shift_open, shift_check, money_difference]):
             raise ValueError("Some data is None")
 
+        shift_money_difference = (
+            0 if shift_check.money_difference > 0 else shift_check.money_difference
+        )
         return (
             "*Проверка денег*\n"
             f"Недостача за закрытую смену: "
-            f"{escape_chars(str(shift_check.money_difference))} ₽\n"  # type: ignore
+            f"{escape_chars(str(shift_money_difference))} ₽\n"  # type: ignore
             f"Инкассация: {escape_chars(str(money_collection))} ₽\n"
             f"Итого в кассе: {escape_chars(str(shift_open.money_amount))} ₽\n"  # type: ignore
-            f"Разница между сменами : {escape_chars(str(money_difference.money_difference))} ₽\n"
+            f"Разница между сменами : {escape_chars(str(-money_difference.money_difference))} ₽\n"
         )
 
     @override

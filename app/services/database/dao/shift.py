@@ -32,6 +32,7 @@ class ShiftDAO(BaseDAO[Shift]):
                 select(Shift)
                 .where(Shift.monthly_reported.is_(False))
                 .where(Shift.close_date.is_not(None))
+                .order_by(Shift.open_date.asc())
             )
             return shifts.scalars().all()
 
