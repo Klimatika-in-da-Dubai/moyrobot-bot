@@ -1,4 +1,4 @@
-from datetime import datetime, time
+from datetime import datetime
 from aiogram import Bot
 from aiogram.types import FSInputFile
 import os
@@ -18,21 +18,7 @@ from app.services.database.models.shift_check import ShiftCheck
 from app.services.database.models.user import User
 from app.services.notifier.base import Notifier
 from UliPlot.XLSX import auto_adjust_xlsx_column_width
-
-month_name = {
-    1: "Январь",
-    2: "Февраль",
-    3: "Март",
-    4: "Апрель",
-    5: "Май",
-    6: "Июнь",
-    7: "Июль",
-    8: "Август",
-    9: "Сентябрь",
-    10: "Октябрь",
-    11: "Ноябрь",
-    12: "Декабрь",
-}
+from app.utils.calendar_names import month_name
 
 
 class MonthlyReportNotifier(Notifier):
@@ -139,7 +125,7 @@ class MonthlyReportNotifier(Notifier):
         df = pd.DataFrame(data=report_rows)
         date = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
         name = f"monthly_report_{date}.xlsx"
-        path = "./monthly_reports/"
+        path = "./reports/monthly_reports/"
         with pd.ExcelWriter(path + name) as writer:  # pyright: ignore
             df.to_excel(writer, index=False, sheet_name="MySheet")
             auto_adjust_xlsx_column_width(df, writer, sheet_name="MySheet", margin=1)

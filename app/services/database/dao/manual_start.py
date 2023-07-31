@@ -18,6 +18,9 @@ class ManualStartDAO(BaseDAO[ManualStart]):
     def __init__(self, session: async_sessionmaker[AsyncSession]):
         super().__init__(ManualStart, session)
 
+    async def get_by_id(self, id_: str) -> ManualStart | None:
+        return await super().get_by_id(id_)
+
     async def add_manual_start(self, manual_start: ManualStart):
         async with self._session() as session:
             await session.merge(manual_start)

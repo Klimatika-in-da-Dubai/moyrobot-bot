@@ -6,6 +6,7 @@ from app.services.notifier.antifreeze import AntifreezeNotifier
 from app.services.notifier.base import Notifier
 from app.services.notifier.bonus import BonusCheckNotifier, BonusNotifier
 from app.services.notifier.cleaning import CleaningNotifier
+from app.services.notifier.corporate_report import CorporateReportNotifier
 from app.services.notifier.manual_start.alerter import ManualStartAlerter
 
 from app.services.notifier.manual_start.notifier import ManualStartNotifier
@@ -59,3 +60,9 @@ def setup_bonus_promo_check_notifiers(
     bot: Bot, session: async_sessionmaker
 ) -> list[Notifier]:
     return [BonusCheckNotifier(bot, session), PromocodeCheckNotifier(bot, session)]
+
+
+def setup_corporate_report_notifiers(
+    bot: Bot, session: async_sessionmaker
+) -> list[Notifier]:
+    return [CorporateReportNotifier(bot, session)]
