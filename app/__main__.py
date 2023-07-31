@@ -11,6 +11,7 @@ from app.services.database.connector import setup_get_pool
 from app.services.notifier.setup_notifiers import (
     setup_bonus_promo_check_notifiers,
     setup_common_notifiers,
+    setup_corporate_report_notifiers,
     setup_monthly_report_notifiers,
     setup_payment_check_notifiers,
     setup_promocode_and_bonus_notifiers,
@@ -45,6 +46,7 @@ def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
     monthly_report_notifiers = setup_monthly_report_notifiers(bot, session)
     payment_check_notifiers = setup_payment_check_notifiers(bot, session)
     bonus_promo_check_notifiers = setup_bonus_promo_check_notifiers(bot, session)
+    corporate_report_notitifiers = setup_corporate_report_notifiers(bot, session)
 
     return get_scheduler(
         parser,
@@ -55,6 +57,7 @@ def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
         monthly_report_notifiers,
         payment_check_notifiers,
         bonus_promo_check_notifiers,
+        corporate_report_notitifiers,
     )
 
 

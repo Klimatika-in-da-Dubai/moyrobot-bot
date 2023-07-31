@@ -4,6 +4,9 @@ from app.services.notifier.base import Notifier
 
 from app.services.parser.parser import Parser
 from app.services.scheduler.bonus_check import create_bonus_check_for_past_week
+from app.services.scheduler.corporate_report import (
+    create_corporate_report_for_past_month,
+)
 from app.services.scheduler.notifiers import notify
 from app.services.scheduler.payment_check import create_payment_check_for_past_day
 from app.services.scheduler.promo_check import create_promocode_check_for_past_week
@@ -19,6 +22,7 @@ def get_scheduler(
     monthly_report_notifiers: list[Notifier],
     payment_check_notifiers: list[Notifier],
     bonus_promo_check_notifiers: list[Notifier],
+    corporate_report_notifiers: list[Notifier],
 ) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
@@ -44,6 +48,21 @@ def get_scheduler(
         hour="8",
         args=(session,),
         name="Creation promocode_check",
+    )
+    scheduler.add_job(
+        create_corporate_report_for_past_month,
+        "cron",
+        day="1",
+        args=(session,),
+        name="Creation corporate_reprt",
+    )
+
+    scheduler.add_job(
+        create_corporate_report_for_past_month,
+        "cron",
+        minute="*",
+        args=(session,),
+        name="Creation corporate_reprt",
     )
 
     scheduler.add_job(
@@ -88,8 +107,27 @@ def get_scheduler(
         "cron",
         day="1,16",
         args=(monthly_report_notifiers,),
-        name="Monthly Report notifier",
+        name="Monthly Report notifiers",
     )
+
+    scheduler.add_job(
+        notify,
+        "cron",
+        day="1",
+        hour="9",
+        args=(corporate_report_notifiers,),
+        name="Corporate Report notifiers",
+    )
+
+    # Удалить
+    scheduler.add_job(
+        notify,
+        "interval",
+        seconds=10,
+        args=(corporate_report_notifiers,),
+        name="Corporate Report notifiers",
+    )
+    ####
 
     scheduler.add_job(
         notify,
