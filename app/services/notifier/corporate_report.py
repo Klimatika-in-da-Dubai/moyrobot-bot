@@ -91,7 +91,7 @@ class CorporateReportNotifier(Notifier):
         return await self._corporationdao.get_name(manual_start.corporation_id)
 
     def get_mode(self, manual_start: ManualStart) -> str | int:
-        return manual_start.mode if manual_start.mode is None else "Неизвестно"
+        return manual_start.mode if manual_start.mode is not None else "Неизвестно"
 
     async def create_xlsx_file(self, rows: list[dict]) -> Path:
         df = pd.DataFrame(data=rows)
