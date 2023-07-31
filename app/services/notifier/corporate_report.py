@@ -95,8 +95,7 @@ class CorporateReportNotifier(Notifier):
 
     async def create_xlsx_file(self, rows: list[dict]) -> Path:
         df = pd.DataFrame(data=rows)
-        date = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
-        path_to_file = Path(f"./reports/corporate_reports/corporate_report_{date}.xlsx")
+        path_to_file = Path("./reports/corporate_report_.xlsx")
         with pd.ExcelWriter(path_to_file) as writer:  # pyright: ignore
             df.to_excel(writer, index=False, sheet_name="MySheet")
             auto_adjust_xlsx_column_width(df, writer, sheet_name="MySheet", margin=0)
