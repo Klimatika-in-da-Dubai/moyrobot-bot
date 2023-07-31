@@ -56,15 +56,6 @@ def get_scheduler(
         args=(session,),
         name="Creation corporate_reprt",
     )
-
-    scheduler.add_job(
-        create_corporate_report_for_past_month,
-        "cron",
-        minute="*",
-        args=(session,),
-        name="Creation corporate_reprt",
-    )
-
     scheduler.add_job(
         update_db,
         "interval",
@@ -118,16 +109,6 @@ def get_scheduler(
         args=(corporate_report_notifiers,),
         name="Corporate Report notifiers",
     )
-
-    # Удалить
-    scheduler.add_job(
-        notify,
-        "interval",
-        seconds=10,
-        args=(corporate_report_notifiers,),
-        name="Corporate Report notifiers",
-    )
-    ####
 
     scheduler.add_job(
         notify,
