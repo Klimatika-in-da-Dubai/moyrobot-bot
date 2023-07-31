@@ -136,3 +136,5 @@ alembic.ini
 .idea
 scripts/versions
 monthly_reports/monthly_report*
+*.xlsx
+
