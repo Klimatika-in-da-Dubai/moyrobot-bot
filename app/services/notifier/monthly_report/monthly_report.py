@@ -123,9 +123,8 @@ class MonthlyReportNotifier(Notifier):
 
     def create_monthly_report(self, report_rows: list):
         df = pd.DataFrame(data=report_rows)
-        date = datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
-        name = f"monthly_report_{date}.xlsx"
-        path = "./reports/monthly_reports/"
+        name = "monthly_report.xlsx"
+        path = "./reports/"
         with pd.ExcelWriter(path + name) as writer:  # pyright: ignore
             df.to_excel(writer, index=False, sheet_name="MySheet")
             auto_adjust_xlsx_column_width(df, writer, sheet_name="MySheet", margin=1)
@@ -134,7 +133,7 @@ class MonthlyReportNotifier(Notifier):
     async def send_notify(self, id: int, report_path: str) -> None:
         match datetime.today().day:
             case 1:
-                filename = f"Зарплата {month_name[datetime.today().month]}.xlsx"
+                filename = f"Зарплата {month_name[datetime.today().month - 1]}.xlsx"
             case 16:
                 filename = f"Aванс {month_name[datetime.today().month]}.xlsx"
             case _:
