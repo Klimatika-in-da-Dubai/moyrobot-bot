@@ -135,7 +135,7 @@ class CloseOpenShiftNotifier(Notifier):
             f"{escape_chars(str(shift_money_difference))} ₽\n"  # type: ignore
             f"Инкассация: {escape_chars(str(money_collection))} ₽\n"
             f"Итого в кассе: {escape_chars(str(shift_open.money_amount))} ₽\n"  # type: ignore
-            f"Разница между сменами : {escape_chars(str(-money_difference.money_difference))} ₽\n"
+            f"Разница между сменами : {escape_chars(str(money_difference.money_difference))} ₽\n"
         )
 
     @override
