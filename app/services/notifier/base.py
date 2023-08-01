@@ -33,10 +33,22 @@ class Notifier:
         if after_notifiers is not None:
             self._after_notifiers = after_notifiers
 
+    async def use_notifiers(self, notifiers: Iterable["Notifier"]) -> None:
+        for notifier in notifiers:
+            await notifier.notify()
+
     async def notify(self) -> None:
         await self.before_notify()
         await self._start_notify()
         await self.after_notify()
+
+    async def before_notify(self):
+        await self.use_notifiers(self._before_notifiers)
+        await self.before()
+
+    @abstractmethod
+    async def before(self):
+        ...
 
     async def _start_notify(self):
         objects_to_notify = await self.get_objects_to_notify()
@@ -49,22 +61,15 @@ class Notifier:
                 except Exception as e:
                     logging.error("Can't send notify to user with id = %s", id)
                     logging.error("Exception: %s", e)
+            await self.after_sending(obj)
 
-    async def use_notifiers(self, notifiers: Iterable["Notifier"]) -> None:
-        for notifier in notifiers:
-            await notifier.notify()
-
-    async def before_notify(self):
-        await self.use_notifiers(self._before_notifiers)
-        await self.before()
+    @abstractmethod
+    async def after_sending(self, obj):
+        ...
 
     async def after_notify(self):
         await self.use_notifiers(self._after_notifiers)
         await self.after()
-
-    @abstractmethod
-    async def before(self):
-        ...
 
     @abstractmethod
     async def after(self):
