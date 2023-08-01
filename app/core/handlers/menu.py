@@ -8,10 +8,11 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.admin.menu import get_admin_menu_keyboard
-from app.core.keyboards.base import Action
-from app.core.keyboards.menu import MenuCB, send_menu_keyboard
+from app.core.keyboards.base import get_cancel_keyboard
+from app.core.keyboards.menu import MenuCB, MenuTarget, send_menu_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.states.admin import AdminMenu
+from app.core.states.feedback import FeedbackMenu
 from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
@@ -45,7 +46,8 @@ async def cmd_start(
 
 
 @menu_router.callback_query(
-    MenuCB.filter((F.role == Role.OPERATOR) & (F.action == Action.OPEN)), isOperatorCB()
+    MenuCB.filter(F.target == MenuTarget.OPERATOR_MENU),
+    isOperatorCB(),
 )
 async def cb_open_operator_menu(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
@@ -55,14 +57,15 @@ async def cb_open_operator_menu(
 
 
 @menu_router.callback_query(
-    MenuCB.filter((F.role == Role.MODERATOR) & (F.action == Action.OPEN))
+    MenuCB.filter(F.target == MenuTarget.MODERATOR_MENU),
 )
 async def cb_open_moderator_menu(cb: types.CallbackQuery) -> None:
     await cb.answer(text="В разработке", show_alert=True)
 
 
 @menu_router.callback_query(
-    MenuCB.filter((F.role == Role.ADMIN) & (F.action == Action.OPEN)), isAdminCB()
+    MenuCB.filter(F.target == MenuTarget.ADMIN_MENU),
+    isAdminCB(),
 )
 async def cb_open_admin_menu(
     cb: types.CallbackQuery,
@@ -74,28 +77,12 @@ async def cb_open_admin_menu(
     await cb.message.edit_text("Админ меню", reply_markup=get_admin_menu_keyboard())  # type: ignore
 
 
-@menu_router.message(Command(commands=["id"]))
-async def cmd_id(message: types.Message) -> None:
-    await message.answer(f"Ваш id: *`{message.chat.id}`*")
+@menu_router.callback_query(MenuCB.filter(F.target == MenuTarget.FEEDBACK_MENU))
+async def cb_open_feedback_menu(cb: types.CallbackQuery, state: FSMContext):
+    await cb.answer()
 
-
-@menu_router.message(Command(commands=["cleaning"]))
-async def cleaning(
-    message: types.Message,
-    command: CommandObject,
-    bot: Bot,
-    session: async_sessionmaker,
-) -> None:
-    cleaningdao = CleaningDAO(session)
-    cleaning_notifier = CleaningNotifier(bot, session)
-    if command.args is None:
-        await message.answer("No id's specified")
-        return
-    args = map(int, command.args.split())
-
-    for id in args:
-        cleaning = await cleaningdao.get_by_id(id)
-        if cleaning is None:
-            await message.answer(f"No cleaning with id \\= {id}")
-            continue
-        await cleaning_notifier.send_notify(message.chat.id, cleaning, debug=True)
+    await state.set_state(FeedbackMenu.get_feedback)
+    await cb.message.edit_text(  # type: ignore
+        "Напишите сообщение, которые вы хотите передать администраторам мойки\\. Вы также можете прикрепить до 10 фотографий",
+        reply_markup=get_cancel_keyboard(),
+    )
