@@ -140,4 +140,6 @@ class MonthlyReportNotifier(Notifier):
                 filename = "Полумесячный отчёт.xlsx"
         report = FSInputFile(report_path, filename=filename)
         await self._bot.send_document(id, document=report)
+
+    async def after_sending(self, report_path: str):
         os.remove(report_path)

@@ -107,8 +107,10 @@ class CorporateReportNotifier(Notifier):
     async def send_notify(self, id: int, report: CorporateReportNotify) -> None:
         input_file = self.get_input_file(report)
         await self._bot.send_document(id, document=input_file)
-        os.remove(report.path_to_file)
 
     def get_input_file(self, report: CorporateReportNotify) -> FSInputFile:
         filename = f"Корпоративные запуски {month_name[report.corporate_report.start.month]}.xlsx"
         return FSInputFile(path=report.path_to_file, filename=filename)
+
+    async def after_sending(self, report: CorporateReportNotify):
+        os.remove(report.path_to_file)
