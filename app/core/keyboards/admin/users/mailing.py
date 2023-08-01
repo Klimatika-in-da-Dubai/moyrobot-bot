@@ -166,6 +166,14 @@ async def get_mailing_emoji(
 async def send_mailing_selection(func, state: FSMContext):
     await state.set_state(AdminMenu.Users.Add.mailing)
     await func(
-        text="Выберете рассыли",
+        text="Выберете рассылки",
+        reply_markup=await get_mailing_selection_keyboard(state),
+    )
+
+
+async def send_mailing_selection_in_change_menu(func, state: FSMContext):
+    await state.set_state(AdminMenu.Users.List.Selected.Change.mailing)
+    await func(
+        text="Выберете рассылки",
         reply_markup=await get_mailing_selection_keyboard(state),
     )

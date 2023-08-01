@@ -12,7 +12,9 @@ from app.core.keyboards.admin.users.list.change import (
     send_change_user_menu,
 )
 from app.core.keyboards.admin.users.list.selected_user import send_selected_user_menu
-from app.core.keyboards.admin.users.mailing import send_mailing_selection
+from app.core.keyboards.admin.users.mailing import (
+    send_mailing_selection_in_change_menu,
+)
 
 from app.core.states.admin import AdminMenu
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
@@ -120,7 +122,7 @@ async def cb_open_mailing_selection(cb: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
     if data.get("mailings") is None:
         await state.update_data(mailings=[])
-    await send_mailing_selection(cb.message.edit_text, state)  # type: ignore
+    await send_mailing_selection_in_change_menu(cb.message.edit_text, state)  # type: ignore
 
 
 @change_user_router.callback_query(
@@ -234,10 +236,9 @@ async def cb_enter(
     mailingdao = MailingDAO(session=session)
     salarydao = SalaryDAO(session=session)
     await userdao.add_user_with_roles(user, user_roles)
-
+    print("wtf")
     await salarydao.add_salary(salary)
-    for mailing in mailings:
-        await mailingdao.add_mailing(mailing)
+    await mailingdao.update_user_mailings(mailings)
 
     await cb_back(cb, state, session)
 
