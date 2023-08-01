@@ -38,11 +38,9 @@ class MailingDAO(BaseDAO[Mailing]):
             )
             return mailings.scalars().all()
 
-    async def update_user_mailings(self, new_mailings: list[Mailing]):
+    async def update_user_mailings(self, user: User, new_mailings: list[Mailing]):
         async with self._session() as session:
-            await session.execute(
-                delete(Mailing).where(Mailing.id == new_mailings[0].id)
-            )
+            await session.execute(delete(Mailing).where(Mailing.id == user.id))
             await session.commit()
 
         for mailing in new_mailings:

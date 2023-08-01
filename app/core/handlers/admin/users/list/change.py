@@ -235,10 +235,9 @@ async def cb_enter(
     userdao = UserDAO(session=session)
     mailingdao = MailingDAO(session=session)
     salarydao = SalaryDAO(session=session)
-    await userdao.add_user_with_roles(user, user_roles)
-    print("wtf")
     await salarydao.add_salary(salary)
-    await mailingdao.update_user_mailings(mailings)
+    await userdao.update_user_roles(user, user_roles)
+    await mailingdao.update_user_mailings(user, mailings)
 
     await cb_back(cb, state, session)
 
