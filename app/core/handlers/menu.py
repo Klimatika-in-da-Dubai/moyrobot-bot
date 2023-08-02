@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.admin.menu import get_admin_menu_keyboard
-from app.core.keyboards.base import get_cancel_keyboard
+from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
 from app.core.keyboards.menu import MenuCB, MenuTarget, send_menu_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.states.admin import AdminMenu
@@ -86,3 +86,12 @@ async def cb_open_feedback_menu(cb: types.CallbackQuery, state: FSMContext):
         "Напишите сообщение, которые вы хотите передать администраторам мойки\\. Вы также можете прикрепить до 10 фотографий",
         reply_markup=get_cancel_keyboard(),
     )
+
+
+@menu_router.callback_query(
+    FeedbackMenu.get_feedback, CancelCB.filter(F.action == Action.CANCEL)
+)
+async def cb_cancel_get_feedback(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await send_menu_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
