@@ -26,6 +26,7 @@ class MailingType(IntEnum):
     PAYMENT_CHECK_ALERT = auto()
     MONEY_COLLECTION = auto()
     CORPORATE_REPORT = auto()
+    FEEDBACK = auto()
 
 
 class Mailing(Base):
