@@ -1,3 +1,4 @@
+from enum import IntEnum, auto
 from typing import Callable
 from aiogram import types
 from aiogram.fsm.context import FSMContext
@@ -9,9 +10,16 @@ from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
 
 
+class MenuTarget(IntEnum):
+    OPERATOR_MENU = auto()
+    MODERATOR_MENU = auto()
+    ADMIN_MENU = auto()
+    FEEDBACK_MENU = auto()
+
+
 class MenuCB(CallbackData, prefix="menu"):
     action: Action
-    role: Role
+    target: MenuTarget
 
 
 async def get_menu_keyboard(
@@ -28,7 +36,9 @@ async def get_menu_keyboard(
         builder.row(
             types.InlineKeyboardButton(
                 text="Меню оператора",
-                callback_data=MenuCB(action=Action.OPEN, role=Role.OPERATOR).pack(),
+                callback_data=MenuCB(
+                    action=Action.OPEN, target=MenuTarget.OPERATOR_MENU
+                ).pack(),
             )
         )
 
@@ -36,7 +46,9 @@ async def get_menu_keyboard(
         builder.row(
             types.InlineKeyboardButton(
                 text="Меню модератора",
-                callback_data=MenuCB(action=Action.OPEN, role=Role.MODERATOR).pack(),
+                callback_data=MenuCB(
+                    action=Action.OPEN, target=MenuTarget.MODERATOR_MENU
+                ).pack(),
             )
         )
 
@@ -44,9 +56,20 @@ async def get_menu_keyboard(
         builder.row(
             types.InlineKeyboardButton(
                 text="Меню админа",
-                callback_data=MenuCB(action=Action.OPEN, role=Role.ADMIN).pack(),
+                callback_data=MenuCB(
+                    action=Action.OPEN, target=MenuTarget.ADMIN_MENU
+                ).pack(),
             )
         )
+
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Связь с администрацией",
+            callback_data=MenuCB(
+                action=Action.OPEN, target=MenuTarget.FEEDBACK_MENU
+            ).pack(),
+        )
+    )
 
     return builder.as_markup()
 

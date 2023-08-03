@@ -7,6 +7,7 @@ from app.services.notifier.base import Notifier
 from app.services.notifier.bonus import BonusCheckNotifier, BonusNotifier
 from app.services.notifier.cleaning import CleaningNotifier
 from app.services.notifier.corporate_report import CorporateReportNotifier
+from app.services.notifier.feedback import FeedbackNotifier
 from app.services.notifier.manual_start.alerter import ManualStartAlerter
 
 from app.services.notifier.manual_start.notifier import ManualStartNotifier
@@ -29,6 +30,7 @@ def setup_common_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifi
         AntifreezeNotifier(bot, session),
         RefundNotifier(bot, session),
         CleaningNotifier(bot, session),
+        FeedbackNotifier(bot, session),
     ]
     return notifiers
 

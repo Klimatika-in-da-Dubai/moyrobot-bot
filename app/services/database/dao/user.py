@@ -1,6 +1,6 @@
 from typing import Optional, Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.mailing import Mailing
 from app.services.database.models.salary import Salary
@@ -44,6 +44,15 @@ class UserDAO(BaseDAO[User]):
         async with self._session() as session:
             for user_role in user_roles:
                 await session.merge(user_role)
+
+            await session.commit()
+
+    async def update_user_roles(self, user: User, user_roles: list[UserRole]):
+        async with self._session() as session:
+            await session.execute(delete(UserRole).where(UserRole.id == user.id))
+
+            for role in user_roles:
+                await session.merge(role)
 
             await session.commit()
 
