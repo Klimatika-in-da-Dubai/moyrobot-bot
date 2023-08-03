@@ -8,6 +8,9 @@ class FeedbackDAO(BaseDAO):
     def __init__(self, session: async_sessionmaker):
         super().__init__(Feedback, session)
 
+    async def get_by_id(self, id_: str | int) -> Feedback | None:
+        return await super().get_by_id(id_)
+
     async def add_feedback(self, feedback: Feedback):
         async with self._session() as session:
             await session.merge(feedback)

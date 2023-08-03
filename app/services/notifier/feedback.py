@@ -3,6 +3,7 @@ from aiogram import Bot
 from aiogram.enums import InputMediaType, ParseMode
 from aiogram.types import InputMediaPhoto
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from app.core.keyboards.notifications.feedback import get_feedback_keyboard
 from app.services.database.dao.feedback import FeedbackDAO
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.feedback import Feedback
@@ -27,15 +28,25 @@ class FeedbackNotifier(Notifier):
         text = await self.get_text(feedback)
 
         if len(feedback.photos) == 0:
-            await self._bot.send_message(id, text=text)
+            await self._bot.send_message(
+                id, text=text, reply_markup=get_feedback_keyboard(feedback)
+            )
             return
 
         if len(feedback.photos) == 1:
-            await self._bot.send_photo(id, photo=feedback.photos[0], caption=text)
+            await self._bot.send_photo(
+                id,
+                photo=feedback.photos[0],
+                caption=text,
+                reply_markup=get_feedback_keyboard(feedback),
+            )
             return
 
         media_group = self.get_media_group(feedback, text)
         await self._bot.send_media_group(id, media_group)  # type: ignore
+        await self._bot.send_message(
+            id, text=text, reply_markup=get_feedback_keyboard(feedback)
+        )
 
     async def get_text(self, feedback: Feedback) -> str:
         user_name = await self._userdao.get_user_name_by_id(feedback.from_user_id)
@@ -51,5 +62,4 @@ class FeedbackNotifier(Notifier):
             InputMediaPhoto(type=InputMediaType.PHOTO, media=photo)
             for photo in feedback.photos
         ]
-        media_group[0].caption = text
         return media_group
