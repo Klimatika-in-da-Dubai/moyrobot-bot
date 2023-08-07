@@ -27,26 +27,26 @@ class FeedbackNotifier(Notifier):
     async def send_notify(self, id: int, feedback: Feedback, debug: bool = False):
         text = await self.get_text(feedback)
 
-        if len(feedback.photos) == 0:
-            await self._bot.send_message(
-                id, text=text, reply_markup=get_feedback_keyboard(feedback)
-            )
-            return
+        match len(feedback.photos):
+            case 0:
+                message = await self._bot.send_message(
+                    id, text=text, reply_markup=get_feedback_keyboard(feedback)
+                )
+            case 1:
+                message = await self._bot.send_photo(
+                    id,
+                    photo=feedback.photos[0],
+                    caption=text,
+                    reply_markup=get_feedback_keyboard(feedback),
+                )
+            case _:
+                media_group = self.get_media_group(feedback, text)
+                await self._bot.send_media_group(id, media_group)  # type: ignore
+                message = await self._bot.send_message(
+                    id, text=text, reply_markup=get_feedback_keyboard(feedback)
+                )
 
-        if len(feedback.photos) == 1:
-            await self._bot.send_photo(
-                id,
-                photo=feedback.photos[0],
-                caption=text,
-                reply_markup=get_feedback_keyboard(feedback),
-            )
-            return
-
-        media_group = self.get_media_group(feedback, text)
-        await self._bot.send_media_group(id, media_group)  # type: ignore
-        await self._bot.send_message(
-            id, text=text, reply_markup=get_feedback_keyboard(feedback)
-        )
+        await self._dao.add_notify_message_id(feedback, id, message.message_id)
 
     async def get_text(self, feedback: Feedback) -> str:
         user_name = await self._userdao.get_user_name_by_id(feedback.from_user_id)
