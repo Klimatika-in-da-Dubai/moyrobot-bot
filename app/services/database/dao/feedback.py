@@ -25,6 +25,19 @@ class FeedbackDAO(BaseDAO):
             )
             return list(results.scalars().all())
 
+    async def add_notify_message_id(
+        self, feedback: Feedback, chat_id: int, message_id: int
+    ):
+        new_list = feedback.notify_messages_ids
+        new_list.append({"chat_id": chat_id, "message_id": message_id})
+        async with self._session() as session:
+            await session.execute(
+                update(Feedback)
+                .where(Feedback.id == feedback.id)
+                .values(notify_messages_ids=new_list)
+            )
+            await session.commit()
+
     async def make_notified(self, feedback: Feedback):
         async with self._session() as session:
             await session.execute(
