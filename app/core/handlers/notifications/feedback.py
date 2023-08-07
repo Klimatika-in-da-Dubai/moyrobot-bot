@@ -24,7 +24,7 @@ async def cb_feedback_notify_check(
         return
 
     if feedback.checked is True:
-        await cb.answer("Сообщение уже было рассмотренно")
+        await cb.answer("Сообщение уже было рассмотренно", show_alert=True)
         return
 
     await cb.answer()
