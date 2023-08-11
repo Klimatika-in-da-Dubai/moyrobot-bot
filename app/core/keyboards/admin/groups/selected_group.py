@@ -36,7 +36,7 @@ def get_selected_group_menu_keyboard() -> InlineKeyboardMarkup:
     )
     builder.row(
         InlineKeyboardButton(
-            text="Удалить чат",
+            text="Удалить группу",
             callback_data=SelectedGroupCB(
                 action=Action.OPEN, target=SelectedGroupTarget.DELETE
             ).pack(),
