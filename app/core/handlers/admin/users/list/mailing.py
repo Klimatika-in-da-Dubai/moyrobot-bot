@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.users.list.change import send_change_user_menu
-from app.core.keyboards.admin.users.mailing import (
+from app.core.keyboards.admin.mailing import (
     MailingSelectionCB,
     send_mailing_selection_in_change_menu,
 )
