@@ -67,6 +67,6 @@ async def send_selected_group_menu(
 
     await state.set_state(AdminMenu.Groups.Selected.menu)
     await func(
-        text=f"Чат: {escape_chars(group.name)}",
+        text=f"Группа: {escape_chars(group.name)}",
         reply_markup=get_selected_group_menu_keyboard(),
     )

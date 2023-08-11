@@ -39,19 +39,19 @@ async def cleaning(
 
 
 @commands_router.message(
-    Command(commands=["addchat"]),
+    Command(commands=["addgroup"]),
     F.chat.type.in_(["group", "supergroup"]),
 )
 async def addchat(message: types.Message, session: async_sessionmaker):
     userdao = UserDAO(session)
-    if not await userdao.is_admin(message.chat.id):
+    if not await userdao.is_admin(message.from_user.id):  # type: ignore
         return
 
     groupdao = GroupDAO(session)
     group = Group(id=message.chat.id, name=message.chat.title)
 
     if await groupdao.get_by_id(group.id) is not None:
-        await message.answer("Чат уже добавлен")
+        await message.answer("Группа уже добавлена")
         return
 
     await groupdao.add_group(group)

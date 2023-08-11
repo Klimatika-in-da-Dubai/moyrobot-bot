@@ -44,4 +44,4 @@ async def send_groups_menu(func, state: FSMContext, session: async_sessionmaker)
     await unselect_group(state)
 
     await state.set_state(AdminMenu.Groups.menu)
-    await func(text="Чаты", reply_markup=get_groups_menu(groups))
+    await func(text="Группы", reply_markup=get_groups_menu(groups))
