@@ -1,8 +1,11 @@
-from aiogram import Router, types, Bot
+from aiogram import Router, types, Bot, F
 from aiogram.filters import Command, CommandObject
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.services.database.dao.cleaning import CleaningDAO
+from app.services.database.dao.group import GroupDAO
+from app.services.database.dao.user import UserDAO
+from app.services.database.models.group import Group
 from app.services.notifier.cleaning import CleaningNotifier
 
 commands_router = Router(name="menu-router")
@@ -33,3 +36,23 @@ async def cleaning(
             await message.answer(f"No cleaning with id \\= {id}")
             continue
         await cleaning_notifier.send_notify(message.chat.id, cleaning, debug=True)
+
+
+@commands_router.message(
+    Command(commands=["addchat"]),
+    F.chat.type.in_(["group", "supergroup"]),
+)
+async def addchat(message: types.Message, session: async_sessionmaker):
+    userdao = UserDAO(session)
+    if not await userdao.is_admin(message.chat.id):
+        return
+
+    groupdao = GroupDAO(session)
+    group = Group(id=message.chat.id, name=message.chat.title)
+
+    if await groupdao.get_by_id(group.id) is not None:
+        await message.answer("Чат уже добавлен")
+        return
+
+    await groupdao.add_group(group)
+    await message.answer("Группа успешно добавлена")

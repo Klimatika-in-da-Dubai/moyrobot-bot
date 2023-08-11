@@ -40,5 +40,13 @@ class AdminMenu(StatesGroup):
                     mailing = State()
                     role = State()
 
+    class Groups(StatesGroup):
+        menu = State()
+
+        class Selected(StatesGroup):
+            menu = State()
+            mailing = State()
+            delete = State()
+
     class MoneyCollection(StatesGroup):
         money_collection = State()

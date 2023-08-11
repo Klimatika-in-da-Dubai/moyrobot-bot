@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 import logging
 from app.core.filters.admin import isAdminCB
-from app.core.keyboards.admin.users.mailing import send_mailing_selection
+from app.core.keyboards.admin.mailing import send_mailing_selection
 
 from app.core.states.admin import AdminMenu
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard

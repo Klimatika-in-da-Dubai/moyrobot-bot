@@ -4,9 +4,12 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
-from app.services.database.models.mailing import MailingType
+from app.services.database.dao.mailing import GroupMailingDAO
+from app.services.database.models.mailing import GroupMailing, MailingType
+from app.utils.group import get_mailings_from_state, get_selected_group_id
 
 
 class MailingSelectionCB(CallbackData, prefix="mailing_selection"):
@@ -182,3 +185,33 @@ async def send_mailing_selection_in_change_menu(func, state: FSMContext):
         text="Выберете рассылки",
         reply_markup=await get_mailing_selection_keyboard(state),
     )
+
+
+async def send_mailing_selection_in_group_menu(
+    func, state: FSMContext, session: async_sessionmaker
+):
+    group_id = await get_selected_group_id(state)
+    if group_id is None:
+        raise ValueError("No group selected")
+
+    mailings = await get_mailings_from_state(state)
+    if len(mailings) == 0:
+        mailings = await get_group_mailings(group_id, session)
+
+    await set_state_malings(state, mailings)
+    await state.set_state(AdminMenu.Groups.Selected.mailing)
+    await func(
+        text="Выберете рассылки",
+        reply_markup=await get_mailing_selection_keyboard(state),
+    )
+
+
+async def get_group_mailings(
+    group_id: int, session: async_sessionmaker
+) -> list[MailingType]:
+    groupmailingdao = GroupMailingDAO(session)
+    return await groupmailingdao.get_mailings(group_id)
+
+
+async def set_state_malings(state: FSMContext, mailings: list[MailingType]):
+    await state.update_data(mailings=mailings)

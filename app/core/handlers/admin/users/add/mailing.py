@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 
 from app.core.filters.admin import isAdminCB
-from app.core.keyboards.admin.users.mailing import (
+from app.core.keyboards.admin.mailing import (
     MailingSelectionCB,
     send_mailing_selection,
 )

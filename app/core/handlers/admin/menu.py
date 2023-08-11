@@ -5,11 +5,15 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
 from app.core.filters.admin import isAdminCB
+from app.core.keyboards.admin.groups.menu import send_groups_menu
 from app.core.keyboards.admin.menu import (
     AdminMenuCB,
     AdminMenuTarget,
 )
-from app.core.keyboards.admin.users.menu import get_users_keyboard
+from app.core.keyboards.admin.users.menu import (
+    get_users_keyboard,
+    send_admin_users_menu,
+)
 from app.core.keyboards.base import Action, get_cancel_keyboard
 from app.core.keyboards.menu import (
     send_menu_keyboard,
@@ -30,11 +34,21 @@ logger = logging.getLogger(name="AdminMenu")
 async def cb_open_users_menu(
     cb: types.CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker[AsyncSession],
 ):
     await cb.answer()
-    await state.set_state(AdminMenu.Users.menu)
-    await cb.message.edit_text("Пользователи", reply_markup=get_users_keyboard())  # type: ignore
+    await send_admin_users_menu(cb.message.edit_text, state)  # type: ignore
+
+
+@menu_router.callback_query(
+    AdminMenu.menu,
+    isAdminCB(),
+    AdminMenuCB.filter((F.action == Action.OPEN) & (F.target == AdminMenuTarget.GROUP)),
+)
+async def cb_open_groups_menu(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await cb.answer()
+    await send_groups_menu(cb.message.edit_text, state, session)  # type: ignore
 
 
 @menu_router.callback_query(
