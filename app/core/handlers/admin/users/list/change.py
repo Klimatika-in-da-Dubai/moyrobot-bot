@@ -12,7 +12,7 @@ from app.core.keyboards.admin.users.list.change import (
     send_change_user_menu,
 )
 from app.core.keyboards.admin.users.list.selected_user import send_selected_user_menu
-from app.core.keyboards.admin.users.mailing import (
+from app.core.keyboards.admin.mailing import (
     send_mailing_selection_in_change_menu,
 )
 

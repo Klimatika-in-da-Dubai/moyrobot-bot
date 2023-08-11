@@ -1,6 +1,7 @@
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.dao.base import BaseDAO
+from app.services.database.models.group import Group
 from app.services.database.models.mailing import GroupMailing, Mailing, MailingType
 from app.services.database.models.user import User
 
@@ -69,6 +70,25 @@ class GroupMailingDAO(BaseDAO[GroupMailing]):
                 select(GroupMailing.id).where(GroupMailing.type == type)
             )
             return ids.scalars().all()
+
+    async def get_mailings(self, id: int) -> list[MailingType]:
+        async with self._session() as session:
+            mailings = await session.execute(
+                select(GroupMailing.type).where(GroupMailing.id == id)
+            )
+            return list(mailings.scalars().all())
+
+    async def update_group_mailings(
+        self, group: Group, new_mailings: list[MailingType]
+    ):
+        async with self._session() as session:
+            await session.execute(
+                delete(GroupMailing).where(GroupMailing.id == group.id)
+            )
+            await session.commit()
+
+        for mailing in new_mailings:
+            await self.add_mailing(GroupMailing(id=group.id, type=mailing))
 
 
 async def get_mailing_ids(session: async_sessionmaker, type: MailingType):
