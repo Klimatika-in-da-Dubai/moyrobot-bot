@@ -7,8 +7,6 @@ from app.core.keyboards.admin.groups.menu import send_groups_menu
 from app.core.keyboards.admin.groups.selected_group import send_selected_group_menu
 from app.core.keyboards.admin.mailing import (
     MailingSelectionCB,
-    get_group_mailings,
-    send_mailing_selection_in_change_menu,
     send_mailing_selection_in_group_menu,
 )
 
@@ -31,10 +29,10 @@ mailing_router.callback_query(AdminMenu.Groups.Selected.mailing)
 
 
 @mailing_router.callback_query(
-    isAdminCB(),
     MailingSelectionCB.filter(
         F.action == Action.SELECT,
     ),
+    isAdminCB(),
 )
 async def cb_select_mailing(
     cb: types.CallbackQuery,
@@ -62,10 +60,10 @@ async def select_mailing(state: FSMContext, mailing: MailingType):
 
 
 @mailing_router.callback_query(
-    isAdminCB(),
     MailingSelectionCB.filter(
         F.action == Action.ENTER,
     ),
+    isAdminCB(),
 )
 async def cb_enter(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker

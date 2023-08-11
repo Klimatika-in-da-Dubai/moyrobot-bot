@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.groups.menu import send_groups_menu
 from app.core.keyboards.admin.groups.selected_group import (
     SelectedGroupCB,
@@ -21,7 +22,7 @@ select_router.callback_query(AdminMenu.Groups.Selected.menu)
 
 
 @select_router.callback_query(
-    SelectedGroupCB.filter(F.target == SelectedGroupTarget.MAILING)
+    SelectedGroupCB.filter(F.target == SelectedGroupTarget.MAILING), isAdminCB()
 )
 async def cb_select_group(
     cb: CallbackQuery,
@@ -34,7 +35,7 @@ async def cb_select_group(
 
 
 @select_router.callback_query(
-    SelectedGroupCB.filter(F.target == SelectedGroupTarget.DELETE)
+    SelectedGroupCB.filter(F.target == SelectedGroupTarget.DELETE), isAdminCB()
 )
 async def cb_delete_group(
     cb: CallbackQuery,
@@ -52,7 +53,9 @@ async def cb_delete_group(
     await send_groups_menu(cb.message.edit_text, state, session)  # type: ignore
 
 
-@select_router.callback_query(SelectedGroupCB.filter(F.target == Action.BACK))
+@select_router.callback_query(
+    SelectedGroupCB.filter(F.target == Action.BACK), isAdminCB()
+)
 async def cb_back(cb: CallbackQuery, state: FSMContext, session: async_sessionmaker):
     await cb.answer()
     await send_groups_menu(cb.message.edit_text, state, session)  # type: ignore
