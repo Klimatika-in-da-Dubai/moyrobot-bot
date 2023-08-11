@@ -2,6 +2,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.groups.menu import GroupsMenuCB
 from app.core.keyboards.admin.groups.selected_group import send_selected_group_menu
 from app.core.keyboards.admin.menu import send_admin_menu
@@ -16,7 +17,7 @@ menu_router = Router()
 menu_router.callback_query(AdminMenu.Groups.menu)
 
 
-@menu_router.callback_query(GroupsMenuCB.filter(F.action == Action.OPEN))
+@menu_router.callback_query(GroupsMenuCB.filter(F.action == Action.OPEN), isAdminCB())
 async def cb_select_group(
     cb: CallbackQuery,
     callback_data: GroupsMenuCB,
@@ -28,7 +29,7 @@ async def cb_select_group(
     await send_selected_group_menu(cb.message.edit_text, state, session)  # type: ignore
 
 
-@menu_router.callback_query(GroupsMenuCB.filter(F.action == Action.BACK))
+@menu_router.callback_query(GroupsMenuCB.filter(F.action == Action.BACK), isAdminCB())
 async def cb_back(cb: CallbackQuery, state: FSMContext):
     await cb.answer()
     await send_admin_menu(cb.message.edit_text, state)  # type: ignore
