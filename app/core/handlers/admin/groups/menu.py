@@ -14,7 +14,7 @@ from app.core.states.admin import AdminMenu
 
 menu_router = Router()
 
-menu_router.callback_query(AdminMenu.Groups.menu)
+menu_router.callback_query.filter(AdminMenu.Groups.menu)
 
 
 @menu_router.callback_query(GroupsMenuCB.filter(F.action == Action.OPEN), isAdminCB())
