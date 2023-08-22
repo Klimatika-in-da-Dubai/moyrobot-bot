@@ -178,7 +178,7 @@ def add_shift_alert_job(
     scheduler.add_job(
         notify,
         "cron",
-        second="*/10",
+        minute="*/15",
         args=([ShiftNotifyNotifier(bot, session)],),
         name="ShiftNotifyNotifier",
     )

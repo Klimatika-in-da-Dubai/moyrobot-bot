@@ -24,11 +24,16 @@ class ShiftNotifyNotifier(Notifier):
         if (
             (
                 time.fromisoformat("09:30") < datetime.now().time()
+                and not (
+                    time.fromisoformat("06:00")
+                    < shift.open_date.time()
+                    < time.fromisoformat("12:00")
+                )
                 or time.fromisoformat("21:30") < datetime.now().time()
             )
             and await self._dao.is_shift_opened()
             and datetime.now() - shift.open_date
-            > timedelta(seconds=seconds_in_hour * 8)
+            > timedelta(seconds=seconds_in_hour * 13)
         ):
             return [ShiftNotifyType.SHIFT_NOT_CLOSED]
 
