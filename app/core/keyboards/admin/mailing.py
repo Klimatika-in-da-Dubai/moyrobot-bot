@@ -103,6 +103,11 @@ async def get_mailing_buttons(state: FSMContext) -> list[ButtonInfo]:
             mailing_emoji=await get_mailing_emoji(state, MailingType.SHIFT),
         ),
         ButtonInfo(
+            description="Напоминание открытия-закрытия смены",
+            mailing_type=MailingType.SHIFT_NOTIFY,
+            mailing_emoji=await get_mailing_emoji(state, MailingType.SHIFT_NOTIFY),
+        ),
+        ButtonInfo(
             description="Покупка антифриза",
             mailing_type=MailingType.ANTIFREEZE,
             mailing_emoji=await get_mailing_emoji(state, MailingType.ANTIFREEZE),

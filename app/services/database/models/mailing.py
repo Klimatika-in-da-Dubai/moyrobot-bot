@@ -15,6 +15,7 @@ class MailingType(IntEnum):
     SHIFT = auto()
     SHIFT_CHECK = auto()
     SHIFTS_DIFFERENCE = auto()
+    SHIFT_NOTIFY = auto()
     ANTIFREEZE = auto()
     CLEANING = auto()
     PROMOCODE = auto()
