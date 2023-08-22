@@ -39,28 +39,6 @@ def get_parser(config: Config) -> Parser:
     return Parser(sessions)
 
 
-def setup_scheduler(bot: Bot, session: async_sessionmaker, parser: Parser):
-    common_notifiers = setup_common_notifiers(bot, session)
-    bonus_promo_notifiers = setup_promocode_and_bonus_notifiers(bot, session)
-    shift_notifier = setup_shifts_notifiers(bot, session)
-    monthly_report_notifiers = setup_monthly_report_notifiers(bot, session)
-    payment_check_notifiers = setup_payment_check_notifiers(bot, session)
-    bonus_promo_check_notifiers = setup_bonus_promo_check_notifiers(bot, session)
-    corporate_report_notitifiers = setup_corporate_report_notifiers(bot, session)
-
-    return get_scheduler(
-        parser,
-        session,
-        common_notifiers,
-        bonus_promo_notifiers,
-        shift_notifier,
-        monthly_report_notifiers,
-        payment_check_notifiers,
-        bonus_promo_check_notifiers,
-        corporate_report_notitifiers,
-    )
-
-
 async def main():
     logging.basicConfig(
         format="%(asctime)s - [%(levelname)s] - %(name)s -"
@@ -73,7 +51,7 @@ async def main():
     session = await setup_get_pool(config.db.uri)
     parser = get_parser(config)
     dp = Dispatcher(storage=RedisStorage.from_url(config.redis.url))
-    scheduler = setup_scheduler(bot, session, parser)
+    scheduler = get_scheduler(bot, parser, session)
     setup_routers(dp)
     setup_middlewares(dp, session)
     try:

@@ -1,6 +1,17 @@
+from aiogram import Bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.services.notifier.base import Notifier
+from app.services.notifier.setup_notifiers import (
+    setup_bonus_promo_check_notifiers,
+    setup_common_notifiers,
+    setup_corporate_report_notifiers,
+    setup_monthly_report_notifiers,
+    setup_payment_check_notifiers,
+    setup_promocode_and_bonus_notifiers,
+    setup_shifts_notifiers,
+)
+from app.services.notifier.shifts.notify import ShiftNotifyNotifier
 
 from app.services.parser.parser import Parser
 from app.services.scheduler.bonus_check import create_bonus_check_for_past_week
@@ -14,15 +25,9 @@ from app.services.scheduler.update_db import update_db
 
 
 def get_scheduler(
+    bot: Bot,
     parser: Parser,
     session: async_sessionmaker[AsyncSession],
-    common_notifiers: list[Notifier],
-    bonus_promo_notifiers: list[Notifier],
-    shift_notifiers: list[Notifier],
-    monthly_report_notifiers: list[Notifier],
-    payment_check_notifiers: list[Notifier],
-    bonus_promo_check_notifiers: list[Notifier],
-    corporate_report_notifiers: list[Notifier],
 ) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
@@ -54,7 +59,7 @@ def get_scheduler(
         "cron",
         day="1",
         args=(session,),
-        name="Creation corporate_reprt",
+        name="Creation corporate_report",
     )
     scheduler.add_job(
         update_db,
@@ -63,6 +68,21 @@ def get_scheduler(
         args=(parser, session),
         name="MoyRobotDB update",
     )
+    add_common_notifiers_job(scheduler, bot, session)
+    add_bonus_promo_job(scheduler, bot, session)
+    add_payment_check_job(scheduler, bot, session)
+    add_shift_notifiers_job(scheduler, bot, session)
+    add_monthly_report_job(scheduler, bot, session)
+    add_corporate_report_job(scheduler, bot, session)
+    add_bonus_promo_check_job(scheduler, bot, session)
+    add_shift_alert_job(scheduler, bot, session)
+    return scheduler
+
+
+def add_common_notifiers_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    common_notifiers = setup_common_notifiers(bot, session)
     scheduler.add_job(
         notify,
         "interval",
@@ -71,6 +91,11 @@ def get_scheduler(
         name="Common notifiers",
     )
 
+
+def add_bonus_promo_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    bonus_promo_notifiers = setup_promocode_and_bonus_notifiers(bot, session)
     scheduler.add_job(
         notify,
         "cron",
@@ -79,6 +104,11 @@ def get_scheduler(
         name="Bonus and Promocode notifiers",
     )
 
+
+def add_payment_check_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    payment_check_notifiers = setup_payment_check_notifiers(bot, session)
     scheduler.add_job(
         notify,
         "cron",
@@ -89,18 +119,34 @@ def get_scheduler(
         name="Payment Chtck notifiers",
     )
 
+
+def add_shift_notifiers_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    shift_notifiers = setup_shifts_notifiers(bot, session)
     scheduler.add_job(
         notify, "interval", seconds=10, args=(shift_notifiers,), name="Shift notifiers"
     )
 
+
+def add_monthly_report_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    monthly_report_notifiers = setup_monthly_report_notifiers(bot, session)
     scheduler.add_job(
         notify,
         "cron",
         day="1,16",
+        hour="12",
         args=(monthly_report_notifiers,),
         name="Monthly Report notifiers",
     )
 
+
+def add_corporate_report_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    corporate_report_notifiers = setup_corporate_report_notifiers(bot, session)
     scheduler.add_job(
         notify,
         "cron",
@@ -110,6 +156,11 @@ def get_scheduler(
         name="Corporate Report notifiers",
     )
 
+
+def add_bonus_promo_check_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    bonus_promo_check_notifiers = setup_bonus_promo_check_notifiers(bot, session)
     scheduler.add_job(
         notify,
         "cron",
@@ -119,4 +170,15 @@ def get_scheduler(
         args=(bonus_promo_check_notifiers,),
         name="Bonus and Promocode check notifiers",
     )
-    return scheduler
+
+
+def add_shift_alert_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    scheduler.add_job(
+        notify,
+        "cron",
+        second="*/10",
+        args=([ShiftNotifyNotifier(bot, session)],),
+        name="ShiftNotifyNotifier",
+    )
