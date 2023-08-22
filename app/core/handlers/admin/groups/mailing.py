@@ -25,7 +25,7 @@ from app.utils.group import (
 
 mailing_router = Router()
 
-mailing_router.callback_query(AdminMenu.Groups.Selected.mailing)
+mailing_router.callback_query.filter(AdminMenu.Groups.Selected.mailing)
 
 
 @mailing_router.callback_query(

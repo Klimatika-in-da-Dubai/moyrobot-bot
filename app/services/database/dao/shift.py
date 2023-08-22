@@ -66,7 +66,7 @@ class ShiftDAO(BaseDAO[Shift]):
 
             return True
 
-    async def get_last_shift(self) -> Shift | None:
+    async def get_last_shift(self) -> Shift:
         async with self._session() as session:
             result = await session.execute(
                 select(Shift).order_by(Shift.close_date.desc())

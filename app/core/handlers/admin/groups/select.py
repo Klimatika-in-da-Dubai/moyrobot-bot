@@ -18,7 +18,7 @@ from app.utils.group import get_selected_group_id
 
 select_router = Router()
 
-select_router.callback_query(AdminMenu.Groups.Selected.menu)
+select_router.callback_query.filter(AdminMenu.Groups.Selected.menu)
 
 
 @select_router.callback_query(
