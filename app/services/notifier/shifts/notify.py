@@ -22,9 +22,14 @@ class ShiftNotifyNotifier(Notifier):
         seconds_in_hour = 3600
         shift = await self._dao.get_last_shift()
         if (
-            time.fromisoformat("09:30") < datetime.now().time()
-            or time.fromisoformat("21:30") < datetime.now().time()
-        ) and datetime.now() - shift.open_date > timedelta(seconds=seconds_in_hour * 8):
+            (
+                time.fromisoformat("09:30") < datetime.now().time()
+                or time.fromisoformat("21:30") < datetime.now().time()
+            )
+            and await self._dao.is_shift_opened()
+            and datetime.now() - shift.open_date
+            > timedelta(seconds=seconds_in_hour * 8)
+        ):
             return [ShiftNotifyType.SHIFT_NOT_CLOSED]
 
         if (
