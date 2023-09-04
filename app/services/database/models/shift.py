@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time, timedelta
 from sqlalchemy import BigInteger, ForeignKey
 
 from sqlalchemy.orm import Mapped, mapped_column
@@ -14,8 +14,44 @@ class Shift(Base):
     opened_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"))
     close_date: Mapped[datetime] = mapped_column(nullable=True)
     closed_by_id: Mapped[int] = mapped_column(ForeignKey("tg_user.id"), nullable=True)
+    closed_automaticaly: Mapped[bool] = mapped_column(default=False)
     notified: Mapped[bool] = mapped_column(default=False)
     monthly_reported: Mapped[bool] = mapped_column(default=False)
+
+    def is_daily_shift(self) -> bool:
+        return (
+            time.fromisoformat("06:00")
+            <= self.open_date.time()
+            < time.fromisoformat("18:00")
+        )
+
+    def is_nightly_shift(self) -> bool:
+        return time.fromisoformat(
+            "18:00"
+        ) <= self.open_date.time() or self.open_date.time() < time.fromisoformat(
+            "06:00"
+        )
+
+    def is_should_be_closed(self) -> bool:
+        if self.close_date is not None:
+            return False
+
+        if self.is_daily_shift() and (
+            datetime.now().time() > time.fromisoformat("21:30")
+        ):
+            return True
+
+        if self.is_nightly_shift() and (
+            time.fromisoformat("09:30")
+            < datetime.now().time()
+            < time.fromisoformat("18:00")
+        ):
+            return True
+
+        if datetime.now() - self.open_date > timedelta(seconds=15 * 60 * 60):
+            return True
+
+        return False
 
 
 class OpenShift(Base):
