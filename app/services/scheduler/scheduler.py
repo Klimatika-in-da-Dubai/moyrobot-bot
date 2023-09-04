@@ -14,6 +14,7 @@ from app.services.notifier.setup_notifiers import (
 from app.services.notifier.shifts.notify import ShiftNotifyNotifier
 
 from app.services.parser.parser import Parser
+from app.services.scheduler.auto_close_shift import auto_close_shift
 from app.services.scheduler.bonus_check import create_bonus_check_for_past_week
 from app.services.scheduler.corporate_report import (
     create_corporate_report_for_past_month,
@@ -76,6 +77,7 @@ def get_scheduler(
     add_corporate_report_job(scheduler, bot, session)
     add_bonus_promo_check_job(scheduler, bot, session)
     add_shift_alert_job(scheduler, bot, session)
+    add_auto_close_shift_job(scheduler, bot, session)
     return scheduler
 
 
@@ -179,6 +181,20 @@ def add_shift_alert_job(
         notify,
         "cron",
         minute="*/15",
+        second="30",
         args=([ShiftNotifyNotifier(bot, session)],),
         name="ShiftNotifyNotifier",
+    )
+
+
+def add_auto_close_shift_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    scheduler.add_job(
+        auto_close_shift,
+        "cron",
+        hour="9-12,21-23",
+        minute="*/30",
+        args=(bot, session),
+        name="Auto Close Shift",
     )
