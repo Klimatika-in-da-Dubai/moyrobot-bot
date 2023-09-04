@@ -1,4 +1,5 @@
-from datetime import datetime, time, timedelta
+import datetime
+from datetime import time, timedelta
 from enum import IntEnum, auto
 from aiogram import Bot
 from aiogram.enums import ParseMode
@@ -19,31 +20,17 @@ class ShiftNotifyNotifier(Notifier):
         self._dao: ShiftDAO
 
     async def get_objects_to_notify(self) -> list:
-        seconds_in_hour = 3600
         shift = await self._dao.get_last_shift()
-        if (
-            (
-                time.fromisoformat("09:30") < datetime.now().time()
-                and not (
-                    time.fromisoformat("06:00")
-                    < shift.open_date.time()
-                    < time.fromisoformat("12:00")
-                )
-                or time.fromisoformat("21:30") < datetime.now().time()
-            )
-            and await self._dao.is_shift_opened()
-            and datetime.now() - shift.open_date
-            > timedelta(seconds=seconds_in_hour * 13)
-        ):
+        if shift.is_should_be_closed():
             return [ShiftNotifyType.SHIFT_NOT_CLOSED]
 
         if (
             time.fromisoformat("09:30")
-            < datetime.now().time()
+            < datetime.datetime.now().time()
             < time.fromisoformat("20:30")
             or (
-                time.fromisoformat("21:30") < datetime.now().time()
-                or datetime.now().time() < time.fromisoformat("08:30")
+                time.fromisoformat("21:30") < datetime.datetime.now().time()
+                or datetime.datetime.now().time() < time.fromisoformat("08:30")
             )
         ) and not (await self._dao.is_shift_opened()):
             return [ShiftNotifyType.SHIFT_NOT_OPENED]

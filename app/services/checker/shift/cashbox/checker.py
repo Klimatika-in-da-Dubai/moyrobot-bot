@@ -27,11 +27,13 @@ class CashboxChecker(Checker):
         cashbox_start = open_shift.money_amount
         cashbox_end = close_shift.money_amount
 
-        income = await self.income_getter.get_income(shift)
-        outcome = await self.outcome_getter.get_outcome(shift)
-
-        shift_check.money_expected = cashbox_start + income - outcome
+        shift_check.money_expected = cashbox_start + await self.get_cashbox_diff(shift)
         shift_check.money_actual = cashbox_end
         shift_check.money_difference = (
             shift_check.money_actual - shift_check.money_expected
         )
+
+    async def get_cashbox_diff(self, shift: Shift) -> int:
+        income = await self.income_getter.get_income(shift)
+        outcome = await self.outcome_getter.get_outcome(shift)
+        return income - outcome
