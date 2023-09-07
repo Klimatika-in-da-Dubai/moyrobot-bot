@@ -117,8 +117,6 @@ async def message_salary(message: types.Message, state: FSMContext):
 async def cb_open_mailing_selection(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
     data = await state.get_data()
-    if data.get("mailings") is None:
-        await state.update_data(mailings=[])
     await send_mailing_selection(cb.message.edit_text, state)  # type: ignore
 
 
