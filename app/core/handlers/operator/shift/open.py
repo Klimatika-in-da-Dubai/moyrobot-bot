@@ -55,10 +55,6 @@ async def cb_enter(
         await cb.answer("Ошибка в получении id оператора", show_alert=True)
         return
 
-    if await userdao.is_work_account(opened_by_id):
-        await cb.answer("Выберите оператора", show_alert=True)
-        return
-
     await shiftdao.add_shift(
         Shift(opened_by_id=opened_by_id, open_date=datetime.now())  # type: ignore
     )

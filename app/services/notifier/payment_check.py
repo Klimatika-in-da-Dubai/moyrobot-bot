@@ -13,6 +13,7 @@ from app.services.database.models.manual_start import (
 from app.services.database.models.payment_check import PaymentCheck
 from app.services.database.models.utils import PaymentMethod
 from app.services.notifier.base import Notifier
+from app.services.notifier.utils import get_manual_start_mode_text
 
 
 class PaymentCheckNotifier(Notifier):
@@ -52,7 +53,7 @@ class PaymentCheckNotifier(Notifier):
             time = manual_start_info.date.strftime("%H:%M")
             text += (
                 f"{time} - Терминал: {manual_start_info.terminal_id} - "
-                f"Режим: {manual_start_info.mode}\n"
+                f"Режим: {get_manual_start_mode_text(manual_start_info)}\n"
             )
         return text
 

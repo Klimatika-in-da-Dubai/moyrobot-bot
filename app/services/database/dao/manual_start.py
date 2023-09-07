@@ -1,7 +1,7 @@
 import datetime
 from typing import Sequence, assert_never
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from sqlalchemy import select, update
+from sqlalchemy import or_, select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.manual_start import (
     CorporateManualStart,
@@ -83,7 +83,13 @@ class ManualStartDAO(BaseDAO[ManualStart]):
             manual_starts = await session.execute(
                 select(ManualStart)
                 .where(ManualStart.reported == True)  # noqa: E712
-                .where(ManualStart.mode != None)  # noqa: E711
+                .where(
+                    or_(
+                        ManualStart.mode != None,
+                        datetime.datetime.now() - ManualStart.date
+                        > datetime.timedelta(seconds=15 * 60),
+                    )
+                )  # noqa: E711
                 .where(ManualStart.notified == False)  # noqa: E712
             )
 

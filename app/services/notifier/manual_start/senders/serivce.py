@@ -9,6 +9,7 @@ from app.services.database.models.manual_start import (
     ServiceManualStart,
 )
 from app.services.notifier.manual_start.senders.sender import TypedManualStartSender
+from app.services.notifier.utils import get_manual_start_mode_text
 from app.utils.text import escape_chars
 
 
@@ -23,7 +24,7 @@ class ServiceManualStartSender(TypedManualStartSender):
             "Ручной запуск:\n"
             "*Тип:* Технический\n"
             f"*ID:* {escape_chars(manual_start.id)}\n"
-            f"*Режим:* {escape_chars(str(manual_start.mode))}\n"
+            f"*Режим:* {escape_chars(get_manual_start_mode_text(manual_start))}\n"
             f"*Причина:* {escape_chars(typed_manual_start.description)}"
         )
 

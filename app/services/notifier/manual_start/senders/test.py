@@ -2,6 +2,7 @@ import logging
 from typing_extensions import override
 
 from aiogram import Bot
+from pandas.core.frame import ma
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.models.manual_start import (
     ManualStart,
@@ -9,6 +10,7 @@ from app.services.database.models.manual_start import (
     TestManualStart,
 )
 from app.services.notifier.manual_start.senders.sender import TypedManualStartSender
+from app.services.notifier.utils import get_manual_start_mode_text
 from app.utils.text import escape_chars
 
 
@@ -23,7 +25,7 @@ class TestManualStartSender(TypedManualStartSender):
             "Ручной запуск:\n"
             "*Тип:* Тест\n"
             f"*ID:* {escape_chars(manual_start.id)}\n"
-            f"*Режим:* {escape_chars(str(manual_start.mode))}\n"
+            f"*Режим:* {escape_chars(get_manual_start_mode_text(manual_start))}\n"
             f"*Причина:* {escape_chars(typed_manual_start.description)}"
         )
 

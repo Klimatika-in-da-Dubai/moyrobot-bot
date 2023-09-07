@@ -35,10 +35,6 @@ async def cb_enter(
         await cb.answer("Ошибка в получении id оператора", show_alert=True)
         return
 
-    if await userdao.is_work_account(closed_by_id):
-        await cb.answer("Выберите оператора", show_alert=True)
-        return
-
     shiftdao = ShiftDAO(session)
     shift = await shiftdao.get_last_shift()
 

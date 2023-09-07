@@ -35,6 +35,9 @@ async def cb_open_users_list(
 )
 async def cb_add_user(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
+    data = await state.get_data()
+    if data.get("mailings") is None:
+        await state.update_data(mailings=[])
     await state.set_state(AdminMenu.Users.Add.menu)
     await cb.message.edit_text(  # type: ignore
         text="Добавить пользователя", reply_markup=await get_add_user_keyboard(state)
