@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
 from app.services.database.dao.mailing import GroupMailingDAO
-from app.services.database.models.mailing import GroupMailing, MailingType
+from app.services.database.models.mailing import MailingType
 from app.utils.group import get_mailings_from_state, get_selected_group_id
 
 
@@ -59,7 +59,7 @@ async def get_mailing_selection_keyboard(
             text="Готово",
             callback_data=MailingSelectionCB(
                 action=Action.ENTER,
-                mailing=MailingType.REFUND,  # mailing_type have no sense for that button
+                mailing=MailingType.REFUND,  # mailing_type no sense
             ).pack(),
         )
     )

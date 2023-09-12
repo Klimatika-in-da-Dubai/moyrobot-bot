@@ -1,6 +1,6 @@
 from typing import List
 from aiogram import Bot
-from aiogram.enums import InputMediaType, ParseMode
+from aiogram.enums import InputMediaType
 from aiogram.types import InputMediaPhoto
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.notifications.feedback import get_feedback_keyboard

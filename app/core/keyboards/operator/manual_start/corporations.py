@@ -1,5 +1,4 @@
 from aiogram import types
-from aiogram.filters import callback_data
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup

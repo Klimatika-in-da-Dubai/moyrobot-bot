@@ -6,7 +6,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.keyboards.base import Action
-from app.core.keyboards.operator.cleaning.cleaning import CleaningMenuCB
 from app.core.states.operator import OperatorMenu
 from app.services.database.dto.cleaning import CleaningDTO, Place
 from app.utils.cleaning import get_place_id

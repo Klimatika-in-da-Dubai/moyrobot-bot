@@ -62,7 +62,7 @@ async def get_add_user_keyboard(state: FSMContext) -> types.InlineKeyboardMarkup
     )
     builder.row(
         types.InlineKeyboardButton(
-            text=f"Рассылки",
+            text="Рассылки",
             callback_data=AddUserCB(
                 action=Action.OPEN, target=AddUserTarget.MAILING
             ).pack(),

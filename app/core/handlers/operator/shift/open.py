@@ -48,7 +48,7 @@ async def cb_enter(
 ):
     shiftdao = ShiftDAO(session)
     openshiftdao = OpenShiftDAO(session)
-    userdao = UserDAO(session)
+    UserDAO(session)
 
     opened_by_id = await get_operator_id(state)
     if opened_by_id is None:

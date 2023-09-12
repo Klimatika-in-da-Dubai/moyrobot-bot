@@ -1,7 +1,6 @@
 from aiogram import Bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from app.services.notifier.base import Notifier
 from app.services.notifier.setup_notifiers import (
     setup_bonus_promo_check_notifiers,
     setup_common_notifiers,

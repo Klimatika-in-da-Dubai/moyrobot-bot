@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Sequence
 from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy import func
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.cleaning import Cleaning
 

@@ -1,8 +1,7 @@
-from typing import Optional, Sequence
+from typing import Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import delete, select, update
 from app.services.database.dao.base import BaseDAO
-from app.services.database.models.mailing import Mailing
 from app.services.database.models.salary import Salary
 from app.services.database.models.user import Role, User, UserRole
 

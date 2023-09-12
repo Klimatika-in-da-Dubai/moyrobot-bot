@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from aiogram import Bot
 from aiogram.types import FSInputFile

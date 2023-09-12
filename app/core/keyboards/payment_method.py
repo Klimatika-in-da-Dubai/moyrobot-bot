@@ -1,5 +1,4 @@
 from enum import IntEnum, auto
-from typing import Callable
 from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext

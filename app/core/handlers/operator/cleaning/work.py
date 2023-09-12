@@ -1,9 +1,8 @@
-from io import BytesIO
 from aiogram import Router, F, types, Bot
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.operator import isOperatorCB
-from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
+from app.core.keyboards.base import Action, CancelCB
 from app.core.keyboards.operator.cleaning.cleaning import send_cleaning_menu
 from app.core.keyboards.operator.cleaning.place import (
     send_place_menu,

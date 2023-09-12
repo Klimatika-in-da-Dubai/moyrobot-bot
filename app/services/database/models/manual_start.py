@@ -6,7 +6,6 @@ from datetime import datetime
 
 
 from app.services.database.base import Base
-from app.services.database.models.corporation import Corporation
 from app.services.database.models.utils import PaymentMethod
 
 

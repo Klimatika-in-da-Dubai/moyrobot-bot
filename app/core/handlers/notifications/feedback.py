@@ -1,5 +1,5 @@
 from aiogram import Bot, Router
-from aiogram.types import CallbackQuery, message_id
+from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.keyboards.notifications.feedback import FeedbackNotifyCB

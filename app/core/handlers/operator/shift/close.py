@@ -29,7 +29,7 @@ close_shift_router = Router()
 async def cb_enter(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
-    userdao = UserDAO(session)
+    UserDAO(session)
     closed_by_id = await get_operator_id(state)
     if closed_by_id is None:
         await cb.answer("Ошибка в получении id оператора", show_alert=True)
