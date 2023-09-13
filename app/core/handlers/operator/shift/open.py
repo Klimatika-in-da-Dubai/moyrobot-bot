@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.operator import isOperatorCB
 from app.core.filters.shift import isShiftClosedCB
+from app.core.handlers.operator.shift.utils import check_for_consumables
 from app.core.keyboards.base import Action
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.keyboards.operator.shift.menu import send_shift_keyboard
@@ -77,6 +78,6 @@ async def cb_enter(
 
     last_closed_shift = await shiftdao.get_last_closed()
     await ShiftsDifferenceCheck(session).check(last_closed_shift, shift)
-
+    await check_for_consumables(openshift, session)
     await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore

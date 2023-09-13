@@ -161,8 +161,8 @@ async def get_mailing_buttons(state: FSMContext) -> list[ButtonInfo]:
         ),
         ButtonInfo(
             description="Обратная свзяь",
-            mailing_type=MailingType.FEEDBACK,
-            mailing_emoji=await get_mailing_emoji(state, MailingType.FEEDBACK),
+            mailing_type=MailingType.OPERATOR_REQUEST,
+            mailing_emoji=await get_mailing_emoji(state, MailingType.OPERATOR_REQUEST),
         ),
     ]
 

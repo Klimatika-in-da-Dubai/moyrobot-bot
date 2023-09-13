@@ -12,7 +12,7 @@ from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
 from app.core.keyboards.menu import MenuCB, MenuTarget, send_menu_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.states.admin import AdminMenu
-from app.core.states.feedback import FeedbackMenu
+from app.core.states.operator_request import OperatorRequestMenu
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
 
@@ -79,11 +79,11 @@ async def cb_open_admin_menu(
     )
 
 
-@menu_router.callback_query(MenuCB.filter(F.target == MenuTarget.FEEDBACK_MENU))
-async def cb_open_feedback_menu(cb: types.CallbackQuery, state: FSMContext):
+@menu_router.callback_query(MenuCB.filter(F.target == MenuTarget.OPERATOR_REQUEST_MENU))
+async def cb_open_operator_request_menu(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
 
-    await state.set_state(FeedbackMenu.get_feedback)
+    await state.set_state(OperatorRequestMenu.get_operator_request)
     await cb.message.edit_text(  # type: ignore
         "Напишите сообщение, которые вы хотите передать администраторам мойки\\."
         "Вы также можете прикрепить до 10 фотографий",
@@ -92,9 +92,9 @@ async def cb_open_feedback_menu(cb: types.CallbackQuery, state: FSMContext):
 
 
 @menu_router.callback_query(
-    FeedbackMenu.get_feedback, CancelCB.filter(F.action == Action.CANCEL)
+    OperatorRequestMenu.get_operator_request, CancelCB.filter(F.action == Action.CANCEL)
 )
-async def cb_cancel_get_feedback(
+async def cb_cancel_get_operator_request(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await send_menu_keyboard(
