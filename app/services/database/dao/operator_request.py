@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from sqlalchemy import or_, select, update
+from sqlalchemy import and_, or_, select, update
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.operator_request import OperatorRequest
@@ -24,10 +24,13 @@ class OperatorRequestDAO(BaseDAO):
             results = await session.execute(
                 select(OperatorRequest)
                 .where(
-                    or_(
-                        OperatorRequest.last_notify_timestamp.is_(None),
-                        datetime.now() - OperatorRequest.last_notify_timestamp
-                        > delta_between_notifies,
+                    and_(
+                        or_(
+                            OperatorRequest.last_notify_timestamp.is_(None),
+                            datetime.now() - OperatorRequest.last_notify_timestamp
+                            > delta_between_notifies,
+                        ),
+                        OperatorRequest.satisfied.is_(False),
                     )
                 )
                 .order_by(OperatorRequest.date.asc())

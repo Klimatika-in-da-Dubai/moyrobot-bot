@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from sqlalchemy import or_, select, update
+from sqlalchemy import and_, or_, select, update
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.consumable_request import (
@@ -27,10 +27,13 @@ class ConsumableRequestDAO(BaseDAO):
             results = await session.execute(
                 select(ConsumableRequest)
                 .where(
-                    or_(
-                        ConsumableRequest.last_notify_timestamp.is_(None),
-                        datetime.now() - ConsumableRequest.last_notify_timestamp
-                        > delta_between_notifies,
+                    and_(
+                        or_(
+                            ConsumableRequest.last_notify_timestamp.is_(None),
+                            datetime.now() - ConsumableRequest.last_notify_timestamp
+                            > delta_between_notifies,
+                        ),
+                        ConsumableRequest.satisfied.is_(False),
                     )
                 )
                 .order_by(ConsumableRequest.date.asc())
