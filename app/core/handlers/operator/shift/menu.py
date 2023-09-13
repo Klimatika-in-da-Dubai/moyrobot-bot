@@ -10,6 +10,9 @@ from app.core.keyboards.operator.shift.base import (
     ShiftMenuCB,
     ShiftMenuTarget,
 )
+from app.core.keyboards.operator.shift.chemistry import (
+    send_chemistry_menu,
+)
 from app.core.keyboards.operator.shift.close import (
     CloseShiftMenuCB,
 )
@@ -129,7 +132,7 @@ async def cb_equipment_check(
     OperatorMenu.Shift.menu,
     isOperatorCB(),
     ShiftMenuCB.filter(
-        (F.action == Action.ENTER_TEXT) & (F.target == ShiftMenuTarget.CHEMISTRY_COUNT)
+        (F.action == Action.OPEN) & (F.target == ShiftMenuTarget.CHEMISTRY)
     ),
 )
 async def cb_chemistry_count(
@@ -137,40 +140,11 @@ async def cb_chemistry_count(
     state: FSMContext,
 ):
     await cb.answer()
-    await state.set_state(OperatorMenu.Shift.chemistry_count)
-    await cb.message.edit_text(  # type: ignore
-        "Напишите количетсво химии", reply_markup=get_cancel_keyboard()
-    )
 
+    if cb.message is None:
+        raise ValueError("test")
 
-@menu_router.message(OperatorMenu.Shift.chemistry_count, F.text)
-async def message_chemistry_count(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
-):
-    if not message.text.isnumeric() or int(message.text) < 0:  # type: ignore
-        await message.answer(
-            "Неверное количество химии", reply_markup=get_cancel_keyboard()
-        )
-        return
-
-    await state.update_data(chemistry_count=int(message.text))  # type: ignore
-    await send_shift_keyboard(message.answer, message, state, session)
-
-
-@menu_router.callback_query(
-    OperatorMenu.Shift.menu,
-    isOperatorCB(),
-    ShiftMenuCB.filter(
-        (F.action == Action.SELECT) & (F.target == ShiftMenuTarget.CHEMISTRY_CHECK)
-    ),
-)
-async def cb_chemistry_check(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
-    await cb.answer()
-    shift = await get_open_shift(state)
-    await state.update_data(chemistry_check=not shift.chemistry_check)
-    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+    await send_chemistry_menu(cb.message.edit_text, state)
 
 
 @menu_router.callback_query(
@@ -223,7 +197,6 @@ async def cb_back(
     or_f(
         OperatorMenu.Shift.money_amount,
         OperatorMenu.Shift.antifreeze_count,
-        OperatorMenu.Shift.chemistry_count,
     ),
     isOperatorCB(),
     CancelCB.filter(F.action == Action.CANCEL),

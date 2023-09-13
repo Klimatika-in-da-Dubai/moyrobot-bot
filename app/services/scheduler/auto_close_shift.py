@@ -46,11 +46,13 @@ async def auto_close_shift(bot: Bot, session: async_sessionmaker) -> None:
 
 async def add_close_shift(shift: Shift, session: async_sessionmaker) -> None:
     closeshiftdao = CloseShiftDAO(session)
-    close_shift = await get_close_shift(shift, session)
+    close_shift = await create_close_shift_from_shift(shift, session)
     await closeshiftdao.add_shift(close_shift)
 
 
-async def get_close_shift(shift: Shift, session: async_sessionmaker) -> CloseShift:
+async def create_close_shift_from_shift(
+    shift: Shift, session: async_sessionmaker
+) -> CloseShift:
     openshiftdao = OpenShiftDAO(session)
     openshift = await openshiftdao.get_by_id(shift.id)
     if openshift is None:
@@ -62,10 +64,14 @@ async def get_close_shift(shift: Shift, session: async_sessionmaker) -> CloseShi
     ).get_cashbox_diff(shift)
 
     closeshift.antifreeze_count = openshift.antifreeze_count
-    closeshift.chemistry_count = closeshift.chemistry_count
-    closeshift.chemistry_check = closeshift.chemistry_check
-    closeshift.equipment_check = closeshift.equipment_check
-    closeshift.robot_movement_check = closeshift.robot_movement_check
-    closeshift.robot_leak_check = closeshift.robot_leak_check
-    closeshift.gates_check = closeshift.gates_check
+    closeshift.shampoo_count = openshift.shampoo_count
+    closeshift.foam_count = openshift.foam_count
+    closeshift.wax_count = openshift.wax_count
+    closeshift.shampoo_check = openshift.shampoo_check
+    closeshift.foam_check = openshift.foam_check
+    closeshift.wax_check = openshift.wax_check
+    closeshift.equipment_check = openshift.equipment_check
+    closeshift.robot_movement_check = openshift.robot_movement_check
+    closeshift.robot_leak_check = openshift.robot_leak_check
+    closeshift.gates_check = openshift.gates_check
     return closeshift

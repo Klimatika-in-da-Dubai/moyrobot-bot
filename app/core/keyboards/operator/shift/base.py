@@ -16,8 +16,7 @@ class ShiftMenuTarget(IntEnum):
     MONEY_AMOUNT = auto()
     ANTIFREEZE_COUNT = auto()
     EQUIPMENT_CHECK = auto()
-    CHEMISTRY_COUNT = auto()
-    CHEMISTRY_CHECK = auto()
+    CHEMISTRY = auto()
     ROBOT_CHECK = auto()
     GATES_CHECK = auto()
 
@@ -33,8 +32,6 @@ class ShiftEmojis:
     money_amount: Literal["✅", "❌"]
     antifreeze_count: Literal["✅", "❌"]
     equipment_check: Literal["✅", "❌"]
-    chemistry_count: Literal["✅", "❌"]
-    chemistry_check: Literal["✅", "❌"]
     robot_check: Literal["✅", "❌"]
     gates_check: Literal["✅", "❌"]
 
@@ -45,8 +42,6 @@ class ShiftInfo:
     money_amount: str
     antifreeze_count: str
     equipment_check: bool
-    chemistry_count: str
-    chemistry_check: bool
     robot_check: bool
     gates_check: bool
 
@@ -93,15 +88,9 @@ def get_shift_menu_builder(
     )
     builder.row(
         types.InlineKeyboardButton(
-            text=f"Кол-во химии: {shift_info.chemistry_count} {emojis.chemistry_count}",
+            text="Химия",
             callback_data=ShiftMenuCB(
-                action=Action.ENTER_TEXT, target=ShiftMenuTarget.CHEMISTRY_COUNT
-            ).pack(),
-        ),
-        types.InlineKeyboardButton(
-            text=f"Нужно больше? {emojis.chemistry_check}",
-            callback_data=ShiftMenuCB(
-                action=Action.SELECT, target=ShiftMenuTarget.CHEMISTRY_CHECK
+                action=Action.OPEN, target=ShiftMenuTarget.CHEMISTRY
             ).pack(),
         ),
     )
@@ -132,10 +121,6 @@ def get_shift_menu_info(shift: OpenShift | CloseShift, operator_name: str | None
         str(shift.antifreeze_count) if shift.antifreeze_count is not None else ""
     )
     equipment_check = True if shift.equipment_check else False
-    chemistry_count = (
-        str(shift.chemistry_count) if shift.chemistry_count is not None else ""
-    )
-    chemistry_check = True if shift.chemistry_check else False
     robot_check = (
         True if shift.robot_leak_check and shift.robot_movement_check else False
     )
@@ -146,8 +131,6 @@ def get_shift_menu_info(shift: OpenShift | CloseShift, operator_name: str | None
         money_amount=money_amount,
         antifreeze_count=antifreeze_count,
         equipment_check=equipment_check,
-        chemistry_count=chemistry_count,
-        chemistry_check=chemistry_check,
         robot_check=robot_check,
         gates_check=gates_check,
     )
@@ -158,8 +141,6 @@ def get_shift_menu_emojis(shift: OpenShift | CloseShift, operator_name: str | No
     money_amount = "✅" if shift.money_amount is not None else "❌"
     antifreeze_count = "✅" if shift.antifreeze_count is not None else "❌"
     equipment_check = "✅" if shift.equipment_check else "❌"
-    chemistry_count = "✅" if shift.chemistry_count is not None else "❌"
-    chemistry_check = "✅" if shift.chemistry_check else "❌"
     robot_check = "✅" if shift.robot_movement_check and shift.robot_leak_check else "❌"
     gates_check = "✅" if shift.gates_check else "❌"
 
@@ -168,8 +149,6 @@ def get_shift_menu_emojis(shift: OpenShift | CloseShift, operator_name: str | No
         money_amount=money_amount,
         antifreeze_count=antifreeze_count,
         equipment_check=equipment_check,
-        chemistry_count=chemistry_count,
-        chemistry_check=chemistry_check,
         robot_check=robot_check,
         gates_check=gates_check,
     )
