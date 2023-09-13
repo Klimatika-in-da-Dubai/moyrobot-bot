@@ -3,15 +3,10 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from app.core.keyboards.admin.users.list.menu import send_users_list_menu
 from app.core.keyboards.base import Action
-from app.services.database.dao.mailing import MailingDAO
-from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
 
 from app.core.states.admin import AdminMenu
-from app.utils.list import get_selected_user
 
 
 class ChangeUserTarget(IntEnum):
@@ -67,7 +62,7 @@ async def get_change_user_keyboard(state: FSMContext) -> types.InlineKeyboardMar
     )
     builder.row(
         types.InlineKeyboardButton(
-            text=f"Рассылки",
+            text="Рассылки",
             callback_data=ChangeUserCB(
                 action=Action.OPEN, target=ChangeUserTarget.MAILING
             ).pack(),

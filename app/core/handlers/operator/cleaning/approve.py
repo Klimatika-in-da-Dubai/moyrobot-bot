@@ -1,6 +1,4 @@
-from sys import call_tracing
 from aiogram import Router, F, types
-from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.base import Action
 

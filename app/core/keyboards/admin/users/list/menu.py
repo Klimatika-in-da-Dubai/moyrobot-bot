@@ -27,7 +27,7 @@ async def get_users_list_keyboard(users: Iterable[User]) -> types.InlineKeyboard
 
     builder.row(
         types.InlineKeyboardButton(
-            text=f"Назад",
+            text="Назад",
             callback_data=UsersListCB(action=Action.BACK, user_id=-1).pack(),
         )
     )

@@ -85,7 +85,7 @@ class ManualStartDAO(BaseDAO[ManualStart]):
                 .where(ManualStart.reported == True)  # noqa: E712
                 .where(
                     or_(
-                        ManualStart.mode != None,
+                        ManualStart.mode is not None,
                         datetime.datetime.now() - ManualStart.date
                         > datetime.timedelta(seconds=15 * 60),
                     )

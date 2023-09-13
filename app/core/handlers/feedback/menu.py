@@ -1,6 +1,4 @@
-from operator import or_
 from aiogram import F, Router
-from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, PhotoSize
 from sqlalchemy.ext.asyncio import async_sessionmaker

@@ -2,7 +2,7 @@ import logging
 
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.groups.menu import send_groups_menu
@@ -11,7 +11,6 @@ from app.core.keyboards.admin.menu import (
     AdminMenuTarget,
 )
 from app.core.keyboards.admin.users.menu import (
-    get_users_keyboard,
     send_admin_users_menu,
 )
 from app.core.keyboards.base import Action, get_cancel_keyboard

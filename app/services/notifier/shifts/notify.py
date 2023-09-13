@@ -1,5 +1,5 @@
 import datetime
-from datetime import time, timedelta
+from datetime import time
 from enum import IntEnum, auto
 from aiogram import Bot
 from aiogram.enums import ParseMode

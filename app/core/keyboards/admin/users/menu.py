@@ -1,11 +1,9 @@
-from enum import IntEnum, auto
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
-from app.services.database.models.user import Role
 
 
 class UsersCB(CallbackData, prefix="amenu_user_section"):

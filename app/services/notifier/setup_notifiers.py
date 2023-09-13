@@ -17,8 +17,6 @@ from app.services.notifier.payment_check.alert import PaymentCheckAlertNotifier
 from app.services.notifier.payment_check.payment_check import PaymentCheckNotifier
 from app.services.notifier.promocode import PromocodeCheckNotifier, PromocodeNotifier
 from app.services.notifier.refund import RefundNotifier
-from app.services.notifier.shifts.close import CloseShiftNotifier
-from app.services.notifier.shifts.open import OpenShiftNotifier
 from app.services.notifier.shifts.shift_close_open import CloseOpenShiftNotifier
 
 

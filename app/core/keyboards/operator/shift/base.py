@@ -8,7 +8,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.core.keyboards.base import Action
 from app.services.database.models.shift import CloseShift, OpenShift
-from app.utils.shift import get_operator_name
 
 
 class ShiftMenuTarget(IntEnum):

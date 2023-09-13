@@ -2,7 +2,6 @@ import logging
 from typing_extensions import override
 
 from aiogram import Bot
-from pandas.core.frame import ma
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.models.manual_start import (
     ManualStart,

@@ -1,4 +1,3 @@
-import datetime
 import pytest
 from app.services.database.models.shift import Shift
 from test.models.shift.conftest import create_shift

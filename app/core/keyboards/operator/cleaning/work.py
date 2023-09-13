@@ -1,5 +1,5 @@
 from enum import IntEnum, auto
-from aiogram import Bot, types
+from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder

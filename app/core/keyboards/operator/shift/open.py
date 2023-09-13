@@ -12,9 +12,8 @@ from app.core.keyboards.operator.shift.base import (
     get_shift_menu_builder,
 )
 from app.core.states.operator import OperatorMenu
-from app.services.database.dao.user import UserDAO
 from app.services.database.models.shift import OpenShift
-from app.utils.shift import get_open_shift, get_operator_id, get_operator_name
+from app.utils.shift import get_open_shift, get_operator_name
 
 
 class OpenShiftMenuTarget(IntEnum):

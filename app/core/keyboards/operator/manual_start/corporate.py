@@ -1,7 +1,6 @@
 from enum import IntEnum, auto
 from typing import Callable
 from aiogram import types
-from aiogram.filters import callback_data
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -10,7 +9,6 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.corporation import CorporationDAO
-from app.services.database.models.corporation import Corporation
 from app.utils.text import escape_chars
 
 

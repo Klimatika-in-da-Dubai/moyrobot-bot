@@ -3,20 +3,10 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
-from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from app.core.handlers import handlers_router
 from app.core.middlewares.db import DbSessionMiddleware
 from app.services.database.connector import setup_get_pool
-from app.services.notifier.setup_notifiers import (
-    setup_bonus_promo_check_notifiers,
-    setup_common_notifiers,
-    setup_corporate_report_notifiers,
-    setup_monthly_report_notifiers,
-    setup_payment_check_notifiers,
-    setup_promocode_and_bonus_notifiers,
-    setup_shifts_notifiers,
-)
 from app.services.parser.parser import Parser
 from app.services.parser.terminal_session import TerminalSession
 from app.services.scheduler.scheduler import get_scheduler

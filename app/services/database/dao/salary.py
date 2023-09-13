@@ -1,5 +1,3 @@
-from typing import Sequence
-from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.salary import Salary

@@ -1,7 +1,7 @@
 from typing import Sequence
 
-from aiogram import Router, types, F, Bot
-from aiogram.filters import Command, CommandObject
+from aiogram import Router, types, F
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
@@ -13,10 +13,8 @@ from app.core.keyboards.menu import MenuCB, MenuTarget, send_menu_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.states.admin import AdminMenu
 from app.core.states.feedback import FeedbackMenu
-from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
-from app.services.notifier.cleaning import CleaningNotifier
 
 menu_router = Router(name="menu-router")
 
@@ -53,7 +51,9 @@ async def cb_open_operator_menu(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ) -> None:
     await cb.answer()
-    await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
+    await send_operator_menu_keyboard(
+        cb.message.edit_text, state, session  # type: ignore
+    )
 
 
 @menu_router.callback_query(
@@ -74,7 +74,9 @@ async def cb_open_admin_menu(
     await cb.answer()
 
     await state.set_state(AdminMenu.menu)
-    await cb.message.edit_text("Админ меню", reply_markup=get_admin_menu_keyboard())  # type: ignore
+    await cb.message.edit_text(  # type: ignore
+        "Админ меню", reply_markup=get_admin_menu_keyboard()
+    )
 
 
 @menu_router.callback_query(MenuCB.filter(F.target == MenuTarget.FEEDBACK_MENU))
@@ -83,7 +85,8 @@ async def cb_open_feedback_menu(cb: types.CallbackQuery, state: FSMContext):
 
     await state.set_state(FeedbackMenu.get_feedback)
     await cb.message.edit_text(  # type: ignore
-        "Напишите сообщение, которые вы хотите передать администраторам мойки\\. Вы также можете прикрепить до 10 фотографий",
+        "Напишите сообщение, которые вы хотите передать администраторам мойки\\."
+        "Вы также можете прикрепить до 10 фотографий",
         reply_markup=get_cancel_keyboard(),
     )
 
@@ -94,4 +97,6 @@ async def cb_open_feedback_menu(cb: types.CallbackQuery, state: FSMContext):
 async def cb_cancel_get_feedback(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
-    await send_menu_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+    await send_menu_keyboard(
+        cb.message.edit_text, cb.message, state, session  # type: ignore
+    )
