@@ -27,7 +27,7 @@ class CleaningNotifier(Notifier):
         media_group = []
         for place in cleaningdto.places:
             for work in place.works:
-                caption = f"{place.name}: {work.name}"
+                caption = f"{place.name}: {escape_chars(work.name)}"
                 if debug:
                     caption += f"\n{escape_chars(work.photo_file_id)}"
 
