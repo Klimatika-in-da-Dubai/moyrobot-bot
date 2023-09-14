@@ -70,6 +70,8 @@ async def create_close_shift_from_shift(
     closeshift.shampoo_check = openshift.shampoo_check
     closeshift.foam_check = openshift.foam_check
     closeshift.wax_check = openshift.wax_check
+    closeshift.napkins_check = openshift.napkins_check
+    closeshift.coins_check = openshift.coins_check
     closeshift.equipment_check = openshift.equipment_check
     closeshift.robot_movement_check = openshift.robot_movement_check
     closeshift.robot_leak_check = openshift.robot_leak_check

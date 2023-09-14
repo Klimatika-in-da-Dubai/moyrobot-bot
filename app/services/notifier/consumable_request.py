@@ -54,6 +54,10 @@ class ConsumableRequestNotifier(Notifier):
                 consumable = "пену"
             case Consumable.WAX:
                 consumable = "воск"
+            case Consumable.COINS:
+                consumable = "монетки"
+            case Consumable.NAPKINS:
+                consumable = "салфетки"
             case _ as never:
                 assert_never(never)
 

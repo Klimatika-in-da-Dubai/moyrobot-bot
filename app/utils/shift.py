@@ -12,6 +12,8 @@ shift_info_columns = [
     "shampoo_check",
     "foam_check",
     "wax_check",
+    "napkins_check",
+    "coins_check",
     "equipment_check",
     "robot_movement_check",
     "robot_leak_check",

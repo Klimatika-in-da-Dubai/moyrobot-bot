@@ -38,4 +38,10 @@ def get_needed_consumables(shift: OpenShift | CloseShift) -> list[Consumable]:
     if shift.wax_count is None or shift.wax_count <= 1 or shift.wax_check:
         needed_consumables.append(Consumable.WAX)
 
+    if shift.coins_check:
+        needed_consumables.append(Consumable.COINS)
+
+    if shift.napkins_check:
+        needed_consumables.append(Consumable.NAPKINS)
+
     return needed_consumables

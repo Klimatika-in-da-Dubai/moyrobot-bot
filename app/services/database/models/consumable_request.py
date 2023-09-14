@@ -9,6 +9,8 @@ class Consumable(IntEnum):
     SHAMPOO = auto()
     FOAM = auto()
     WAX = auto()
+    COINS = auto()
+    NAPKINS = auto()
 
 
 class ConsumableRequest(Base):

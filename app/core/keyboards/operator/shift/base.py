@@ -19,6 +19,8 @@ class ShiftMenuTarget(IntEnum):
     CHEMISTRY = auto()
     ROBOT_CHECK = auto()
     GATES_CHECK = auto()
+    COINS_CHECK = auto()
+    NAPKINS_CHECK = auto()
 
 
 class ShiftMenuCB(CallbackData, prefix="shift"):
@@ -34,6 +36,8 @@ class ShiftEmojis:
     equipment_check: Literal["✅", "❌"]
     robot_check: Literal["✅", "❌"]
     gates_check: Literal["✅", "❌"]
+    coins_check: Literal["✅", "❌"]
+    napkins_check: Literal["✅", "❌"]
 
 
 @dataclass
@@ -44,6 +48,8 @@ class ShiftInfo:
     equipment_check: bool
     robot_check: bool
     gates_check: bool
+    coins_check: bool
+    napkins_check: bool
 
 
 def get_shift_menu_builder(
@@ -110,7 +116,22 @@ def get_shift_menu_builder(
             ).pack(),
         )
     )
-
+    builder.row(
+        types.InlineKeyboardButton(
+            text=f"Нужны монетки {emojis.coins_check}",
+            callback_data=ShiftMenuCB(
+                action=Action.SELECT, target=ShiftMenuTarget.COINS_CHECK
+            ).pack(),
+        )
+    )
+    builder.row(
+        types.InlineKeyboardButton(
+            text=f"Нужны салфетки {emojis.napkins_check}",
+            callback_data=ShiftMenuCB(
+                action=Action.SELECT, target=ShiftMenuTarget.NAPKINS_CHECK
+            ).pack(),
+        )
+    )
     return builder
 
 
@@ -126,6 +147,9 @@ def get_shift_menu_info(shift: OpenShift | CloseShift, operator_name: str | None
     )
     gates_check = True if shift.gates_check else False
 
+    coins_check = True if shift.coins_check else False
+    napkins_check = True if shift.napkins_check else False
+
     return ShiftInfo(
         operator_name=operator_name,
         money_amount=money_amount,
@@ -133,6 +157,8 @@ def get_shift_menu_info(shift: OpenShift | CloseShift, operator_name: str | None
         equipment_check=equipment_check,
         robot_check=robot_check,
         gates_check=gates_check,
+        coins_check=coins_check,
+        napkins_check=napkins_check,
     )
 
 
@@ -143,6 +169,8 @@ def get_shift_menu_emojis(shift: OpenShift | CloseShift, operator_name: str | No
     equipment_check = "✅" if shift.equipment_check else "❌"
     robot_check = "✅" if shift.robot_movement_check and shift.robot_leak_check else "❌"
     gates_check = "✅" if shift.gates_check else "❌"
+    coins_check = "✅" if shift.coins_check else "❌"
+    napkins_check = "✅" if shift.napkins_check else "❌"
 
     return ShiftEmojis(
         operator_name=operator_name,
@@ -151,4 +179,6 @@ def get_shift_menu_emojis(shift: OpenShift | CloseShift, operator_name: str | No
         equipment_check=equipment_check,
         robot_check=robot_check,
         gates_check=gates_check,
+        coins_check=coins_check,
+        napkins_check=napkins_check,
     )

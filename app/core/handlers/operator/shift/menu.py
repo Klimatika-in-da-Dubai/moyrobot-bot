@@ -180,6 +180,38 @@ async def cb_gates_check(
 @menu_router.callback_query(
     OperatorMenu.Shift.menu,
     isOperatorCB(),
+    ShiftMenuCB.filter(
+        (F.action == Action.SELECT) & (F.target == ShiftMenuTarget.COINS_CHECK)
+    ),
+)
+async def cb_coins_check(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await cb.answer()
+    shift = await get_open_shift(state)
+    await state.update_data(coins_check=not shift.coins_check)
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+
+
+@menu_router.callback_query(
+    OperatorMenu.Shift.menu,
+    isOperatorCB(),
+    ShiftMenuCB.filter(
+        (F.action == Action.SELECT) & (F.target == ShiftMenuTarget.NAPKINS_CHECK)
+    ),
+)
+async def cb_napkins_check(
+    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+):
+    await cb.answer()
+    shift = await get_open_shift(state)
+    await state.update_data(napkins_check=not shift.napkins_check)
+    await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+
+
+@menu_router.callback_query(
+    OperatorMenu.Shift.menu,
+    isOperatorCB(),
     or_f(
         OpenShiftMenuCB.filter(F.action == Action.BACK),
         CloseShiftMenuCB.filter(F.action == Action.BACK),
