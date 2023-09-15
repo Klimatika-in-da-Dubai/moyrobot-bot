@@ -56,6 +56,15 @@ class PaymentCheckNotifier(Notifier):
 
     async def send_notify(self, id: int, payment_check: PaymentCheck):
         text = await self.get_text(payment_check)
+
+        if payment_check.count_manual_starts == 0:
+            await self._dao.make_checked(payment_check)
+            await self._bot.send_message(
+                chat_id=id,
+                text=text,
+            )
+            return
+
         await self._bot.send_message(
             chat_id=id,
             text=text,
