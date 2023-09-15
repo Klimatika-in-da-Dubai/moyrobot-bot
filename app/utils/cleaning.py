@@ -64,7 +64,7 @@ async def add_cleaning_to_state(state: FSMContext) -> None:
                 works=[
                     Work(name="Пылесос"),
                     Work(name="Мойка ковров"),
-                    Work(name="Шампунь для мойки ковров"),
+                    Work(name="Уровень шампуня для мойки ковров"),
                     Work(name="Фото салфеток (внутри)"),
                 ],
             ),
