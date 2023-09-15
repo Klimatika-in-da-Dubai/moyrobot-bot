@@ -13,6 +13,7 @@ from app.services.database.models.manual_start import (
 from app.services.database.models.payment_check import PaymentCheck
 from app.services.database.models.utils import PaymentMethod
 from app.services.notifier.base import Notifier
+from app.services.notifier.utils import get_manual_start_mode_text
 from app.utils.text import escape_chars
 
 
@@ -46,12 +47,11 @@ class PaymentCheckNotifier(Notifier):
             if not isinstance(manual_start_info, ManualStart):
                 raise TypeError("manual_start error")
 
-            if manual_start_info.mode is None:
-                continue
-
             time = manual_start_info.date.strftime("%H:%M")
-            text += f"{time} \\- Терминал: {manual_start_info.terminal_id} \\- Режим: {manual_start_info.mode} \\- Сумма оплаты: {manual_start.payment_amount}\n"
-
+            text += (
+                f"{time} \\- Терминал: {manual_start_info.terminal_id} \\- "
+                f"Режим: {get_manual_start_mode_text(manual_start_info)}\n"
+            )
         return text
 
     async def get_card_manual_starts(
