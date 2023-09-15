@@ -47,9 +47,6 @@ class PaymentCheckNotifier(Notifier):
             if not isinstance(manual_start_info, ManualStart):
                 raise TypeError("manual_start error")
 
-            if manual_start_info.mode is None:
-                continue
-
             time = manual_start_info.date.strftime("%H:%M")
             text += (
                 f"{time} - Терминал: {manual_start_info.terminal_id} - "
