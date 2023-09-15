@@ -49,7 +49,7 @@ class PaymentCheckNotifier(Notifier):
 
             time = manual_start_info.date.strftime("%H:%M")
             text += (
-                f"{time} - Терминал: {manual_start_info.terminal_id} - "
+                f"{time} \\- Терминал: {manual_start_info.terminal_id} \\- "
                 f"Режим: {get_manual_start_mode_text(manual_start_info)}\n"
             )
         return text
