@@ -6,13 +6,14 @@ from app.services.notifier.antifreeze import AntifreezeNotifier
 from app.services.notifier.base import Notifier
 from app.services.notifier.bonus import BonusCheckNotifier, BonusNotifier
 from app.services.notifier.cleaning import CleaningNotifier
+from app.services.notifier.consumable_request import ConsumableRequestNotifier
 from app.services.notifier.corporate_report import CorporateReportNotifier
-from app.services.notifier.feedback import FeedbackNotifier
 from app.services.notifier.manual_start.alerter import ManualStartAlerter
 
 from app.services.notifier.manual_start.notifier import ManualStartNotifier
 from app.services.notifier.manual_start.reminder import ManualStartReminder
 from app.services.notifier.monthly_report.monthly_report import MonthlyReportNotifier
+from app.services.notifier.operator_request import OperatorRequestNotifier
 from app.services.notifier.payment_check.alert import PaymentCheckAlertNotifier
 from app.services.notifier.payment_check.payment_check import PaymentCheckNotifier
 from app.services.notifier.promocode import PromocodeCheckNotifier, PromocodeNotifier
@@ -28,7 +29,6 @@ def setup_common_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifi
         AntifreezeNotifier(bot, session),
         RefundNotifier(bot, session),
         CleaningNotifier(bot, session),
-        FeedbackNotifier(bot, session),
     ]
     return notifiers
 
@@ -60,6 +60,13 @@ def setup_bonus_promo_check_notifiers(
     bot: Bot, session: async_sessionmaker
 ) -> list[Notifier]:
     return [BonusCheckNotifier(bot, session), PromocodeCheckNotifier(bot, session)]
+
+
+def setup_requests_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifier]:
+    return [
+        OperatorRequestNotifier(bot, session),
+        ConsumableRequestNotifier(bot, session),
+    ]
 
 
 def setup_corporate_report_notifiers(

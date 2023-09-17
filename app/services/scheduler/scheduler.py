@@ -8,6 +8,7 @@ from app.services.notifier.setup_notifiers import (
     setup_monthly_report_notifiers,
     setup_payment_check_notifiers,
     setup_promocode_and_bonus_notifiers,
+    setup_requests_notifiers,
     setup_shifts_notifiers,
 )
 from app.services.notifier.shifts.notify import ShiftNotifyNotifier
@@ -77,6 +78,7 @@ def get_scheduler(
     add_bonus_promo_check_job(scheduler, bot, session)
     add_shift_alert_job(scheduler, bot, session)
     add_auto_close_shift_job(scheduler, bot, session)
+    add_request_notifiers_job(scheduler, bot, session)
     return scheduler
 
 
@@ -87,7 +89,7 @@ def add_common_notifiers_job(
     scheduler.add_job(
         notify,
         "interval",
-        seconds=10,
+        seconds=30,
         args=(common_notifiers,),
         name="Common notifiers",
     )
@@ -118,6 +120,20 @@ def add_payment_check_job(
         minute="*",
         args=(payment_check_notifiers,),
         name="Payment Chtck notifiers",
+    )
+
+
+def add_request_notifiers_job(
+    scheduler: AsyncIOScheduler, bot: Bot, session: async_sessionmaker
+):
+    request_notifiers = setup_requests_notifiers(bot, session)
+    scheduler.add_job(
+        notify,
+        "cron",
+        hour="9-22",
+        minute="*",
+        args=(request_notifiers,),
+        name="Request notifiers",
     )
 
 

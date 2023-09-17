@@ -3,22 +3,30 @@ from aiogram.fsm.context import FSMContext
 from app.services.database.models.shift import CloseShift, OpenShift
 
 
+shift_info_columns = [
+    "money_amount",
+    "antifreeze_count",
+    "shampoo_count",
+    "foam_count",
+    "wax_count",
+    "shampoo_check",
+    "foam_check",
+    "wax_check",
+    "napkins_check",
+    "coins_check",
+    "equipment_check",
+    "robot_movement_check",
+    "robot_leak_check",
+    "gates_check",
+]
+
+
 async def get_open_shift(state: FSMContext) -> OpenShift:
     data = await state.get_data()
 
     shift = OpenShift()
 
-    columns = [
-        "money_amount",
-        "antifreeze_count",
-        "chemistry_count",
-        "chemistry_check",
-        "equipment_check",
-        "robot_movement_check",
-        "robot_leak_check",
-        "gates_check",
-        "cleaning_check",
-    ]
+    columns = shift_info_columns + ["cleaning_check"]
 
     for el in columns:
         value = data.get(el)
@@ -33,16 +41,7 @@ async def get_close_shift(state: FSMContext) -> CloseShift:
 
     shift = CloseShift()
 
-    columns = [
-        "money_amount",
-        "antifreeze_count",
-        "chemistry_count",
-        "chemistry_check",
-        "equipment_check",
-        "robot_movement_check",
-        "robot_leak_check",
-        "gates_check",
-    ]
+    columns = shift_info_columns
 
     for el in columns:
         value = data.get(el)

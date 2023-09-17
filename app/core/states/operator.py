@@ -9,8 +9,13 @@ class OperatorMenu(StatesGroup):
         operator = State()
         money_amount = State()
         antifreeze_count = State()
-        chemistry_count = State()
         robot_check = State()
+
+        class Chemistry(StatesGroup):
+            menu = State()
+            shampoo = State()
+            foam = State()
+            wax = State()
 
     class ManualStart(StatesGroup):
         menu = State()

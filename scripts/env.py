@@ -27,7 +27,8 @@ from app.services.database.models.payment_check import *
 from app.services.database.models.bonus_check import *
 from app.services.database.models.promocode_check import *
 from app.services.database.models.corporate_report import *
-from app.services.database.models.feedback import *
+from app.services.database.models.operator_request import *
+from app.services.database.models.consumable_request import *
 from app.services.database.base import Base
 
 # this is the Alembic Config object, which provides

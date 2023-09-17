@@ -14,7 +14,7 @@ class MenuTarget(IntEnum):
     OPERATOR_MENU = auto()
     MODERATOR_MENU = auto()
     ADMIN_MENU = auto()
-    FEEDBACK_MENU = auto()
+    OPERATOR_REQUEST_MENU = auto()
 
 
 class MenuCB(CallbackData, prefix="menu"):
@@ -66,7 +66,7 @@ async def get_menu_keyboard(
         types.InlineKeyboardButton(
             text="Связь с администрацией",
             callback_data=MenuCB(
-                action=Action.OPEN, target=MenuTarget.FEEDBACK_MENU
+                action=Action.OPEN, target=MenuTarget.OPERATOR_REQUEST_MENU
             ).pack(),
         )
     )
