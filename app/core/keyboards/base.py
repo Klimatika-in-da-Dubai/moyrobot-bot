@@ -13,6 +13,7 @@ class Action(IntEnum):
     ADD = auto()
     DELETE = auto()
     ENTER_TEXT = auto()
+    INPUT = auto()
     ADD_PHOTO = auto()
     SELECT = auto()
     CANCEL = auto()

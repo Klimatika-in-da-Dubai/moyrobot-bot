@@ -12,6 +12,7 @@ from app.services.database.dao.user import UserDAO
 
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.shift import CloseShift, OpenShift, Shift
+from app.services.database.models.shift_check import ShiftCheck
 from app.services.notifier.base import Notifier
 from app.services.notifier.cleaning import CleaningNotifier
 from app.utils.text import escape_chars
@@ -71,6 +72,15 @@ class CloseOpenShiftNotifier(Notifier):
         await self._dao.make_notified(info.closed_shift)
         await self._dao.make_notified(info.opened_shift)
 
+    @override
+    async def send_notify(self, id: int, info: CloseOpenShiftInfo) -> None:
+        text = await self.get_text(info)
+        await self._bot.send_message(id, text)
+
+    @override
+    async def before_notify(self):
+        return await super().before_notify()
+
     async def get_text(self, info: CloseOpenShiftInfo) -> str:
         close_shift_text = await self.get_close_shift_text(info.closed_shift)
         open_shift_text = await self.get_open_shift_text(info.opened_shift)
@@ -78,20 +88,29 @@ class CloseOpenShiftNotifier(Notifier):
         return f"{close_shift_text}\n{open_shift_text}\n{money_check_text}\n"
 
     async def get_close_shift_text(self, shift: Shift) -> str:
+        close_shift = await self.get_close_shift(shift)
+
+        return "*Закрытие*\n" + (await self.get_shift_text(shift, close_shift))
+
+    async def get_open_shift_text(self, shift: Shift) -> str:
+        open_shift = await self.get_open_shift(shift)
+        return "*Открытие*\n" + (await self.get_shift_text(shift, open_shift))
+
+    async def get_close_shift(self, shift: Shift) -> CloseShift:
         close_shift = await self._closeshiftdao.get_by_id(shift.id)
 
         if not isinstance(close_shift, CloseShift):
             raise ValueError("close shift is None")
 
-        return "*Закрытие*\n" + (await self.get_shift_text(shift, close_shift))
+        return close_shift
 
-    async def get_open_shift_text(self, shift: Shift) -> str:
+    async def get_open_shift(self, shift: Shift) -> OpenShift:
         open_shift = await self._openshiftdao.get_by_id(shift.id)
 
         if not isinstance(open_shift, OpenShift):
-            raise ValueError("open shift is None")
+            raise ValueError("close shift is None")
 
-        return "*Открытие*\n" + (await self.get_shift_text(shift, open_shift))
+        return open_shift
 
     async def get_shift_text(
         self, shift: Shift, shift_info: CloseShift | OpenShift
@@ -102,7 +121,9 @@ class CloseOpenShiftNotifier(Notifier):
 
         names_text = escape_chars(", ".join(names))
         money_text = shift_info.money_amount
-        chemistry_text = shift_info.chemistry_count
+        shampoo_text = shift_info.shampoo_count
+        foam_text = shift_info.foam_count
+        wax_text = shift_info.wax_count
 
         antifreeze_sentence = ""
         if shift_info.antifreeze_count != 0:
@@ -111,12 +132,14 @@ class CloseOpenShiftNotifier(Notifier):
         return (
             f"ФИО: {names_text}\n"
             f"Деньги: {money_text} ₽\n"
-            f"Количество химии: {chemistry_text}\n" + antifreeze_sentence
+            f"Шампунь: {shampoo_text}\n"
+            f"Пена: {foam_text}\n"
+            f"Воск: {wax_text}\n" + antifreeze_sentence
         )
 
     async def get_money_check_text(self, info: CloseOpenShiftInfo) -> str:
-        shift_open = await self._openshiftdao.get_by_id(info.opened_shift.id)
-        shift_check = await self._shiftcheckdao.get_by_id(info.closed_shift.id)
+        shift_open = await self.get_open_shift(info.opened_shift)
+        shift_check = await self.get_close_shift_check(info.closed_shift)
         money_difference = await self._shiftdifferencedao.get_by_ids(
             info.closed_shift.id, info.opened_shift.id
         )
@@ -138,11 +161,8 @@ class CloseOpenShiftNotifier(Notifier):
             f"Разница между сменами : {escape_chars(str(money_difference.money_difference))} ₽\n"
         )
 
-    @override
-    async def send_notify(self, id: int, info: CloseOpenShiftInfo) -> None:
-        text = await self.get_text(info)
-        await self._bot.send_message(id, text)
-
-    @override
-    async def before_notify(self):
-        return await super().before_notify()
+    async def get_close_shift_check(self, closed_shift: Shift) -> ShiftCheck:
+        shift_check = await self._shiftcheckdao.get_by_id(closed_shift.id)
+        if shift_check is None:
+            raise ValueError("Shift Check is None")
+        return shift_check
