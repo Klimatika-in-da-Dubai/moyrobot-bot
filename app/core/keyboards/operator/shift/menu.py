@@ -16,13 +16,10 @@ async def send_shift_keyboard(
     userdao = UserDAO(session)
     operator_id = await get_operator_id(state)
 
-    if operator_id is None:
-        operator_id = message.chat.id
-        await state.update_data(operator_id=operator_id)
+    if operator_id is not None:
+        operator_name = await userdao.get_user_name_by_id(operator_id)
+        await state.update_data(operator_name=operator_name)
 
-    operator_name = await userdao.get_user_name_by_id(operator_id)
-
-    await state.update_data(operator_name=operator_name)
     if await shiftdao.is_shift_opened():
         await send_close_shift_menu_keyboard(func, state, session)  # type: ignore
     else:

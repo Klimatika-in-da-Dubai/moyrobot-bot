@@ -14,7 +14,6 @@ from app.core.keyboards.operator.shift.open import OpenShiftMenuCB, OpenShiftMen
 from app.core.states.operator import OperatorMenu
 from app.services.checker.shifts_difference.checker import ShiftsDifferenceCheck
 from app.services.database.dao.shift import OpenShiftDAO, ShiftDAO
-from app.services.database.dao.user import UserDAO
 from app.services.database.models.shift import Shift
 from app.utils.shift import get_open_shift, get_operator_id
 
@@ -49,11 +48,10 @@ async def cb_enter(
 ):
     shiftdao = ShiftDAO(session)
     openshiftdao = OpenShiftDAO(session)
-    UserDAO(session)
 
     opened_by_id = await get_operator_id(state)
     if opened_by_id is None:
-        await cb.answer("Ошибка в получении id оператора", show_alert=True)
+        await cb.answer("Выберите оператора", show_alert=True)
         return
 
     await shiftdao.add_shift(

@@ -23,6 +23,7 @@ from app.core.keyboards.operator.shift.menu import send_shift_keyboard
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dao.shift import OpenShiftDAO, ShiftDAO
+from app.services.database.dao.user import UserDAO
 from app.services.database.models.shift import OpenShift, Shift
 from app.utils.cleaning import add_cleaning_to_state, is_cleaning_exists
 
@@ -41,6 +42,13 @@ async def cb_open_shift(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
     await cb.answer()
+
+    if cb.message is None:
+        return
+
+    if not await UserDAO(session).is_work_account(cb.message.chat.id):
+        await state.update_data(operator_id=cb.message.chat.id)
+
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 
@@ -62,6 +70,13 @@ async def cb_close_shift(
         )
         return
     await cb.answer()
+
+    if cb.message is None:
+        return
+
+    if not await UserDAO(session).is_work_account(cb.message.chat.id):
+        await state.update_data(operator_id=cb.message.chat.id)
+
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
 

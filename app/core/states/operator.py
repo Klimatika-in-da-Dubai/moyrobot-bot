@@ -7,6 +7,7 @@ class OperatorMenu(StatesGroup):
     class Shift(StatesGroup):
         menu = State()
         operator = State()
+        auth = State()
         money_amount = State()
         antifreeze_count = State()
         robot_check = State()
