@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import assert_never
 from aiogram import Bot
+from apscheduler.executors.base import logging
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.notifications.consumable_request import (
     get_consumable_request_keyboard,
@@ -23,13 +24,24 @@ class ConsumableRequestNotifier(Notifier):
         )
         self._dao: ConsumableRequestDAO
         self._userdao = UserDAO(session)
+        self.delta_between_notifies = timedelta(hours=1)
 
     async def get_objects_to_notify(self):
-        delta_between_notifies = timedelta(hours=1)
-        return await self._dao.get_requests_to_notify(delta_between_notifies)
+        return await self._dao.get_requests_to_notify(self.delta_between_notifies)
 
     async def make_notified(self, consumable_request: ConsumableRequest) -> None:
         await self._dao.make_notified(consumable_request)
+
+    async def before(self):
+        requests = await self._dao.get_requests_to_notify(self.delta_between_notifies)
+        for request in requests:
+            for notify in request.notify_messages_ids:
+                chat_id, message_id = notify["chat_id"], notify["message_id"]
+                try:
+                    await self._bot.delete_message(chat_id, message_id)
+                except Exception as e:
+                    logging.error(e)
+            await self._dao.delete_notify_messages(request)
 
     async def send_notify(
         self, id: int, consumable_request: ConsumableRequest, debug: bool = False
@@ -44,7 +56,6 @@ class ConsumableRequestNotifier(Notifier):
         await self._dao.add_notify_message_id(
             consumable_request, id, message.message_id
         )
-        await self._dao.make_notified(consumable_request)
 
     async def get_text(self, consumable_request: ConsumableRequest) -> str:
         match consumable_request.consumable:

@@ -53,6 +53,15 @@ class ConsumableRequestDAO(BaseDAO):
             )
             await session.commit()
 
+    async def delete_notify_messages(self, consumable_request: ConsumableRequest):
+        async with self._session() as session:
+            await session.execute(
+                update(ConsumableRequest)
+                .where(ConsumableRequest.id == consumable_request.id)
+                .values(notify_messages_ids=[])
+            )
+            await session.commit()
+
     async def make_notified(self, consumable_request: ConsumableRequest):
         async with self._session() as session:
             await session.execute(
