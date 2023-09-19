@@ -1,4 +1,4 @@
-from aiogram import Router, F, types
+from aiogram import Bot, Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.message import Message
@@ -10,7 +10,11 @@ from app.core.keyboards.operator.shift.operator import OperatorsCB
 
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.user import UserDAO
-from app.utils.shift import get_operator_id
+from app.utils.shift import (
+    get_operator_id,
+    get_request_pincode_message_id,
+    set_request_pincode_message_id,
+)
 
 
 operator_selection_router = Router()
@@ -36,14 +40,15 @@ async def cb_select_operator_name(
     await cb.message.edit_text(  # type: ignore
         f"Введите пинкод {operator_name}", reply_markup=get_cancel_keyboard()
     )
+    await set_request_pincode_message_id(state, cb.message.message_id)  # type: ignore
 
 
 @operator_selection_router.message(OperatorMenu.Shift.auth, F.text)
 async def message_pincode(
-    message: Message, state: FSMContext, session: async_sessionmaker
+    message: Message, state: FSMContext, session: async_sessionmaker, bot: Bot
 ):
     if not message.text.isdigit():  # type: ignore
-        await message.answer("Введите число\\!", reply_markup=get_cancel_keyboard())
+        await message.answer("Введите число!", reply_markup=get_cancel_keyboard())
         return
 
     pincode = message.text
@@ -58,6 +63,16 @@ async def message_pincode(
     if not await userdao.get_pincode(operator_id) == pincode:
         await message.answer("Неверный пинкод\\!", reply_markup=get_cancel_keyboard())
         return
+
+    request_message_id = await get_request_pincode_message_id(state)
+    if request_message_id is None:
+        await message.answer(
+            "Произошла ошибка во время проверки пинкода\nОбратитесь к администратору"
+        )
+        return
+
+    await bot.delete_message(message.chat.id, request_message_id)
+    await message.delete()
 
     await send_shift_keyboard(message.answer, message, state, session)  # type: ignore
 
