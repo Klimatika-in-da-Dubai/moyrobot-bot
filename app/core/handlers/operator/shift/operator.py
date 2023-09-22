@@ -38,7 +38,8 @@ async def cb_select_operator_name(
     await state.set_state(OperatorMenu.Shift.auth)
 
     await cb.message.edit_text(  # type: ignore
-        f"Введите пинкод {operator_name}", reply_markup=get_cancel_keyboard()
+        f"Введите пинкод оператора: *{operator_name}*",
+        reply_markup=get_cancel_keyboard(),
     )
     await set_request_pincode_message_id(state, cb.message.message_id)  # type: ignore
 
