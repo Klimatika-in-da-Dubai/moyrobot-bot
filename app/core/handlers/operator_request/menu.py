@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.filters.message_len import MessageLenght
 from app.core.keyboards.menu import send_menu_keyboard
 from app.core.middlewares.media_group import MediaGroupMiddleware
+from app.core.states.menu import MainMenu
 
-from app.core.states.operator_request import OperatorRequestMenu
 from app.services.database.dao.operator_request import OperatorRequestDAO
 from app.services.database.models.operator_request import OperatorRequest
 
@@ -16,7 +16,7 @@ operator_request_menu_router.message.middleware(MediaGroupMiddleware())
 
 
 @operator_request_menu_router.message(
-    OperatorRequestMenu.get_operator_request,
+    MainMenu.operator_request,
     F.media_group_id,
     F.caption,
     MessageLenght(max_length=950),
@@ -35,7 +35,7 @@ async def get_operator_request_media(
 
 
 @operator_request_menu_router.message(
-    OperatorRequestMenu.get_operator_request,
+    MainMenu.operator_request,
     F.photo,
     F.caption,
     MessageLenght(max_length=950),
@@ -50,7 +50,7 @@ async def get_operator_request_photo(
 
 
 @operator_request_menu_router.message(
-    OperatorRequestMenu.get_operator_request, F.text, MessageLenght(max_length=950)
+    MainMenu.operator_request, F.text, MessageLenght(max_length=950)
 )
 async def get_operator_request(
     message: Message, state: FSMContext, session: async_sessionmaker
@@ -60,7 +60,7 @@ async def get_operator_request(
     await exit_get_operator_request(message, state, session)
 
 
-@operator_request_menu_router.message(OperatorRequestMenu.get_operator_request)
+@operator_request_menu_router.message(MainMenu.operator_request)
 async def operator_request_no_text(message: Message):
     await message.answer("Вы должны указать сообщениe")
 

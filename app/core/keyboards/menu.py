@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.core.keyboards.base import Action
+from app.core.states.menu import MainMenu
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
 
@@ -80,8 +81,7 @@ async def send_menu_keyboard(
     state: FSMContext,
     session: async_sessionmaker,
 ) -> None:
-    await state.clear()
-
+    await state.set_state(MainMenu.menu)
     await send_func(
         text="Меню", reply_markup=await get_menu_keyboard(message.chat.id, session)
     )
