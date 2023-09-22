@@ -12,7 +12,7 @@ from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
 from app.core.keyboards.menu import MenuCB, MenuTarget, send_menu_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
 from app.core.states.admin import AdminMenu
-from app.core.states.operator_request import OperatorRequestMenu
+from app.core.states.menu import MainMenu
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
 
@@ -23,7 +23,6 @@ menu_router = Router(name="menu-router")
 async def cmd_start(
     message: types.Message, state: FSMContext, session: async_sessionmaker[AsyncSession]
 ):
-    await state.clear()
     userdao = UserDAO(session=session)
     if not await userdao.exists(chat_id=message.chat.id):
         await message.answer(
@@ -44,6 +43,7 @@ async def cmd_start(
 
 
 @menu_router.callback_query(
+    MainMenu.menu,
     MenuCB.filter(F.target == MenuTarget.OPERATOR_MENU),
     isOperatorCB(),
 )
@@ -57,6 +57,7 @@ async def cb_open_operator_menu(
 
 
 @menu_router.callback_query(
+    MainMenu.menu,
     MenuCB.filter(F.target == MenuTarget.MODERATOR_MENU),
 )
 async def cb_open_moderator_menu(cb: types.CallbackQuery) -> None:
@@ -64,6 +65,7 @@ async def cb_open_moderator_menu(cb: types.CallbackQuery) -> None:
 
 
 @menu_router.callback_query(
+    MainMenu.menu,
     MenuCB.filter(F.target == MenuTarget.ADMIN_MENU),
     isAdminCB(),
 )
@@ -79,11 +81,13 @@ async def cb_open_admin_menu(
     )
 
 
-@menu_router.callback_query(MenuCB.filter(F.target == MenuTarget.OPERATOR_REQUEST_MENU))
+@menu_router.callback_query(
+    MainMenu.menu, MenuCB.filter(F.target == MenuTarget.OPERATOR_REQUEST_MENU)
+)
 async def cb_open_operator_request_menu(cb: types.CallbackQuery, state: FSMContext):
     await cb.answer()
 
-    await state.set_state(OperatorRequestMenu.get_operator_request)
+    await state.set_state(MainMenu.operator_request)
     await cb.message.edit_text(  # type: ignore
         "Напишите сообщение, которые вы хотите передать администраторам мойки\\."
         "Вы также можете прикрепить до 10 фотографий",
@@ -92,7 +96,7 @@ async def cb_open_operator_request_menu(cb: types.CallbackQuery, state: FSMConte
 
 
 @menu_router.callback_query(
-    OperatorRequestMenu.get_operator_request, CancelCB.filter(F.action == Action.CANCEL)
+    MainMenu.operator_request, CancelCB.filter(F.action == Action.CANCEL)
 )
 async def cb_cancel_get_operator_request(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
