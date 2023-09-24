@@ -85,7 +85,15 @@ class CloseOpenShiftNotifier(Notifier):
         close_shift_text = await self.get_close_shift_text(info.closed_shift)
         open_shift_text = await self.get_open_shift_text(info.opened_shift)
         money_check_text = await self.get_money_check_text(info)
-        return f"{close_shift_text}\n{open_shift_text}\n{money_check_text}\n"
+        chemistry_message = await self.get_chemistry_text(info.opened_shift)
+        robot_problems = await self.get_problems_text(info.opened_shift)
+        return (
+            f"{close_shift_text}\n"
+            f"{open_shift_text}\n"
+            f"{chemistry_message}\n"
+            f"{money_check_text}\n"
+            f"{robot_problems}\n"
+        )
 
     async def get_close_shift_text(self, shift: Shift) -> str:
         close_shift = await self.get_close_shift(shift)
@@ -121,21 +129,12 @@ class CloseOpenShiftNotifier(Notifier):
 
         names_text = escape_chars(", ".join(names))
         money_text = shift_info.money_amount
-        shampoo_text = shift_info.shampoo_count
-        foam_text = shift_info.foam_count
-        wax_text = shift_info.wax_count
 
         antifreeze_sentence = ""
         if shift_info.antifreeze_count != 0:
             antifreeze_sentence = f"Антифриз: {shift_info.antifreeze_count}\n"
 
-        return (
-            f"ФИО: {names_text}\n"
-            f"Деньги: {money_text} ₽\n"
-            f"Шампунь: {shampoo_text}\n"
-            f"Пена: {foam_text}\n"
-            f"Воск: {wax_text}\n" + antifreeze_sentence
-        )
+        return f"ФИО: {names_text}\n" f"Касса: {money_text} ₽\n" + antifreeze_sentence
 
     async def get_money_check_text(self, info: CloseOpenShiftInfo) -> str:
         shift_open = await self.get_open_shift(info.opened_shift)
@@ -160,6 +159,44 @@ class CloseOpenShiftNotifier(Notifier):
             f"Итого в кассе: {escape_chars(str(shift_open.money_amount))} ₽\n"  # type: ignore
             f"Разница между сменами : {escape_chars(str(money_difference.money_difference))} ₽\n"
         )
+
+    async def get_chemistry_text(self, shift: Shift) -> str:
+        shift_info = await self.get_open_shift(shift)
+
+        shampoo_text = shift_info.shampoo_count
+        foam_text = shift_info.foam_count
+        wax_text = shift_info.wax_count
+
+        return (
+            f"*Химия*\n"
+            f"Шампунь: {shampoo_text}\n"
+            f"Пена: {foam_text}\n"
+            f"Воск: {wax_text}\n"
+        )
+
+    async def get_problems_text(self, shift: Shift) -> str:
+        shift_info = await self.get_open_shift(shift)
+        if all(
+            [
+                shift_info.robot_movement_check,
+                shift_info.robot_leak_check,
+                shift_info.gates_check,
+            ]
+        ):
+            return ""
+
+        text = "*Проблемы*\n"
+
+        if not shift_info.robot_movement_check:
+            text += "⚠️ Неровный ход робота\n"
+
+        if not shift_info.robot_leak_check:
+            text += "⚠️ Протечка робота\n"
+
+        if not shift_info.gates_check:
+            text += "⚠️ Неисправность работы ворот\n"
+
+        return text
 
     async def get_close_shift_check(self, closed_shift: Shift) -> ShiftCheck:
         shift_check = await self._shiftcheckdao.get_by_id(closed_shift.id)
