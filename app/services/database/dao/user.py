@@ -1,5 +1,5 @@
 from operator import and_
-from typing import Sequence
+from typing import Optional, Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import delete, select, update
 from app.services.database.dao.base import BaseDAO
