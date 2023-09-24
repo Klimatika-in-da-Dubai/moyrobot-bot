@@ -67,8 +67,11 @@ async def get_text(state: FSMContext, session: async_sessionmaker):
 
     userdao = UserDAO(session=session)
     user = await userdao.get_by_id(id_=user_id)
-
     if user is None:
         raise Exception("no user with id %s", user_id)
 
-    return f"Выбранный пользователь: {escape_chars(user.name)}"
+    pincode = await userdao.get_pincode(user_id=user_id)
+    if pincode is None:
+        pincode = "не сгенерирован"
+
+    return f"Выбранный пользователь: {escape_chars(user.name)}\nПинкод: {pincode}"

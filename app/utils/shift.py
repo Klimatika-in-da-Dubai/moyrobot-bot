@@ -60,3 +60,12 @@ async def get_operator_id(state: FSMContext) -> int | None:
 async def get_operator_name(state: FSMContext) -> str | None:
     data = await state.get_data()
     return data.get("operator_name")
+
+
+async def set_request_pincode_message_id(state: FSMContext, message_id: int):
+    await state.update_data(request_pincode_message_id=message_id)
+
+
+async def get_request_pincode_message_id(state: FSMContext) -> int | None:
+    data = await state.get_data()
+    return data.get("request_pincode_message_id")

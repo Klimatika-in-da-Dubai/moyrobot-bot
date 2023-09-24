@@ -34,3 +34,15 @@ class UserRole(Base):
         autoincrement=False,
     )
     role: Mapped[Role] = mapped_column(Enum(Role), primary_key=True)
+
+
+class UserPincode(Base):
+    __tablename__ = "tg_user_pincode"
+
+    id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("tg_user.id", ondelete="CASCADE"),
+        primary_key=True,
+        autoincrement=False,
+    )
+    pincode: Mapped[str]

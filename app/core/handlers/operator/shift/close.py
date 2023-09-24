@@ -14,7 +14,6 @@ from app.core.keyboards.operator.shift.close import (
 from app.core.states.operator import OperatorMenu
 from app.services.checker.shift.shift import ShiftChecker
 from app.services.database.dao.shift import CloseShiftDAO, ShiftDAO
-from app.services.database.dao.user import UserDAO
 from app.utils.shift import get_close_shift, get_operator_id
 
 
@@ -30,10 +29,9 @@ close_shift_router = Router()
 async def cb_enter(
     cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
 ):
-    UserDAO(session)
     closed_by_id = await get_operator_id(state)
     if closed_by_id is None:
-        await cb.answer("Ошибка в получении id оператора", show_alert=True)
+        await cb.answer("Выберите оператора", show_alert=True)
         return
 
     shiftdao = ShiftDAO(session)
