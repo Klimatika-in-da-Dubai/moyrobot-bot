@@ -1,3 +1,4 @@
+from operator import and_
 from typing import Sequence
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import delete, select, update
@@ -74,7 +75,9 @@ class UserDAO(BaseDAO[User]):
     async def get_operators(self) -> list[User]:
         async with self._session() as session:
             users = await session.execute(
-                select(User).join(UserRole).where(UserRole.role == Role.OPERATOR)
+                select(User)
+                .join(UserRole)
+                .where(and_(UserRole.role == Role.OPERATOR, User.active.is_(True)))
             )
             return list(users.scalars().all())
 
