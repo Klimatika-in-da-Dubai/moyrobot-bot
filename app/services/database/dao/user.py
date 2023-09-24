@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import delete, select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.salary import Salary
-from app.services.database.models.user import Role, User, UserRole
+from app.services.database.models.user import Role, User, UserPincode, UserRole
 
 
 class UserDAO(BaseDAO[User]):
@@ -71,6 +71,19 @@ class UserDAO(BaseDAO[User]):
             )
 
             return result.scalar()  # type: ignore
+
+    async def set_pincode(self, user_id: int, pincode: str):
+        pincode = UserPincode(id=user_id, pincode=pincode)
+        async with self._session() as session:
+            await session.merge(pincode)
+            await session.commit()
+
+    async def get_pincode(self, user_id: int) -> Optional[str]:
+        async with self._session() as session:
+            result = await session.execute(
+                select(UserPincode.pincode).where(UserPincode.id == user_id)
+            )
+            return result.scalar()
 
     async def get_operators(self) -> list[User]:
         async with self._session() as session:

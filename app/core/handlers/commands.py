@@ -1,4 +1,5 @@
 from aiogram import Router, types, Bot, F
+from aiogram.enums import ChatType
 from aiogram.filters import Command, CommandObject
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
@@ -7,6 +8,7 @@ from app.services.database.dao.group import GroupDAO
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.group import Group
 from app.services.notifier.cleaning import CleaningNotifier
+from app.utils.pincode import create_pincode_for_user
 
 commands_router = Router(name="menu-router")
 
@@ -56,3 +58,22 @@ async def addchat(message: types.Message, session: async_sessionmaker):
 
     await groupdao.add_group(group)
     await message.answer("Группа успешно добавлена")
+
+
+@commands_router.message(
+    Command(commands=["pincode"]), F.chat.type.in_([ChatType.PRIVATE])
+)
+async def send_pincode(message: types.Message, session: async_sessionmaker):
+    userdao = UserDAO(session)
+    user = await userdao.get_by_id(id_=message.chat.id)
+    if user is None:
+        await message.answer("Вы не являетесь пользователем бота")
+        return
+
+    pincode = await userdao.get_pincode(user.id)
+
+    if pincode is None:
+        await create_pincode_for_user(user.id, session)
+        pincode = await userdao.get_pincode(user.id)
+
+    await message.answer(f"Ваш пинкод: {pincode}")

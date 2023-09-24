@@ -35,5 +35,7 @@ def get_operators_keyboard(operators: list[User]):
 async def send_operators_keyboard(func, state: FSMContext, session: async_sessionmaker):
     userdao = UserDAO(session)
     operators = await userdao.get_operators()
-    await func(text="Выберите имя", reply_markup=get_operators_keyboard(operators))
+    await func(
+        text="Выберите оператора", reply_markup=get_operators_keyboard(operators)
+    )
     await state.set_state(OperatorMenu.Shift.operator)

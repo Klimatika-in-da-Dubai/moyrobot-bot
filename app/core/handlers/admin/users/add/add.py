@@ -25,6 +25,7 @@ from app.services.database.dao.user import UserDAO
 from app.services.database.models.mailing import Mailing
 from app.services.database.models.salary import Salary
 from app.services.database.models.user import Role, User, UserRole
+from app.utils.pincode import create_pincode_for_user
 
 add_user_router = Router()
 
@@ -231,9 +232,13 @@ async def cb_enter(
     userdao = UserDAO(session=session)
     mailingdao = MailingDAO(session=session)
     salarydao = SalaryDAO(session=session)
+
     await userdao.add_user_with_roles(user, user_roles)
 
+    await create_pincode_for_user(user.id, session)
+
     await salarydao.add_salary(salary)
+
     for mailing in mailings:
         await mailingdao.add_mailing(mailing)
 
