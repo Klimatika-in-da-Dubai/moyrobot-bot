@@ -9,6 +9,7 @@ from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
     ManualStart,
     ManualStartType,
+    PaidManualStart,
 )
 from app.services.database.models.payment_check import PaymentCheck
 from app.services.database.models.utils import PaymentMethod
@@ -50,13 +51,14 @@ class PaymentCheckNotifier(Notifier):
             time = manual_start_info.date.strftime("%H:%M")
             text += (
                 f"{time} \\- Терминал: {manual_start_info.terminal_id} \\- "
-                f"Режим: {get_manual_start_mode_text(manual_start_info)}\n"
+                f"Режим: {get_manual_start_mode_text(manual_start_info)} \\- "
+                f"Сумма: {manual_start.payment_amount}\n"
             )
         return text
 
     async def get_card_manual_starts(
         self, payment_check: PaymentCheck
-    ) -> list[ManualStart]:
+    ) -> list[PaidManualStart]:
         manual_starts = await self._manual_start_dao.get_typed_between_time(
             ManualStartType.PAID, payment_check.start_check, payment_check.end_check
         )
