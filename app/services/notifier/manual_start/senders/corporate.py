@@ -31,7 +31,7 @@ class CorporateManualStartSender(TypedManualStartSender):
             "Ручной запуск:\n"
             "*Тип:* Корпоративный\n"
             f"*ID:* {escape_chars(manual_start.id)}\n"
-            f"*Режим:* {escape_chars(get_manual_start_mode_text(manual_start))}"
+            f"*Режим:* {escape_chars(get_manual_start_mode_text(manual_start))}\n"
             f"*Компания:* {escape_chars(corporation_name)}\n"
             f"*Причина:* {escape_chars(typed_manual_start.description)}"
         )
