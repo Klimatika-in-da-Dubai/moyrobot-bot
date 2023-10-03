@@ -53,7 +53,7 @@ async def send_close_shift_menu_keyboard(
 
     operator_name = await get_operator_name(state)
     await func(
-        text="Открытие смены",
+        text="Закрытие смены",
         reply_markup=get_close_shift_keyboard(shift, operator_name),
     )
     await state.set_state(OperatorMenu.Shift.menu)

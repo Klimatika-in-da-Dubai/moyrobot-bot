@@ -29,13 +29,15 @@ async def check_for_consumables(
 
 def get_needed_consumables(shift: OpenShift | CloseShift) -> list[Consumable]:
     needed_consumables = []
-    if shift.shampoo_count is None or shift.shampoo_count <= 1 or shift.shampoo_check:
+    if (
+        shift.shampoo_count is None or shift.shampoo_count <= 1
+    ):  # or shift.shampoo_check:
         needed_consumables.append(Consumable.SHAMPOO)
 
-    if shift.foam_count is None or shift.foam_count <= 1 or shift.foam_check:
+    if shift.foam_count is None or shift.foam_count <= 1:  #  or shift.foam_check:
         needed_consumables.append(Consumable.FOAM)
 
-    if shift.wax_count is None or shift.wax_count <= 1 or shift.wax_check:
+    if shift.wax_count is None or shift.wax_count <= 1:  # or shift.wax_check:
         needed_consumables.append(Consumable.WAX)
 
     if shift.coins_check:
