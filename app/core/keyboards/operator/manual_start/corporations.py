@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from apscheduler.job import Iterable
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -40,7 +40,7 @@ def get_corporations_menu(corporations: Iterable[Corporation]) -> InlineKeyboard
     return builder.as_markup()
 
 
-async def send_corporations_menu(func, state: FSMContext, session: async_sessionmaker):
+async def send_corporations_menu(func, state: FSMContext, session: AsyncSession):
     corporations = await CorporationDAO(session).get_all()
     await state.set_state(OperatorMenu.ManualStart.CorporateManualStart.corporation)
     await func("Выберете компанию", reply_markup=get_corporations_menu(corporations))

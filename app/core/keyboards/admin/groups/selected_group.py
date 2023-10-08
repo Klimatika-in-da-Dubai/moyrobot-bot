@@ -3,7 +3,7 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
@@ -53,9 +53,7 @@ def get_selected_group_menu_keyboard() -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-async def send_selected_group_menu(
-    func, state: FSMContext, session: async_sessionmaker
-):
+async def send_selected_group_menu(func, state: FSMContext, session: AsyncSession):
     group_id = await get_selected_group_id(state)
     if group_id is None:
         raise ValueError("Error ")

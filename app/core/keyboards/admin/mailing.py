@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
 from app.services.database.dao.mailing import GroupMailingDAO
@@ -193,7 +193,7 @@ async def send_mailing_selection_in_change_menu(func, state: FSMContext):
 
 
 async def send_mailing_selection_in_group_menu(
-    func, state: FSMContext, session: async_sessionmaker
+    func, state: FSMContext, session: AsyncSession
 ):
     group_id = await get_selected_group_id(state)
     if group_id is None:
@@ -211,9 +211,7 @@ async def send_mailing_selection_in_group_menu(
     )
 
 
-async def get_group_mailings(
-    group_id: int, session: async_sessionmaker
-) -> list[MailingType]:
+async def get_group_mailings(group_id: int, session: AsyncSession) -> list[MailingType]:
     groupmailingdao = GroupMailingDAO(session)
     return await groupmailingdao.get_mailings(group_id)
 

@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.filters import Filter
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.menu import send_menu_keyboard
 from app.services.database.dao.user import UserDAO
 
@@ -13,7 +13,7 @@ class isAdminCB(Filter):
         self.role = Role.ADMIN
 
     async def __call__(
-        self, cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+        self, cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
     ) -> bool:
         userdao = UserDAO(session=session)
         if not await userdao.exists(chat_id=cb.message.chat.id):  # type: ignore

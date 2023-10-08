@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.keyboards.payment_method import get_payment_method_keyboard
@@ -71,18 +71,14 @@ async def get_antifreeze_info_status_emoji(state: FSMContext):
     return payment_method_em, payment_amount_em
 
 
-async def send_antifreeze_keyboard(
-    func, state: FSMContext, session: async_sessionmaker
-):
+async def send_antifreeze_keyboard(func, state: FSMContext, session: AsyncSession):
     text = await get_antifreeze_text(state)
 
     await state.set_state(OperatorMenu.Antifreeze.menu)
     await func(text=text, reply_markup=await get_antifreeze_keyboard(state))
 
 
-async def send_payment_method_keyboard(
-    func, state: FSMContext, session: async_sessionmaker
-):
+async def send_payment_method_keyboard(func, state: FSMContext, session: AsyncSession):
     await state.set_state(OperatorMenu.Antifreeze.payment_method)
     await func(
         text="Выбирите способ оплаты",

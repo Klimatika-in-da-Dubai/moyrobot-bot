@@ -1,6 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.groups.menu import send_groups_menu
@@ -38,7 +38,7 @@ async def cb_select_mailing(
     cb: types.CallbackQuery,
     callback_data: MailingSelectionCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await select_mailing(state, callback_data.mailing)
     await send_mailing_selection_in_group_menu(cb.message.edit_text, state, session)  # type: ignore
@@ -65,9 +65,7 @@ async def select_mailing(state: FSMContext, mailing: MailingType):
     ),
     isAdminCB(),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     group_id = await get_selected_group_id(state)
     if group_id is None:
         await cb.answer("Данная группа не существует")
@@ -81,7 +79,7 @@ async def cb_enter(
 
 
 async def update_group_mailings(
-    group_id: int, mailings: list[MailingType], session: async_sessionmaker
+    group_id: int, mailings: list[MailingType], session: AsyncSession
 ):
     groupdao = GroupDAO(session)
     groupmailingdao = GroupMailingDAO(session)

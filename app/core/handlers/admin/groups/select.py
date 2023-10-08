@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.groups.menu import send_groups_menu
 from app.core.keyboards.admin.groups.selected_group import (
@@ -27,7 +27,7 @@ select_router.callback_query.filter(AdminMenu.Groups.Selected.menu)
 async def cb_select_group(
     cb: CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
 
@@ -40,7 +40,7 @@ async def cb_select_group(
 async def cb_delete_group(
     cb: CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
     group_id = await get_selected_group_id(state)
@@ -56,6 +56,6 @@ async def cb_delete_group(
 @select_router.callback_query(
     SelectedGroupCB.filter(F.target == Action.BACK), isAdminCB()
 )
-async def cb_back(cb: CallbackQuery, state: FSMContext, session: async_sessionmaker):
+async def cb_back(cb: CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_groups_menu(cb.message.edit_text, state, session)  # type: ignore

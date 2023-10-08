@@ -1,6 +1,6 @@
 from aiogram import types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.operator.shift.close import send_close_shift_menu_keyboard
 from app.core.keyboards.operator.shift.open import send_open_shift_menu_keyboard
 
@@ -10,7 +10,7 @@ from app.utils.shift import get_operator_id
 
 
 async def send_shift_keyboard(
-    func, message: types.Message, state: FSMContext, session: async_sessionmaker
+    func, message: types.Message, state: FSMContext, session: AsyncSession
 ):
     shiftdao = ShiftDAO(session)
     userdao = UserDAO(session)

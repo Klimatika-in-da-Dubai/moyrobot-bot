@@ -1,6 +1,7 @@
 from aiogram.fsm.context import FSMContext
 from app.services.database.models.promocode import WashMode
-from app.utils.text import format_phone, escape_chars
+from app.utils.text import escape_chars
+from app.utils.phone import format_phone
 
 
 async def get_promocode_text_info(state: FSMContext) -> tuple[str, str, str]:

@@ -1,10 +1,10 @@
 from abc import abstractmethod
 import logging
-from typing import Optional
+from typing import Optional, overload
 from aiogram import Bot
 from apscheduler.job import Iterable
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.base import BaseDAO
 from app.services.database.dao.mailing import get_mailing_ids
 from app.services.database.models.mailing import MailingType
@@ -14,7 +14,7 @@ class Notifier:
     def __init__(
         self,
         bot: Bot,
-        session: async_sessionmaker,
+        session: AsyncSession,
         mailing_type: MailingType,
         dao: Optional[BaseDAO],
         before_notifiers: Optional[Iterable["Notifier"]] = None,

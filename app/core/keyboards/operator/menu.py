@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.shift import ShiftDAO
@@ -118,7 +118,7 @@ def get_closed_operator_menu_keyboard() -> types.InlineKeyboardMarkup:
 
 
 async def send_operator_menu_keyboard(
-    send_func: Callable, state: FSMContext, session: async_sessionmaker
+    send_func: Callable, state: FSMContext, session: AsyncSession
 ):
     await state.set_state(OperatorMenu.menu)
     shiftdao = ShiftDAO(session)

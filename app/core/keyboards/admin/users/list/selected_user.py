@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
@@ -54,13 +54,13 @@ def get_selected_user_keyboard() -> types.InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-async def send_selected_user_menu(func, state: FSMContext, session: async_sessionmaker):
+async def send_selected_user_menu(func, state: FSMContext, session: AsyncSession):
     text = await get_text(state, session)
     await state.set_state(AdminMenu.Users.List.Selected.menu)
     await func(text=text, reply_markup=get_selected_user_keyboard())
 
 
-async def get_text(state: FSMContext, session: async_sessionmaker):
+async def get_text(state: FSMContext, session: AsyncSession):
     user_id = (await state.get_data()).get("selected_user_id")
     if user_id is None:
         raise ValueError("no user was selected")

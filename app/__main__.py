@@ -21,12 +21,16 @@ def setup_middlewares(dp: Dispatcher, session) -> None:
     dp.update.middleware(DbSessionMiddleware(session))
 
 
-def get_parser(config: Config) -> Parser:
+def get_terminal_sessions(config: Config) -> list[TerminalSession]:
     sessions = [
         TerminalSession(terminal.id, terminal.url, terminal.login, terminal.password)
         for terminal in config.terminals
     ]
-    return Parser(sessions)
+    return sessions
+
+
+def get_parser(terminal_sessions: list[TerminalSession]) -> Parser:
+    return Parser(terminal_sessions)
 
 
 async def main():
@@ -35,11 +39,11 @@ async def main():
         "(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s",
         level=logging.DEBUG,
     )
-
     config: Config = load_config()
     bot = Bot(config.bot.token, parse_mode=config.bot.parse_mode)
     session = await setup_get_pool(config.db.uri)
-    parser = get_parser(config)
+    terminal_sessions = get_terminal_sessions(config)
+    parser = get_parser(terminal_sessions)
     dp = Dispatcher(storage=RedisStorage.from_url(config.redis.url))
     scheduler = get_scheduler(bot, parser, session)
     setup_routers(dp)

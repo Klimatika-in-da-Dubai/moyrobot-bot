@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.checker.shift.cashbox.checker import CashboxChecker
 from app.services.database.dao.shift_check import ShiftCheckDAO
 from app.services.database.models.shift import Shift
@@ -6,7 +6,7 @@ from app.services.database.models.shift_check import ShiftCheck
 
 
 class ShiftChecker:
-    def __init__(self, session: async_sessionmaker):
+    def __init__(self, session: AsyncSession):
         self.checkers = [CashboxChecker(session)]
         self.shiftcheckdao = ShiftCheckDAO(session)
 

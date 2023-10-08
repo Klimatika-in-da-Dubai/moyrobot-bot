@@ -1,6 +1,6 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.users.list.change import send_change_user_menu
 from app.core.keyboards.admin.users.list.menu import send_users_list_menu
@@ -27,9 +27,7 @@ selected_user_router = Router()
         (F.action == Action.SELECT) & (F.target == SelectedUserTarget.DELETE)
     ),
 )
-async def cb_delete(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_delete(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     user = await get_selected_user(state, session)
     if user is None:
@@ -50,9 +48,7 @@ async def cb_delete(
         (F.action == Action.OPEN) & (F.target == SelectedUserTarget.CHANGE)
     ),
 )
-async def cb_change(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_change(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     user = await get_selected_user(state, session)
     if user is None:
         await cb.answer("Пользователя нет в базе данных", show_alert=True)
@@ -77,7 +73,7 @@ async def cb_change(
     YesNoCB.filter(F.target == YesNoTarget.YES),
 )
 async def cb_delete_yes(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     userdao = UserDAO(session)
@@ -92,7 +88,7 @@ async def cb_delete_yes(
     YesNoCB.filter(F.target == YesNoTarget.NO),
 )
 async def cb_delete_no(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_selected_user_menu(cb.message.edit_text, state, session)  # type: ignore
@@ -103,9 +99,7 @@ async def cb_delete_no(
     isAdminCB(),
     SelectedUserCB.filter((F.action == Action.BACK)),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.clear()
     await send_users_list_menu(cb.message.edit_text, state, session)  # type: ignore

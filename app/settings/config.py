@@ -67,6 +67,7 @@ class Config:
 
     bot: Bot
     db: DB
+    client_db: DB
     redis: Redis
     terminals: list[Terminal] = field(default_factory=list)
 
@@ -112,12 +113,19 @@ def load_config() -> Config:
 
     bot = config["bot"]
     db = config["database"]
+    client_db = config["client_database"]
     redis = config["redis"]
     terminals = config["terminals"]
     return Config(
         bot=Bot(token=bot["token"], parse_mode=get_parse_mode(bot)),
         db=DB(
             host=db["host"], name=db["name"], user=db["user"], password=db["password"]
+        ),
+        client_db=DB(
+            host=client_db["host"],
+            name=client_db["name"],
+            user=client_db["user"],
+            password=client_db["password"],
         ),
         redis=Redis(
             host=redis["host"],

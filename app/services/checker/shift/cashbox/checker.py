@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.checker.shift.cashbox.income.getter import IncomeGetter
 from app.services.checker.shift.cashbox.income.object.paid_manual_start import (
     PaidManualStartIncome,
@@ -14,7 +14,7 @@ from app.services.database.models.shift_check import ShiftCheck
 
 
 class CashboxChecker(Checker):
-    def __init__(self, session: async_sessionmaker):
+    def __init__(self, session: AsyncSession):
         self.income_getter = IncomeGetter([PaidManualStartIncome(session)])
         self.outcome_getter = OutcomeGetter([MoneyCollectionOutcome(session)])
         self.openshiftdao = OpenShiftDAO(session)

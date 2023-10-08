@@ -1,7 +1,7 @@
 from aiogram import Router, types, F
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
 from app.core.keyboards.operator.menu import send_operator_menu_keyboard
@@ -26,7 +26,7 @@ menu_router = Router()
     ),
 )
 async def cb_payment_device(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
 
@@ -49,7 +49,7 @@ async def cb_payment_device(
     ),
 )
 async def cb_payment_method(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
 
@@ -84,7 +84,7 @@ async def cb_description(
 
 @menu_router.message(OperatorMenu.Refund.description, F.text)
 async def message_description(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     await state.update_data(description=message.text)
     await send_refund_keyboard(message.answer, state, session)
@@ -119,7 +119,7 @@ async def cb_statement_photo(cb: types.CallbackQuery, state: FSMContext):
 
 @menu_router.message(OperatorMenu.Refund.statement_photo, F.photo)
 async def message_statement_photo(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     await state.update_data(statement_photo_file_id=message.photo[-1].file_id)  # type: ignore
     await send_refund_keyboard(message.answer, state, session)  # type: ignore
@@ -154,7 +154,7 @@ async def cb_consumable_photo(cb: types.CallbackQuery, state: FSMContext):
 
 @menu_router.message(OperatorMenu.Refund.consumable_photo, F.photo)
 async def message_consumable_photo(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     await state.update_data(consumable_photo_file_id=message.photo[-1].file_id)  # type: ignore
     await send_refund_keyboard(message.answer, state, session)
@@ -168,7 +168,7 @@ async def message_consumable_photo(
     ),
 )
 async def cb_give_money(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     data = await state.get_data()
@@ -184,7 +184,7 @@ async def cb_give_money(
     ),
 )
 async def cb_money_on_card(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     data = await state.get_data()
@@ -197,9 +197,7 @@ async def cb_money_on_card(
     isOperatorCB(),
     RefundMenuCB.filter((F.action == Action.ENTER)),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     if not await check_refund_report(state):
         await cb.answer("Не все поля заполнены", show_alert=True)
         return
@@ -218,9 +216,7 @@ async def cb_enter(
     isOperatorCB(),
     RefundMenuCB.filter((F.action == Action.BACK)),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -236,9 +232,7 @@ async def cb_back(
     CancelCB.filter(F.action == Action.CANCEL),
     F.message.text,
 )
-async def cb_cancel(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_cancel(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_refund_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
@@ -253,7 +247,7 @@ async def cb_cancel(
     F.message.photo,
 )
 async def cb_cancel_media(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await cb.message.delete()  # type: ignore

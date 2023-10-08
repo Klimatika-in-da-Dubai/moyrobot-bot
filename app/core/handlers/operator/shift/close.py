@@ -1,7 +1,7 @@
 from datetime import datetime
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.operator import isOperatorCB
 from app.core.filters.shift import isShiftOpenedCB
 from app.core.handlers.operator.shift.utils import check_for_consumables
@@ -26,9 +26,7 @@ close_shift_router = Router()
     CloseShiftMenuCB.filter(F.action == Action.ENTER),
     isShiftOpenedCB(),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     closed_by_id = await get_operator_id(state)
     if closed_by_id is None:
         await cb.answer("Выберите оператора", show_alert=True)

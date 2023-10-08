@@ -1,7 +1,7 @@
 from aiogram import Router, types, Bot, F
 from aiogram.enums import ChatType
 from aiogram.filters import Command, CommandObject
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dao.group import GroupDAO
@@ -23,7 +23,7 @@ async def cleaning(
     message: types.Message,
     command: CommandObject,
     bot: Bot,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ) -> None:
     cleaningdao = CleaningDAO(session)
     cleaning_notifier = CleaningNotifier(bot, session)
@@ -44,7 +44,7 @@ async def cleaning(
     Command(commands=["addgroup"]),
     F.chat.type.in_(["group", "supergroup"]),
 )
-async def addchat(message: types.Message, session: async_sessionmaker):
+async def addchat(message: types.Message, session: AsyncSession):
     userdao = UserDAO(session)
     if not await userdao.is_admin(message.from_user.id):  # type: ignore
         return
@@ -63,7 +63,7 @@ async def addchat(message: types.Message, session: async_sessionmaker):
 @commands_router.message(
     Command(commands=["pincode"]), F.chat.type.in_([ChatType.PRIVATE])
 )
-async def send_pincode(message: types.Message, session: async_sessionmaker):
+async def send_pincode(message: types.Message, session: AsyncSession):
     userdao = UserDAO(session)
     user = await userdao.get_by_id(id_=message.chat.id)
     if user is None:

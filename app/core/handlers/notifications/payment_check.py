@@ -1,5 +1,5 @@
 from aiogram import Router, F, types
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 
 from app.core.keyboards.notifications.payment_check import (
@@ -23,7 +23,7 @@ card_payment_router = Router()
 async def cb_approve_card_payment_check(
     cb: types.CallbackQuery,
     callback_data: CardPaymentCheckCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     cb.answer()
 
@@ -44,7 +44,7 @@ async def cb_approve_card_payment_check(
 async def cb_remind_card_payment_check(
     cb: types.CallbackQuery,
     callback_data: CardPaymentCheckCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     cb.answer()
 

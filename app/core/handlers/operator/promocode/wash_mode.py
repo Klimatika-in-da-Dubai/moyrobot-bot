@@ -1,6 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio.session import async_sessionmaker
+from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
@@ -21,7 +21,7 @@ async def cb_select_mode(
     cb: types.CallbackQuery,
     callback_data: WashModeCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
     await state.update_data(wash_mode=callback_data.wash_mode)
@@ -36,7 +36,7 @@ async def cb_select_mode(
 async def cb_back(
     cb: types.CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
     await send_promocode_keyboard(cb.message.edit_text, state, session)  # type: ignore

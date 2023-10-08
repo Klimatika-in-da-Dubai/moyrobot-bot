@@ -3,7 +3,7 @@ from aiogram import Bot
 from aiogram.types import FSInputFile
 import os
 import pandas as pd
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dao.manual_start import ManualStartDAO
@@ -22,7 +22,7 @@ from app.utils.calendar_names import month_name
 
 
 class MonthlyReportNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker):
+    def __init__(self, bot, session):
         super().__init__(bot, session, MailingType.MONTHLY_REPORT, None)
         self._shiftdao = ShiftDAO(session)
         self._userdao = UserDAO(session)

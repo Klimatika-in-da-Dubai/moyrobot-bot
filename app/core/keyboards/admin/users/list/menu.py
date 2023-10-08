@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
 from app.services.database.dao.user import UserDAO
@@ -34,7 +34,7 @@ async def get_users_list_keyboard(users: Iterable[User]) -> types.InlineKeyboard
     return builder.as_markup()
 
 
-async def send_users_list_menu(func, state: FSMContext, session: async_sessionmaker):
+async def send_users_list_menu(func, state: FSMContext, session: AsyncSession):
     userdao = UserDAO(session=session)
     users = await userdao.get_all_active()
     await state.set_state(AdminMenu.Users.List.menu)

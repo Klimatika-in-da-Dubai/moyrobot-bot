@@ -3,7 +3,7 @@ from typing import Sequence
 from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
 
 from app.core.filters.admin import isAdminCB
 from app.core.filters.operator import isOperatorCB
@@ -20,9 +20,7 @@ menu_router = Router(name="menu-router")
 
 
 @menu_router.message(Command(commands=["start"]))
-async def cmd_start(
-    message: types.Message, state: FSMContext, session: async_sessionmaker[AsyncSession]
-):
+async def cmd_start(message: types.Message, state: FSMContext, session: AsyncSession):
     userdao = UserDAO(session=session)
     if not await userdao.exists(chat_id=message.chat.id):
         await message.answer(
@@ -48,7 +46,7 @@ async def cmd_start(
     isOperatorCB(),
 )
 async def cb_open_operator_menu(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ) -> None:
     await cb.answer()
     await send_operator_menu_keyboard(
@@ -99,7 +97,7 @@ async def cb_open_operator_request_menu(cb: types.CallbackQuery, state: FSMConte
     MainMenu.operator_request, CancelCB.filter(F.action == Action.CANCEL)
 )
 async def cb_cancel_get_operator_request(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await send_menu_keyboard(
         cb.message.edit_text, cb.message, state, session  # type: ignore

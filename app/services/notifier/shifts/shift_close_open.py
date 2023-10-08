@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing_extensions import override
 from aiogram import Bot
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.checker.shift.cashbox.outcome.object.money_collection import (
     MoneyCollectionOutcome,
 )
@@ -28,7 +28,7 @@ class CloseOpenShiftNotifier(Notifier):
     def __init__(
         self,
         bot: Bot,
-        session: async_sessionmaker,
+        session: AsyncSession,
     ) -> None:
         after_notifiers = [CleaningNotifier(bot, session)]
         super().__init__(

@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.groups.menu import GroupsMenuCB
 from app.core.keyboards.admin.groups.selected_group import send_selected_group_menu
@@ -22,7 +22,7 @@ async def cb_select_group(
     cb: CallbackQuery,
     callback_data: GroupsMenuCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
     await set_selected_group_id(state, callback_data.group_id)

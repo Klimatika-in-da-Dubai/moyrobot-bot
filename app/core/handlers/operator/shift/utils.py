@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.consumable_request import ConsumableRequestDAO
 from app.services.database.models.consumable_request import (
     Consumable,
@@ -7,9 +7,7 @@ from app.services.database.models.consumable_request import (
 from app.services.database.models.shift import CloseShift, OpenShift
 
 
-async def check_for_consumables(
-    shift: OpenShift | CloseShift, session: async_sessionmaker
-):
+async def check_for_consumables(shift: OpenShift | CloseShift, session: AsyncSession):
     needed_consumables = get_needed_consumables(shift)
     if not needed_consumables:
         return

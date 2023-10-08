@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing_extensions import override
 from aiogram import Bot
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.notifications.bonus import get_bonus_check_keyboard
 from app.services.database.dao.bonus import BonusDAO
 from app.services.database.dao.bonus_check import BonusCheckDAO
@@ -10,12 +10,13 @@ from app.services.database.models.bonus_check import BonusCheck
 
 from app.services.database.models.mailing import MailingType
 from app.services.notifier.base import Notifier
-from app.utils.text import format_phone, escape_chars
+from app.utils.text import escape_chars
+from app.utils.phone import format_phone
 from math import ceil
 
 
 class BonusNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker) -> None:
+    def __init__(self, bot, session) -> None:
         super().__init__(bot, session, MailingType.BONUS, BonusDAO(session))
         self._dao: BonusDAO
 
@@ -46,7 +47,7 @@ class BonusNotifier(Notifier):
 
 
 class BonusCheckNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker) -> None:
+    def __init__(self, bot, session) -> None:
         super().__init__(bot, session, MailingType.BONUS_CHECK, BonusCheckDAO(session))
         self._dao: BonusCheckDAO
         self._bonusdao = BonusDAO(session)

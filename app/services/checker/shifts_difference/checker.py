@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.shift import CloseShiftDAO, OpenShiftDAO
 
 from app.services.database.dao.shifts_difference import ShiftsDifferenceDAO
@@ -7,7 +7,7 @@ from app.services.database.models.shifts_difference import ShiftsDifference
 
 
 class ShiftsDifferenceCheck:
-    def __init__(self, session: async_sessionmaker):
+    def __init__(self, session: AsyncSession):
         self.closeshiftdao = CloseShiftDAO(session)
         self.openshiftdao = OpenShiftDAO(session)
         self.shiftsdifferencedao = ShiftsDifferenceDAO(session)

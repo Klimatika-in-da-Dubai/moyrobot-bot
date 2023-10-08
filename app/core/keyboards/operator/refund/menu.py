@@ -1,6 +1,6 @@
 from aiogram import types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 from app.core.keyboards.operator.refund.base import (
     RefundEmojis,
@@ -128,7 +128,7 @@ async def get_terminal_card_refund_keyboard(
     return builder.as_markup()
 
 
-async def send_refund_keyboard(func, state: FSMContext, session: async_sessionmaker):
+async def send_refund_keyboard(func, state: FSMContext, session: AsyncSession):
     refund: Refund = await get_refund(state)
 
     if (
