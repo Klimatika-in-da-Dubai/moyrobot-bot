@@ -1,7 +1,5 @@
 from typing import Sequence, assert_never
-from aiogram import Bot
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
@@ -19,7 +17,7 @@ from app.services.notifier.manual_start.senders.test import TestManualStartSende
 
 
 class ManualStartNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker):
+    def __init__(self, bot, session):
         super().__init__(
             bot, session, MailingType.MANUAL_START, ManualStartDAO(session)
         )

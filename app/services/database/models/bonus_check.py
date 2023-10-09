@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger
+from sqlalchemy import ARRAY, JSON, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime
 
@@ -20,3 +20,4 @@ class BonusCheck(Base):
     count_notifications: Mapped[int] = mapped_column(default=0)
     checked: Mapped[bool] = mapped_column(default=False)
     alerted: Mapped[bool] = mapped_column(default=False)
+    notify_messages_ids: Mapped[list[dict]] = mapped_column(ARRAY(JSON), default=list)

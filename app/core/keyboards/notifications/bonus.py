@@ -1,6 +1,7 @@
 from enum import IntEnum, auto
 from aiogram import types
 from aiogram.filters.callback_data import CallbackData
+from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.core.keyboards.base import Action
@@ -8,7 +9,7 @@ from app.core.keyboards.base import Action
 
 class BonusNotificationTarget(IntEnum):
     APPROVE = auto()
-    REMIND = auto()
+    DECLINE = auto()
 
 
 class BonusNotificationCB(CallbackData, prefix="bonus_check"):
@@ -17,18 +18,18 @@ class BonusNotificationCB(CallbackData, prefix="bonus_check"):
     id: int
 
 
-def get_bonus_check_keyboard(id: int) -> types.InlineKeyboardMarkup:
+def get_approve_bonus_keyboard(id: int) -> types.InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.row(
         types.InlineKeyboardButton(
-            text="Напомнить ❌",
+            text="Отклонить ❌",
             callback_data=BonusNotificationCB(
-                action=Action.SELECT, target=BonusNotificationTarget.REMIND, id=id
+                action=Action.SELECT, target=BonusNotificationTarget.DECLINE, id=id
             ).pack(),
         ),
         types.InlineKeyboardButton(
-            text="Начислено ✅",
+            text="Начислить ✅",
             callback_data=BonusNotificationCB(
                 action=Action.SELECT, target=BonusNotificationTarget.APPROVE, id=id
             ).pack(),
@@ -37,7 +38,7 @@ def get_bonus_check_keyboard(id: int) -> types.InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def get_approve_keyboard() -> types.InlineKeyboardMarkup:
+def get_approve_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
         types.InlineKeyboardButton(text="Начислено ✅", callback_data="NothingSpecial")
@@ -45,11 +46,19 @@ def get_approve_keyboard() -> types.InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-def get_remind_keyboard() -> types.InlineKeyboardMarkup:
+def get_no_client_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(
         types.InlineKeyboardButton(
-            text="Напомним через час ❌", callback_data="NothingSpecial"
+            text="Нет такого клиента ⚠️", callback_data="NothingSpecial"
         )
+    )
+    return builder.as_markup()
+
+
+def get_decline_keyboard() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        types.InlineKeyboardButton(text="Отклонено ❌", callback_data="NothingSpecial")
     )
     return builder.as_markup()

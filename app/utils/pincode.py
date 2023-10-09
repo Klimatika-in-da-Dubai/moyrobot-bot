@@ -1,11 +1,11 @@
 import random
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.database.dao.user import UserDAO
 
 
-async def create_pincode_for_user(user_id: int, session: async_sessionmaker):
+async def create_pincode_for_user(user_id: int, session: AsyncSession):
     userdao = UserDAO(session)
     pincode = generate_pincode()
     await userdao.set_pincode(user_id, pincode)

@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -49,7 +49,7 @@ def get_place_keyboard(place: Place):
     return builder.as_markup()
 
 
-async def send_place_menu(func, state: FSMContext, session: async_sessionmaker):
+async def send_place_menu(func, state: FSMContext, session: AsyncSession):
     await state.update_data(work_id=None)
 
     data = await state.get_data()

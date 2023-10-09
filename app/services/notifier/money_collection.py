@@ -1,5 +1,5 @@
 from aiogram import Bot
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.money_collection import MoneyCollectionDAO
 from app.services.database.dao.shift import ShiftDAO
 from app.services.database.models.mailing import MailingType
@@ -12,7 +12,7 @@ class MoneyCollectionNotifier(Notifier):
     def __init__(
         self,
         bot: Bot,
-        session: async_sessionmaker,
+        session: AsyncSession,
     ):
         super().__init__(
             bot, session, MailingType.MONEY_COLLECTION, MoneyCollectionDAO(session)

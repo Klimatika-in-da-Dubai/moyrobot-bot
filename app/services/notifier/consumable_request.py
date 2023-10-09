@@ -2,7 +2,7 @@ from datetime import timedelta
 from typing import assert_never
 from aiogram import Bot
 from apscheduler.executors.base import logging
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.notifications.consumable_request import (
     get_consumable_request_keyboard,
 )
@@ -18,7 +18,7 @@ from app.utils.text import escape_chars
 
 
 class ConsumableRequestNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker):
+    def __init__(self, bot, session):
         super().__init__(
             bot, session, MailingType.OPERATOR_REQUEST, ConsumableRequestDAO(session)
         )

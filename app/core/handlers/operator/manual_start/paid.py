@@ -1,6 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, YesNoCB, YesNoTarget, get_yes_no_keyboard
@@ -50,7 +50,7 @@ async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStart.PaidManualStart.photo, F.photo
 )
 async def message_photo(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     photo_file_id = message.photo[-1].file_id  # type: ignore
     await state.update_data(photo_file_id=photo_file_id)
@@ -65,7 +65,7 @@ async def message_photo(
     ),
 )
 async def cb_payment_method(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_payment_method_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -80,7 +80,7 @@ async def cb_payment_method_select(
     cb: types.CallbackQuery,
     callback_data: PaymentMethodCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     payment_method_cb = callback_data.target
 
@@ -103,7 +103,7 @@ async def cb_payment_method_select(
     PaymentMethodCB.filter(F.action == Action.BACK),
 )
 async def cb_payment_method_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_paid_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -127,7 +127,7 @@ async def cb_payment_amount(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStart.PaidManualStart.payment_amount, F.text
 )
 async def message_payment_amount(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     payment_amount = message.text
     if not payment_amount.isnumeric() or int(message.text) <= 0:  # type: ignore
@@ -143,9 +143,7 @@ async def message_payment_amount(
     isOperatorCB(),
     PaidManualStartCB.filter(F.action == Action.BACK),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.update_data(payment_method=None, payment_amount=None)
     await send_manual_start_type_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -156,9 +154,7 @@ async def cb_back(
     isOperatorCB(),
     PaidManualStartCB.filter(F.action == Action.ENTER),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
 
     if not check_data(data):
@@ -173,7 +169,7 @@ async def cb_enter(
     await state.set_state(OperatorMenu.ManualStart.PaidManualStart.bonus)
 
 
-async def table_add_paid_manual_start(state: FSMContext, session: async_sessionmaker):
+async def table_add_paid_manual_start(state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     id = data.get("id")
     payment_method = data.get("payment_method")
@@ -198,7 +194,7 @@ async def table_add_paid_manual_start(state: FSMContext, session: async_sessionm
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.NO)),
 )
 async def cb_bonus_no(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -210,7 +206,7 @@ async def cb_bonus_no(
     YesNoCB.filter((F.action == Action.SELECT) & (F.target == YesNoTarget.YES)),
 )
 async def cb_bonus_yes(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await send_bonus_keyboard(cb.message.edit_text, state, session)  # type: ignore
 

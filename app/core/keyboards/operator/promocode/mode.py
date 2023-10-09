@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -62,7 +62,7 @@ def get_wash_mode_keyboard() -> types.InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-async def send_washmode_keyboard(func, state: FSMContext, session: async_sessionmaker):
+async def send_washmode_keyboard(func, state: FSMContext, session: AsyncSession):
     text = await get_promocode_text(state)
     await state.set_state(OperatorMenu.Promocode.wash_mode)
     await func(text=text, reply_markup=get_wash_mode_keyboard())

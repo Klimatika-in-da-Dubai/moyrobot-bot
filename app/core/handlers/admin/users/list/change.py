@@ -2,7 +2,7 @@ from typing import Any
 from aiogram import Router, types, F
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
 
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.users.list.change import (
@@ -194,9 +194,7 @@ async def cb_roles_back(cb: types.CallbackQuery, state: FSMContext):
     isAdminCB(),
     ChangeUserCB.filter(F.action == Action.BACK),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_selected_user_menu(cb.message.edit_text, state, session)  # type: ignore
 
@@ -219,7 +217,7 @@ async def cb_cancel(cb: types.CallbackQuery, state: FSMContext):
 async def cb_enter(
     cb: types.CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker[AsyncSession],
+    session: AsyncSession,
 ):
     data = await state.get_data()
     if not is_correct_data(data):

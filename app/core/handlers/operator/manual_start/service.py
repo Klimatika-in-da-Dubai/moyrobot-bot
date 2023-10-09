@@ -1,6 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
@@ -43,7 +43,7 @@ async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStart.ServiceManualStart.photo, F.photo
 )
 async def message_photo(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     photo_file_id = message.photo[-1].file_id  # type: ignore
     await state.update_data(photo_file_id=photo_file_id)
@@ -77,9 +77,7 @@ async def message_description(message: types.Message, state: FSMContext, session
     isOperatorCB(),
     ServiceManualStartCB.filter((F.action == Action.BACK)),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.update_data(description=None)
     await send_manual_start_type_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -90,9 +88,7 @@ async def cb_back(
     isOperatorCB(),
     ServiceManualStartCB.filter((F.action == Action.ENTER)),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
 
     if not check_data(data):
@@ -104,9 +100,7 @@ async def cb_enter(
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
-async def table_add_service_manual_start(
-    state: FSMContext, session: async_sessionmaker
-):
+async def table_add_service_manual_start(state: FSMContext, session: AsyncSession):
     data = await state.get_data()
     id = data.get("id")
     description = data.get("description")

@@ -1,6 +1,6 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.notifications.consumable_request import (
     ConsumableRequestNotifyCB,
@@ -18,7 +18,7 @@ async def cb_consumable_request_notify_check(
     cb: CallbackQuery,
     bot: Bot,
     callback_data: ConsumableRequestNotifyCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     consumable_request_dao = ConsumableRequestDAO(session)
     consumable_request = await consumable_request_dao.get_by_id(

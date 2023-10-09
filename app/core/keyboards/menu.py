@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 from app.core.states.menu import MainMenu
 from app.services.database.dao.user import UserDAO
@@ -24,7 +24,7 @@ class MenuCB(CallbackData, prefix="menu"):
 
 
 async def get_menu_keyboard(
-    chat_id: int, session: async_sessionmaker
+    chat_id: int, session: AsyncSession
 ) -> types.InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     userdao = UserDAO(session=session)
@@ -79,7 +79,7 @@ async def send_menu_keyboard(
     send_func: Callable,
     message: types.Message,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ) -> None:
     await state.set_state(MainMenu.menu)
     await send_func(

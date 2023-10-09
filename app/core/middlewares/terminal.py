@@ -2,14 +2,15 @@ from typing import Callable, Awaitable, Dict, Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
-from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from app.services.parser.terminal_session import TerminalSession
 
 
-class DbSessionMiddleware(BaseMiddleware):
-    def __init__(self, session_pool: async_sessionmaker, param_name: str = "session"):
+class TerminalSessionMiddleware(BaseMiddleware):
+    def __init__(self, terminal_session: TerminalSession, param_name: str = "terminal"):
         super().__init__()
         self.param_name = param_name
-        self.session_pool = session_pool
+        self.session_pool = terminal_session
 
     async def __call__(
         self,
@@ -17,6 +18,5 @@ class DbSessionMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-        async with self.session_pool() as session:
-            data[self.param_name] = session
-            return await handler(event, data)
+        data[self.param_name] = self.session_pool
+        return await handler(event, data)

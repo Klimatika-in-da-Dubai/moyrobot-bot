@@ -2,7 +2,7 @@ import logging
 from typing_extensions import override
 
 from aiogram import Bot
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.models.manual_start import (
     ManualStart,
     ManualStartType,
@@ -14,7 +14,7 @@ from app.utils.text import escape_chars
 
 
 class TestManualStartSender(TypedManualStartSender):
-    def __init__(self, bot: Bot, session: async_sessionmaker):
+    def __init__(self, bot, session):
         super().__init__(bot, session, ManualStartType.TEST)
 
     def get_text(self, manual_start: ManualStart, typed_manual_start: TestManualStart):  # type: ignore

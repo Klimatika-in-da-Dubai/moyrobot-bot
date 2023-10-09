@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -88,7 +88,7 @@ async def get_promocode_info_status_emoji(
 
 
 async def send_promocode_keyboard(
-    func, state: FSMContext, session: async_sessionmaker
+    func, state: FSMContext, session: AsyncSession
 ) -> None:
     text = await get_promocode_text(state)
     await state.set_state(OperatorMenu.Promocode.menu)

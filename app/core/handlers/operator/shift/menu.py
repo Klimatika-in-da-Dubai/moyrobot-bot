@@ -1,7 +1,7 @@
 from aiogram import F, Router, types
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
@@ -38,7 +38,7 @@ menu_router = Router()
     ),
 )
 async def cb_operator_name(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     userdao = UserDAO(session)
     if not await userdao.is_work_account(cb.message.chat.id):  # type: ignore
@@ -68,7 +68,7 @@ async def cb_money_amount(
 
 @menu_router.message(OperatorMenu.Shift.money_amount, F.text)
 async def message_money_amount(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     if not message.text.isnumeric() or int(message.text) < 0:  # type: ignore
         await message.answer(
@@ -100,7 +100,7 @@ async def cb_antifreeze_count(
 
 @menu_router.message(OperatorMenu.Shift.antifreeze_count, F.text)
 async def message_antifreeze_count(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     if not message.text.isnumeric() or int(message.text) < 0:  # type: ignore
         await message.answer(
@@ -120,7 +120,7 @@ async def message_antifreeze_count(
     ),
 )
 async def cb_equipment_check(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     shift = await get_open_shift(state)
@@ -155,7 +155,7 @@ async def cb_chemistry_count(
     ),
 )
 async def cb_robot_check(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_robot_check_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -169,7 +169,7 @@ async def cb_robot_check(
     ),
 )
 async def cb_gates_check(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     shift = await get_open_shift(state)
@@ -185,7 +185,7 @@ async def cb_gates_check(
     ),
 )
 async def cb_coins_check(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     shift = await get_open_shift(state)
@@ -201,7 +201,7 @@ async def cb_coins_check(
     ),
 )
 async def cb_napkins_check(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     shift = await get_open_shift(state)
@@ -217,9 +217,7 @@ async def cb_napkins_check(
         CloseShiftMenuCB.filter(F.action == Action.BACK),
     ),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -233,8 +231,6 @@ async def cb_back(
     isOperatorCB(),
     CancelCB.filter(F.action == Action.CANCEL),
 )
-async def cb_cancel(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_cancel(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

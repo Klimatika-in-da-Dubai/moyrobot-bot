@@ -1,6 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
@@ -39,7 +39,7 @@ manual_start_type_router = Router()
     ),
 )
 async def cb_test_manual_start(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.update_data(type=ManualStartType.TEST)
@@ -56,7 +56,7 @@ async def cb_test_manual_start(
     ),
 )
 async def cb_service_manual_start(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.update_data(type=ManualStartType.SERVICE)
@@ -72,7 +72,7 @@ async def cb_service_manual_start(
     ),
 )
 async def cb_rewash_manual_start(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.update_data(type=ManualStartType.REWASH)
@@ -89,7 +89,7 @@ async def cb_rewash_manual_start(
     ),
 )
 async def cb_paid_manual_start(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.update_data(type=ManualStartType.PAID)
@@ -106,7 +106,7 @@ async def cb_paid_manual_start(
     ),
 )
 async def cb_corporation_manual_start(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.update_data(type=ManualStartType.CORPORATE)
@@ -119,9 +119,7 @@ async def cb_corporation_manual_start(
     isOperatorCB(),
     ManualStartReportCB.filter(F.action == Action.BACK),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.clear()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore

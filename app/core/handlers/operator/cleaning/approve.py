@@ -1,5 +1,5 @@
 from aiogram import Router, F, types
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 
 from app.core.keyboards.operator.cleaning.approve import (
@@ -17,7 +17,7 @@ approve_router = Router()
 async def cb_check_cleaning(
     cb: types.CallbackQuery,
     callback_data: CleaningApproveCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     if await is_checked(callback_data.cleaning_id, session):
         cb.answer("Отчёт о уборке уже был проверен", show_alert=True)
@@ -36,14 +36,14 @@ def get_approve_value(cleaning_cb: CleaningApproveCB):
     return True
 
 
-async def is_checked(cleaning_id: int, session: async_sessionmaker):
+async def is_checked(cleaning_id: int, session: AsyncSession):
     cleaningdao = CleaningDAO(session)
     cleaning: Cleaning = await cleaningdao.get_by_id(cleaning_id)  # type: ignore
     return cleaning.approved is not None
 
 
 async def edit_cleaning_message(
-    cb: types.CallbackQuery, cleaning_id: int, session: async_sessionmaker
+    cb: types.CallbackQuery, cleaning_id: int, session: AsyncSession
 ):
     cleaningdao = CleaningDAO(session)
     cleaning: Cleaning = await cleaningdao.get_by_id(cleaning_id)  # type: ignore

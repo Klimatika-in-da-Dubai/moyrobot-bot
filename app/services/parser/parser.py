@@ -15,28 +15,25 @@ class Parser:
 
     async def get_manual_starts(self) -> list[ManualStart]:
         tasks = [
-            asyncio.create_task(self._get_manual_start_impl(session))
+            asyncio.create_task(self.get_manual_starts_from_session(session))
             for session in self.sessions
         ]
-        group = asyncio.gather(*tasks)
-        manual_starts_group = await group
-        manual_starts = []
-        for el in manual_starts_group:
-            manual_starts.extend(el)
-        return manual_starts
-
-    async def _get_manual_start_impl(self, session: TerminalSession):
-        if session.is_active() is False:
-            await session.login()
-        return await self.get_manual_starts_from_session(session)
+        return [
+            manual_start
+            for manual_starts in await asyncio.gather(*tasks)
+            for manual_start in manual_starts
+        ]
 
     async def get_manual_starts_from_session(
-        self, session: TerminalSession
+        self, terminal_session: TerminalSession
     ) -> list[ManualStart]:
-        table_sales_page = await session.get_table_sales_page()
+        async with terminal_session as session:
+            table_sales_page = await session.get_table_sales_page()
         if table_sales_page is None:
             return []
-        return self.__get_manual_starts_from_page(session.terminal_id, table_sales_page)
+        return self.__get_manual_starts_from_page(
+            terminal_session.terminal_id, table_sales_page
+        )
 
     def __get_manual_starts_from_page(
         self, terminal_id: int, table_sales_page: str

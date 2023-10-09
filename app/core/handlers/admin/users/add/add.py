@@ -2,7 +2,7 @@ from typing import Any
 from aiogram import Router, types, F
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
 
 import logging
 from app.core.filters.admin import isAdminCB
@@ -213,7 +213,7 @@ async def cb_cancel(cb: types.CallbackQuery, state: FSMContext):
 async def cb_enter(
     cb: types.CallbackQuery,
     state: FSMContext,
-    session: async_sessionmaker[AsyncSession],
+    session: AsyncSession,
 ):
     data = await state.get_data()
     if not is_correct_data(data):

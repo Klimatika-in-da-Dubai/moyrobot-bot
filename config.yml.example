@@ -8,6 +8,12 @@ database:
   user:
   password:
 
+client_database:
+  host: 
+  name:
+  user:
+  password:
+
 redis:
   host: 
   port:
