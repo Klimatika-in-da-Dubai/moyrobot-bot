@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from aiogram import Bot
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.manual_start import (
     ManualStart,
@@ -14,7 +14,7 @@ from app.services.database.models.manual_start import (
 
 
 class TypedManualStartSender:
-    def __init__(self, bot: Bot, session: async_sessionmaker, type: ManualStartType):
+    def __init__(self, bot: Bot, session: AsyncSession, type: ManualStartType):
         self._bot = bot
         self._dao: ManualStartDAO = ManualStartDAO(session)
         self._type = type

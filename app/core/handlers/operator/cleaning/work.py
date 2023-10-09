@@ -1,6 +1,6 @@
 from aiogram import Router, F, types, Bot
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB
 from app.core.keyboards.operator.cleaning.cleaning import send_cleaning_menu
@@ -28,7 +28,7 @@ work_router = Router()
 )
 @work_router.message(OperatorMenu.Cleaning.Place.Work.photo, F.photo)
 async def message_work_photo(
-    message: types.Message, state: FSMContext, session: async_sessionmaker, bot: Bot
+    message: types.Message, state: FSMContext, session: AsyncSession, bot: Bot
 ):
     data = await state.get_data()
     cleaning = CleaningDTO.from_dict(data)
@@ -67,9 +67,7 @@ async def get_image_hash(bot: Bot, photo: types.PhotoSize) -> str:
     CancelCB.filter((F.action == Action.CANCEL)),
     F.message.text,
 )
-async def cb_cancel(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_cancel(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_place_menu(cb.message.edit_text, state, session)  # type: ignore
 
@@ -81,7 +79,7 @@ async def cb_cancel(
     F.message.photo,
 )
 async def cb_cancel_with_photo(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await cb.message.delete()  # type: ignore

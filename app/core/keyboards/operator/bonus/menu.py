@@ -3,7 +3,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -79,7 +79,7 @@ async def get_bonus_info_status_emoji(state: FSMContext):
     return phone_em, bonus_em, description_em
 
 
-async def send_bonus_keyboard(func, state: FSMContext, session: async_sessionmaker):
+async def send_bonus_keyboard(func, state: FSMContext, session: AsyncSession):
     text = await get_bonus_text(state)
     await state.set_state(OperatorMenu.Bonus.menu)
     await func(text=text, reply_markup=await get_bonus_keyboard(state))

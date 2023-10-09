@@ -1,5 +1,5 @@
 from aiogram import Router, F, types
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 
 from app.core.keyboards.notifications.promocode import (
@@ -23,7 +23,7 @@ promocode_router = Router()
 async def cb_approve_promocode_check(
     cb: types.CallbackQuery,
     callback_data: PromocodeNotificationCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     cb.answer()
 
@@ -44,7 +44,7 @@ async def cb_approve_promocode_check(
 async def cb_remind_promocode_check(
     cb: types.CallbackQuery,
     callback_data: PromocodeNotificationCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     cb.answer()
 

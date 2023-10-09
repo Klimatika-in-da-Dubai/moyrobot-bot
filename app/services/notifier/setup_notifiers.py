@@ -1,7 +1,7 @@
 from aiogram import Bot
 
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.notifier.antifreeze import AntifreezeNotifier
 from app.services.notifier.base import Notifier
 from app.services.notifier.bonus import BonusCheckNotifier, BonusNotifier
@@ -21,55 +21,53 @@ from app.services.notifier.refund import RefundNotifier
 from app.services.notifier.shifts.shift_close_open import CloseOpenShiftNotifier
 
 
-def setup_common_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifier]:
+def setup_common_notifiers() -> list[Notifier]:
     notifiers = [
-        ManualStartNotifier(bot, session),
-        ManualStartAlerter(bot, session),
-        ManualStartReminder(bot, session),
-        AntifreezeNotifier(bot, session),
-        RefundNotifier(bot, session),
-        CleaningNotifier(bot, session),
+        ManualStartNotifier,
+        ManualStartAlerter,
+        ManualStartReminder,
+        AntifreezeNotifier,
+        RefundNotifier,
+        CleaningNotifier,
     ]
     return notifiers
 
 
-def setup_promocode_and_bonus_notifiers(
-    bot: Bot, session: async_sessionmaker
-) -> list[Notifier]:
-    notifiers = [BonusNotifier(bot, session), PromocodeNotifier(bot, session)]
+def setup_promocode_and_bonus_notifiers() -> list[Notifier]:
+    notifiers = [BonusNotifier, PromocodeNotifier]
     return notifiers
 
 
-def setup_shifts_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifier]:
-    return [CloseOpenShiftNotifier(bot, session)]
-
-
-def setup_monthly_report_notifiers(
-    bot: Bot, session: async_sessionmaker
-) -> list[Notifier]:
-    return [MonthlyReportNotifier(bot, session)]
-
-
-def setup_payment_check_notifiers(
-    bot: Bot, session: async_sessionmaker
-) -> list[Notifier]:
-    return [PaymentCheckNotifier(bot, session), PaymentCheckAlertNotifier(bot, session)]
-
-
-def setup_bonus_promo_check_notifiers(
-    bot: Bot, session: async_sessionmaker
-) -> list[Notifier]:
-    return [BonusCheckNotifier(bot, session), PromocodeCheckNotifier(bot, session)]
-
-
-def setup_requests_notifiers(bot: Bot, session: async_sessionmaker) -> list[Notifier]:
-    return [
-        OperatorRequestNotifier(bot, session),
-        ConsumableRequestNotifier(bot, session),
+def setup_shifts_notifiers() -> list[Notifier]:
+    notifiers = [
+        CloseOpenShiftNotifier,
     ]
+    return notifiers
 
 
-def setup_corporate_report_notifiers(
-    bot: Bot, session: async_sessionmaker
-) -> list[Notifier]:
-    return [CorporateReportNotifier(bot, session)]
+def setup_monthly_report_notifiers() -> list[Notifier]:
+    notifiers = [MonthlyReportNotifier]
+    return notifiers
+
+
+def setup_payment_check_notifiers() -> list[Notifier]:
+    notifiers = [PaymentCheckNotifier, PaymentCheckAlertNotifier]
+    return notifiers
+
+
+def setup_bonus_promo_check_notifiers() -> list[Notifier]:
+    notifiers = [BonusCheckNotifier, PromocodeCheckNotifier]
+    return notifiers
+
+
+def setup_requests_notifiers() -> list[Notifier]:
+    notifiers = [
+        OperatorRequestNotifier,
+        ConsumableRequestNotifier,
+    ]
+    return notifiers
+
+
+def setup_corporate_report_notifiers() -> list[Notifier]:
+    notifiers = [CorporateReportNotifier]
+    return notifiers

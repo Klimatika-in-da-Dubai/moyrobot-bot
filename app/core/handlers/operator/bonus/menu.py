@@ -1,7 +1,7 @@
 from aiogram import Router, F, types
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
@@ -15,7 +15,7 @@ from app.core.states.operator import OperatorMenu
 from app.services.database.dao.bonus import BonusDAO
 from app.services.database.models.bonus import Bonus
 from app.utils.bonus import get_bonus_info
-from app.utils.text import convert_text_to_phone, is_correct_phone
+from app.utils.phone import is_phone_correct, phone_to_text
 
 
 menu_router = Router()
@@ -29,7 +29,7 @@ menu_router = Router()
     ),
 )
 async def cb_bonus_phone(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Bonus.phone)
@@ -40,10 +40,10 @@ async def cb_bonus_phone(
 
 @menu_router.message(OperatorMenu.Bonus.phone, F.text)
 async def message_phone(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
-    phone = convert_text_to_phone(message.text)  # type: ignore
-    if not is_correct_phone(phone):
+    phone = phone_to_text(message.text)  # type: ignore
+    if not is_phone_correct(phone):
         await message.answer(
             "Некорректный номер телефона", reply_markup=get_cancel_keyboard()
         )
@@ -61,7 +61,7 @@ async def message_phone(
     ),
 )
 async def cb_bonus_amount(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Bonus.bonus_amount)
@@ -72,7 +72,7 @@ async def cb_bonus_amount(
 
 @menu_router.message(OperatorMenu.Bonus.bonus_amount, F.text)
 async def message_bonus_amount(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     if not message.text.isnumeric() or int(message.text) < 0:  # type: ignore
         await message.answer(
@@ -91,7 +91,7 @@ async def message_bonus_amount(
     ),
 )
 async def cb_bonus_description(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Bonus.description)
@@ -102,7 +102,7 @@ async def cb_bonus_description(
 
 @menu_router.message(OperatorMenu.Bonus.description, F.text)
 async def message_bonus_description(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     await state.update_data(description=message.text)
     await send_bonus_keyboard(message.answer, state, session)
@@ -113,9 +113,7 @@ async def message_bonus_description(
     isOperatorCB(),
     BonusMenuCB.filter(F.action == Action.BACK),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -126,9 +124,7 @@ async def cb_back(
     isOperatorCB(),
     BonusMenuCB.filter(F.action == Action.ENTER),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     phone, bonus_amount, description = await get_bonus_info(state)
 
     if any(el is None for el in (phone, bonus_amount, description)):
@@ -153,7 +149,7 @@ async def cb_enter(
     CancelCB.filter(F.action == Action.CANCEL),
 )
 async def cb_cancel_enter_text(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_bonus_keyboard(cb.message.edit_text, state, session)  # type: ignore

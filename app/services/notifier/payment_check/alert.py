@@ -1,5 +1,5 @@
 from aiogram import Bot
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.payment_check import PaymentCheckDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.payment_check import PaymentCheck
@@ -8,7 +8,7 @@ from app.utils.text import escape_chars
 
 
 class PaymentCheckAlertNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker):
+    def __init__(self, bot, session):
         super().__init__(
             bot, session, MailingType.PAYMENT_CHECK_ALERT, PaymentCheckDAO(session)
         )

@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -25,7 +25,7 @@ class ManualStartCB(CallbackData, prefix="omenu_man_start"):
 
 
 async def get_manual_starts_keyboard(
-    session: async_sessionmaker[AsyncSession],
+    session: AsyncSession,
 ) -> types.InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
@@ -62,7 +62,7 @@ async def get_manual_starts_keyboard(
 async def send_manual_starts_keyboard(
     send_func: Callable,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await state.set_state(OperatorMenu.ManualStart.menu)
     await send_func(

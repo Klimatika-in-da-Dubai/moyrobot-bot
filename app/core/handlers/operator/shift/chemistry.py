@@ -3,7 +3,7 @@ from aiogram import F, Router, types
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types.callback_query import CallbackQuery
-from sqlalchemy.ext.asyncio.session import async_sessionmaker
+from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
@@ -133,7 +133,7 @@ async def cb_chemistry_check(
     ChemistryMenuCB.filter(F.action == Action.ENTER),
 )
 async def cb_chemistry_enter(
-    cb: CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

@@ -1,6 +1,6 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, get_cancel_keyboard
 from app.core.keyboards.operator.cleaning.cleaning import (
@@ -67,8 +67,6 @@ async def cb_work_open(
     isOperatorCB(),
     PlaceMenuCB.filter((F.action == Action.BACK)),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_cleaning_menu(cb.message.edit_text, state, session)  # type: ignore

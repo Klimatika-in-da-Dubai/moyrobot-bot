@@ -1,7 +1,7 @@
 from typing_extensions import override
 from aiogram import Bot
 from aiogram.types import InputMediaPhoto
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.refund import RefundDAO
 
 from app.services.database.models.mailing import MailingType
@@ -12,7 +12,7 @@ from app.utils.text import escape_chars
 
 
 class RefundNotifier(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker) -> None:
+    def __init__(self, bot, session) -> None:
         super().__init__(bot, session, MailingType.REFUND, RefundDAO(session))
         self._dao: RefundDAO
 

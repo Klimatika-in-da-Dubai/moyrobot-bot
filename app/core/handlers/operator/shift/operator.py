@@ -2,7 +2,7 @@ from aiogram import Bot, Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.types.callback_query import CallbackQuery
 from aiogram.types.message import Message
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
 from app.core.keyboards.operator.shift.menu import send_shift_keyboard
@@ -29,7 +29,7 @@ async def cb_select_operator_name(
     cb: types.CallbackQuery,
     callback_data: OperatorsCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
     userdao = UserDAO(session)
@@ -46,7 +46,7 @@ async def cb_select_operator_name(
 
 @operator_selection_router.message(OperatorMenu.Shift.auth, F.text)
 async def message_pincode(
-    message: Message, state: FSMContext, session: async_sessionmaker, bot: Bot
+    message: Message, state: FSMContext, session: AsyncSession, bot: Bot
 ):
     if not message.text.isdigit():  # type: ignore
         await message.answer("Введите число!", reply_markup=get_cancel_keyboard())
@@ -79,7 +79,7 @@ async def message_pincode(
 
 
 @operator_selection_router.callback_query(OperatorMenu.Shift.auth, CancelCB.filter())
-async def cb_cancel(cb: CallbackQuery, state: FSMContext, session: async_sessionmaker):
+async def cb_cancel(cb: CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.update_data(operator_id=None)
     await send_shift_keyboard(cb.message.answer, cb.message, state, session)  # type: ignore
@@ -90,8 +90,6 @@ async def cb_cancel(cb: CallbackQuery, state: FSMContext, session: async_session
     isOperatorCB(),
     OperatorsCB.filter(F.action == Action.BACK),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

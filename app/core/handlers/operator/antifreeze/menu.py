@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.filters import or_f
 
 
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
@@ -32,7 +32,7 @@ menu_router = Router()
     ),
 )
 async def cb_antifreeze_payment_method(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_payment_method_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -47,7 +47,7 @@ async def cb_payment_method_select(
     cb: types.CallbackQuery,
     callback_data: PaymentMethodCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     payment_method_cb = callback_data.target
 
@@ -73,7 +73,7 @@ async def cb_payment_method_select(
     ),
 )
 async def cb_antifreeze_payment_amount(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await state.set_state(OperatorMenu.Antifreeze.payment_amount)
@@ -84,7 +84,7 @@ async def cb_antifreeze_payment_amount(
 
 @menu_router.message(OperatorMenu.Antifreeze.payment_amount, F.text)
 async def message_payment_amount(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     if not message.text.isnumeric() or int(message.text) <= 0:  # type: ignore
         await message.answer("Не корректная сумма", reply_markup=get_cancel_keyboard())
@@ -99,9 +99,7 @@ async def message_payment_amount(
     isOperatorCB(),
     AntifreezeMenuCB.filter(F.action == Action.BACK),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -112,9 +110,7 @@ async def cb_back(
     isOperatorCB(),
     AntifreezeMenuCB.filter(F.action == Action.ENTER),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     payment_method, payment_amount = await get_antifreeze_info(state)
 
     if any(el is None for el in (payment_method, payment_amount)):
@@ -139,7 +135,7 @@ async def cb_enter(
     CancelCB.filter(F.action == Action.CANCEL),
 )
 async def cb_cancel_enter_text(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_antifreeze_keyboard(cb.message.edit_text, state, session)  # type: ignore

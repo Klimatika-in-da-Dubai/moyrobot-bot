@@ -1,6 +1,6 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
 from app.core.keyboards.operator.shift.menu import send_shift_keyboard
@@ -26,7 +26,7 @@ async def cb_select(
     cb: types.CallbackQuery,
     callback_data: RobotCheckMenuCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
     shift = await get_open_shift(state)
@@ -43,8 +43,6 @@ async def cb_select(
     isOperatorCB(),
     RobotCheckMenuCB.filter(F.action == Action.ENTER),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

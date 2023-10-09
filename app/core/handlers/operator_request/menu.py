@@ -1,7 +1,7 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, PhotoSize
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.message_len import MessageLenght
 from app.core.keyboards.menu import send_menu_keyboard
 from app.core.middlewares.media_group import MediaGroupMiddleware
@@ -24,7 +24,7 @@ operator_request_menu_router.message.middleware(MediaGroupMiddleware())
 async def get_operator_request_media(
     message: Message,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
     album: list[Message],
 ):
     photos = [mes.photo[-1] for mes in album]  # pyright: ignore
@@ -41,7 +41,7 @@ async def get_operator_request_media(
     MessageLenght(max_length=950),
 )
 async def get_operator_request_photo(
-    message: Message, state: FSMContext, session: async_sessionmaker
+    message: Message, state: FSMContext, session: AsyncSession
 ):
     photos = [message.photo[-1]]  # pyright: ignore
     await create_operator_request(message, session, photos)
@@ -53,7 +53,7 @@ async def get_operator_request_photo(
     MainMenu.operator_request, F.text, MessageLenght(max_length=950)
 )
 async def get_operator_request(
-    message: Message, state: FSMContext, session: async_sessionmaker
+    message: Message, state: FSMContext, session: AsyncSession
 ):
     await create_operator_request(message, session)
 
@@ -67,7 +67,7 @@ async def operator_request_no_text(message: Message):
 
 async def create_operator_request(
     message: Message,
-    session: async_sessionmaker,
+    session: AsyncSession,
     photos: list[PhotoSize] | None = None,
 ):
     if photos is None:
@@ -85,7 +85,7 @@ async def create_operator_request(
 
 
 async def exit_get_operator_request(
-    message: Message, state: FSMContext, session: async_sessionmaker
+    message: Message, state: FSMContext, session: AsyncSession
 ):
     await message.answer(
         "Ваше сообщение будет передано администраторам",

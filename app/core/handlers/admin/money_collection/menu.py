@@ -1,6 +1,6 @@
 from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.menu import get_admin_menu_keyboard
 from app.core.keyboards.base import Action, CancelCB, get_cancel_keyboard
@@ -15,7 +15,7 @@ menu_router = Router()
 
 @menu_router.message(AdminMenu.MoneyCollection.money_collection, F.text)
 async def message_money_collection(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     text: str = message.text  # type: ignore
 

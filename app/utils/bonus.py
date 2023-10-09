@@ -1,6 +1,7 @@
 from aiogram.fsm.context import FSMContext
 
-from app.utils.text import escape_chars, format_phone
+from app.utils.text import escape_chars
+from app.utils.phone import format_phone
 
 
 async def get_bonus_info(

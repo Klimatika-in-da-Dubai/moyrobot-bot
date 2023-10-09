@@ -1,6 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio.session import async_sessionmaker
+from sqlalchemy.ext.asyncio.session import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.keyboards.base import Action
@@ -50,7 +50,7 @@ async def cb_photo(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStart.CorporateManualStart.photo, F.photo
 )
 async def message_photo(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     photo_file_id = message.photo[-1].file_id  # type: ignore
     await state.update_data(photo_file_id=photo_file_id)
@@ -75,7 +75,7 @@ async def cb_description(cb: types.CallbackQuery, state: FSMContext):
     OperatorMenu.ManualStart.CorporateManualStart.description, F.text
 )
 async def message_description(
-    message: types.Message, state: FSMContext, session: async_sessionmaker
+    message: types.Message, state: FSMContext, session: AsyncSession
 ):
     await state.update_data(description=message.text)
     await send_corporate_manual_start_keyboard(message.answer, state, session)
@@ -86,9 +86,7 @@ async def message_description(
     isOperatorCB(),
     CorporateManualStartCB.filter(F.action == Action.BACK),
 )
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await state.update_data(photo_file_id=None, description=None)
     await send_manual_start_type_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -102,7 +100,7 @@ async def cb_back(
     ),
 )
 async def cb_open_corporation_menu(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_corporations_menu(cb.message.edit_text, state, session)  # type: ignore
@@ -117,7 +115,7 @@ async def cb_select_corporation(
     cb: types.CallbackQuery,
     callback_data: CorporationsMenuCB,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     await cb.answer()
     await state.update_data(corporation_id=callback_data.corporation_id)
@@ -130,7 +128,7 @@ async def cb_select_corporation(
     CorporationsMenuCB.filter(F.action == Action.BACK),
 )
 async def cb_corporations_menu_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_corporate_manual_start_keyboard(cb.message.edit_text, state, session)  # type: ignore
@@ -141,9 +139,7 @@ async def cb_corporations_menu_back(
     isOperatorCB(),
     CorporateManualStartCB.filter(F.action == Action.ENTER),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     data = await state.get_data()
 
     if not check_data(data):
@@ -155,9 +151,7 @@ async def cb_enter(
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
-async def table_add_corporate_manual_start(
-    state: FSMContext, session: async_sessionmaker
-):
+async def table_add_corporate_manual_start(state: FSMContext, session: AsyncSession):
     data = await state.get_data()
 
     id = data.get("id")

@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -71,7 +71,7 @@ def get_test_manual_start_keyboard() -> types.InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-async def get_manual_start_text(state: FSMContext, session: async_sessionmaker):
+async def get_manual_start_text(state: FSMContext, session: AsyncSession):
     data = await state.get_data()
 
     id = escape_chars(data.get("id"))
@@ -88,7 +88,7 @@ async def get_manual_start_text(state: FSMContext, session: async_sessionmaker):
     )
 
 
-async def get_corporation_name(data: dict, session: async_sessionmaker) -> str:
+async def get_corporation_name(data: dict, session: AsyncSession) -> str:
     corporation_id = data.get("corporation_id")
     if corporation_id is None:
         return ""
@@ -101,7 +101,7 @@ async def get_corporation_name(data: dict, session: async_sessionmaker) -> str:
 async def send_corporate_manual_start_keyboard(
     send_func: Callable,
     state: FSMContext,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     text = await get_manual_start_text(state, session)
     await state.set_state(OperatorMenu.ManualStart.CorporateManualStart.menu)

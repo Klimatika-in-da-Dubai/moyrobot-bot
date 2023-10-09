@@ -1,6 +1,6 @@
 from operator import and_
 from typing import Optional, Sequence
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.salary import Salary
@@ -10,7 +10,7 @@ from app.services.database.models.user import Role, User, UserPincode, UserRole
 class UserDAO(BaseDAO[User]):
     """ORM queries for users table"""
 
-    def __init__(self, session: async_sessionmaker):
+    def __init__(self, session: AsyncSession):
         super().__init__(User, session)
 
     async def add_user(self, user: User) -> None:
@@ -19,80 +19,72 @@ class UserDAO(BaseDAO[User]):
         :param user: Telegram user.
         """
 
-        async with self._session() as session:
-            await session.merge(user)
-            await session.commit()
+        await self._session.merge(user)
+        await self._session.commit()
 
     async def delete_user(self, user: User) -> None:
-        async with self._session() as session:
-            await session.execute(
-                update(User).where(User.id == user.id).values(active=False)
-            )
-            await session.commit()
+        await self._session.execute(
+            update(User).where(User.id == user.id).values(active=False)
+        )
+        await self._session.commit()
 
     async def get_all_active(self) -> Sequence[User]:
         """
         :return: List of models.
         """
-        async with self._session() as session:
-            result = await session.execute(select(User).where(User.active.is_(True)))
-            return result.scalars().all()
+
+        result = await self._session.execute(select(User).where(User.active.is_(True)))
+        return result.scalars().all()
 
     async def add_user_with_roles(self, user: User, user_roles: list[UserRole]):
         await self.add_user(user)
 
-        async with self._session() as session:
-            for user_role in user_roles:
-                await session.merge(user_role)
+        for user_role in user_roles:
+            await self._session.merge(user_role)
 
-            await session.commit()
+        await self._session.commit()
 
     async def update_user_roles(self, user: User, user_roles: list[UserRole]):
-        async with self._session() as session:
-            await session.execute(delete(UserRole).where(UserRole.id == user.id))
+        await self._session.execute(delete(UserRole).where(UserRole.id == user.id))
 
-            for role in user_roles:
-                await session.merge(role)
+        for role in user_roles:
+            await self._session.merge(role)
 
-            await session.commit()
+        await self._session.commit()
 
     async def get_user_roles(self, user: User) -> list[Role]:
-        async with self._session() as session:
-            roles = await session.execute(
-                select(UserRole.role).join(User).where(self._model.id == user.id)
-            )
-            roles_list = roles.scalars().all()
-            return list(roles_list)
+        roles = await self._session.execute(
+            select(UserRole.role).join(User).where(self._model.id == user.id)
+        )
+        roles_list = roles.scalars().all()
+        return list(roles_list)
 
     async def get_salary(self, user: User) -> int:
-        async with self._session() as session:
-            result = await session.execute(
-                select(Salary.salary).where(Salary.user_id == user.id)
-            )
+        result = await self._session.execute(
+            select(Salary.salary).where(Salary.user_id == user.id)
+        )
 
-            return result.scalar()  # type: ignore
+        return result.scalar()  # type: ignore
 
     async def set_pincode(self, user_id: int, pincode: str):
         pincode = UserPincode(id=user_id, pincode=pincode)
-        async with self._session() as session:
-            await session.merge(pincode)
-            await session.commit()
+
+        await self._session.merge(pincode)
+        await self._session.commit()
 
     async def get_pincode(self, user_id: int) -> Optional[str]:
-        async with self._session() as session:
-            result = await session.execute(
-                select(UserPincode.pincode).where(UserPincode.id == user_id)
-            )
-            return result.scalar()
+        result = await self._session.execute(
+            select(UserPincode.pincode).where(UserPincode.id == user_id)
+        )
+        return result.scalar()
 
     async def get_operators(self) -> list[User]:
-        async with self._session() as session:
-            users = await session.execute(
-                select(User)
-                .join(UserRole)
-                .where(and_(UserRole.role == Role.OPERATOR, User.active.is_(True)))
-            )
-            return list(users.scalars().all())
+        users = await self._session.execute(
+            select(User)
+            .join(UserRole)
+            .where(and_(UserRole.role == Role.OPERATOR, User.active.is_(True)))
+        )
+        return list(users.scalars().all())
 
     async def get_user_name_by_id(self, chat_id: int) -> str:
         user = await self.get_by_id(id_=chat_id)

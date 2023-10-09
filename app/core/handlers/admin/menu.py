@@ -2,7 +2,7 @@ import logging
 
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.groups.menu import send_groups_menu
@@ -44,7 +44,7 @@ async def cb_open_users_menu(
     AdminMenuCB.filter((F.action == Action.OPEN) & (F.target == AdminMenuTarget.GROUP)),
 )
 async def cb_open_groups_menu(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     await send_groups_menu(cb.message.edit_text, state, session)  # type: ignore
@@ -58,7 +58,7 @@ async def cb_open_groups_menu(
     ),
 )
 async def cb_money_collection(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     if not await ShiftDAO(session).is_shift_opened():
         await cb.answer("Нельзя производить инкассацию вне смены", show_alert=True)
@@ -72,8 +72,6 @@ async def cb_money_collection(
 
 
 @menu_router.callback_query(AdminMenu.menu, AdminMenuCB.filter(F.action == Action.BACK))
-async def cb_back(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
     await send_menu_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore

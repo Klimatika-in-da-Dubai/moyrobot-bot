@@ -1,7 +1,7 @@
 from datetime import datetime
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.filters.shift import isShiftClosedCB
@@ -29,7 +29,7 @@ open_shift_router = Router()
     ),
 )
 async def cb_cleaning_check(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await cb.answer()
     shift = await get_open_shift(state)
@@ -43,9 +43,7 @@ async def cb_cleaning_check(
     OpenShiftMenuCB.filter(F.action == Action.ENTER),
     isShiftClosedCB(),
 )
-async def cb_enter(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
-):
+async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     shiftdao = ShiftDAO(session)
     openshiftdao = OpenShiftDAO(session)
 

@@ -1,6 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.filters.admin import isAdminCB
 from app.core.keyboards.admin.users.list.menu import send_users_list_menu
 
@@ -23,7 +23,7 @@ menu_router = Router()
     UsersCB.filter(F.action == Action.LIST),
 )
 async def cb_open_users_list(
-    cb: types.CallbackQuery, state: FSMContext, session: async_sessionmaker
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
     await send_users_list_menu(cb.message.edit_text, state, session)  # type: ignore
 

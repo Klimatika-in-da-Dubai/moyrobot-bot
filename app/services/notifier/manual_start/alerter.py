@@ -1,7 +1,7 @@
 from datetime import timedelta
 from typing_extensions import override
 from aiogram import Bot
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStart
@@ -10,7 +10,7 @@ from app.utils.text import escape_chars
 
 
 class ManualStartAlerter(Notifier):
-    def __init__(self, bot: Bot, session: async_sessionmaker):
+    def __init__(self, bot, session):
         super().__init__(
             bot, session, MailingType.MANUAL_START_REPORT_ALERT, ManualStartDAO(session)
         )

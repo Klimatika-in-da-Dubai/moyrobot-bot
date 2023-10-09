@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
 from app.services.database.dao.user import UserDAO
@@ -32,7 +32,7 @@ def get_operators_keyboard(operators: list[User]):
     return builder.as_markup()
 
 
-async def send_operators_keyboard(func, state: FSMContext, session: async_sessionmaker):
+async def send_operators_keyboard(func, state: FSMContext, session: AsyncSession):
     userdao = UserDAO(session)
     operators = await userdao.get_operators()
     await func(

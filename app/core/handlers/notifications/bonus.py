@@ -1,15 +1,18 @@
 from aiogram import Router, F, types
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 
 from app.core.keyboards.notifications.bonus import (
     BonusNotificationCB,
     BonusNotificationTarget,
     get_approve_keyboard,
-    get_remind_keyboard,
+    get_decline_keyboard,
+    get_no_client_keyboard,
 )
-from app.services.database.dao.bonus_check import BonusCheckDAO
-from app.services.database.models.bonus_check import BonusCheck
+from app.services.client_database.dao.client_bonus import ClientBonusDAO
+from app.services.database.dao.bonus import BonusDAO
+from app.services.database.models.bonus import Bonus
+from app.services.parser.terminal_session import NoClientError, TerminalSession
 
 
 bonus_router = Router()
@@ -23,34 +26,51 @@ bonus_router = Router()
 async def cb_approve_bonus_check(
     cb: types.CallbackQuery,
     callback_data: BonusNotificationCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
+    client_session: AsyncSession,
+    terminal1: TerminalSession,
 ):
+    bonus_dao = BonusDAO(session)
+    bonus: Bonus | None = await bonus_dao.get_by_id(callback_data.id)
+    if bonus is None:
+        await cb.answer("Произошла ошибка в базе данных", show_alert=True)
+        await cb.message.edit_reply_markup()  # type: ignore
+        return
+
+    try:
+        async with terminal1 as terminal:
+            await terminal.add_bonuses_by_phone(
+                bonus.phone, bonus.bonus_amount, bonus.description
+            )
+    except NoClientError:
+        await cb.answer("Нет клиента с таким номером телефона", show_alert=True)
+        await bonus_dao.set_given(bonus, False)
+        await cb.message.edit_reply_markup(reply_markup=get_no_client_keyboard())  # type: ignore
+        return
+
     cb.answer()
-
-    bonus_check_dao = BonusCheckDAO(session)
-    bonus_check = await bonus_check_dao.get_by_id(callback_data.id)
-    if not isinstance(bonus_check, BonusCheck):
-        await cb.message.edit_text("Произошла ошибка в базе данных")  # type: ignore
-
-    await bonus_check_dao.make_checked(bonus_check)
+    clientbonus_dao = ClientBonusDAO(client_session)
+    await clientbonus_dao.add_bonuses(bonus.phone, bonus.bonus_amount)
+    await bonus_dao.set_given(bonus, True)
     await cb.message.edit_reply_markup(reply_markup=get_approve_keyboard())  # type: ignore
 
 
 @bonus_router.callback_query(
     BonusNotificationCB.filter(
-        (F.target == BonusNotificationTarget.REMIND) & (F.action == Action.SELECT)
+        (F.target == BonusNotificationTarget.DECLINE) & (F.action == Action.SELECT)
     )
 )
-async def cb_remind_bonus_check(
+async def cb_decline_bonus_check(
     cb: types.CallbackQuery,
     callback_data: BonusNotificationCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     cb.answer()
-
-    bonus_check_dao = BonusCheckDAO(session)
-    bonus_check = await bonus_check_dao.get_by_id(callback_data.id)
-    if not isinstance(bonus_check, BonusCheck):
-        await cb.message.edit_text("Произошла ошибка в базе данных")  # type: ignore
-
-    await cb.message.edit_reply_markup(reply_markup=get_remind_keyboard())  # type: ignore
+    bonus_dao = BonusDAO(session)
+    bonus: Bonus | None = await bonus_dao.get_by_id(callback_data.id)
+    if bonus is None:
+        await cb.answer("Произошла ошибка в базе данных", show_alert=True)
+        await cb.message.edit_reply_markup()  # type: ignore
+        return
+    await bonus_dao.set_given(bonus, False)
+    await cb.message.edit_reply_markup(reply_markup=get_decline_keyboard())  # type: ignore

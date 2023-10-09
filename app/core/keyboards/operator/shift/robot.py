@@ -5,7 +5,7 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.base import Action
 from app.core.states.operator import OperatorMenu
@@ -82,9 +82,7 @@ def get_robot_check_emojis(robot_check_info: RobotCheckInfo) -> RobotCheckEmojis
     return RobotCheckEmojis(movement_check=movement_check_em, leak_check=leak_check_em)
 
 
-async def send_robot_check_keyboard(
-    func, state: FSMContext, session: async_sessionmaker
-):
+async def send_robot_check_keyboard(func, state: FSMContext, session: AsyncSession):
     await state.set_state(OperatorMenu.Shift.robot_check)
     shift = await get_open_shift(state)
     await func(

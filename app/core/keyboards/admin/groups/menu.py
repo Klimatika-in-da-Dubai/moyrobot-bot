@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from apscheduler.job import Iterable
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 from app.core.states.admin import AdminMenu
 from app.services.database.dao.group import GroupDAO
@@ -37,7 +37,7 @@ def get_groups_menu(groups: Iterable[Group]) -> InlineKeyboardMarkup:
     return builder.as_markup()
 
 
-async def send_groups_menu(func, state: FSMContext, session: async_sessionmaker):
+async def send_groups_menu(func, state: FSMContext, session: AsyncSession):
     groupdao = GroupDAO(session)
     groups = await groupdao.get_all()
 

@@ -1,6 +1,6 @@
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
-from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.keyboards.notifications.operator_request import (
     OperatorRequestNotifyCB,
@@ -18,7 +18,7 @@ async def cb_operator_request_notify_check(
     cb: CallbackQuery,
     bot: Bot,
     callback_data: OperatorRequestNotifyCB,
-    session: async_sessionmaker,
+    session: AsyncSession,
 ):
     operator_request_dao = OperatorRequestDAO(session)
     operator_request = await operator_request_dao.get_by_id(

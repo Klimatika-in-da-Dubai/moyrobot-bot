@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import BigInteger
+from sqlalchemy import ARRAY, JSON, BigInteger
 
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -15,3 +15,5 @@ class Bonus(Base):
     bonus_amount: Mapped[int]
     description: Mapped[str]
     notified: Mapped[bool] = mapped_column(default=False)
+    given: Mapped[bool] = mapped_column(nullable=True)
+    notify_messages_ids: Mapped[list[dict]] = mapped_column(ARRAY(JSON), default=list)
