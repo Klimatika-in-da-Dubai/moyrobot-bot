@@ -1,7 +1,5 @@
 from typing import Sequence, assert_never
-from aiogram import Bot
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import (
@@ -24,11 +22,11 @@ class ManualStartNotifier(Notifier):
             bot, session, MailingType.MANUAL_START, ManualStartDAO(session)
         )
         self._dao: ManualStartDAO
-        self.test_sender = TestManualStartSender
-        self.service_sender = ServiceManualStartSender
-        self.rewash_sender = RewashManualStartSender
-        self.paid_sender = PaidManualStartSender
-        self.corporate_sender = CorporateManualStartSender
+        self.test_sender = TestManualStartSender(bot, session)
+        self.service_sender = ServiceManualStartSender(bot, session)
+        self.rewash_sender = RewashManualStartSender(bot, session)
+        self.paid_sender = PaidManualStartSender(bot, session)
+        self.corporate_sender = CorporateManualStartSender(bot, session)
 
     async def get_objects_to_notify(self) -> Sequence[ManualStart]:
         return await self._dao.get_unnotified()

@@ -95,7 +95,7 @@ class TerminalSession:
             partner_data = json.loads(data["Result"])
 
             if not partner_data:
-                raise NoPartnerError("No partner with such phone")
+                raise NoClientError("No partner with such phone")
 
             return partner_data[0]["Partner"]["Id"]
 
@@ -107,5 +107,5 @@ class TerminalSession:
         )
 
 
-class NoPartnerError(Exception):
+class NoClientError(Exception):
     ...

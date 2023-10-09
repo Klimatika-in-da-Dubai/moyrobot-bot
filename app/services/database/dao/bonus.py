@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Sequence
 from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.bonus import Bonus
 
@@ -35,6 +35,36 @@ class BonusDAO(BaseDAO[Bonus]):
             select(Bonus).filter(Bonus.date.between(begin, end))
         )
         return bonuses.scalars().all()
+
+    async def get_unhandled_between_time(
+        self, begin: datetime, end: datetime
+    ) -> Sequence[Bonus]:
+        bonuses = await self._session.execute(
+            select(Bonus)
+            .where(Bonus.given.is_(None))
+            .filter(Bonus.date.between(begin, end))
+        )
+        return bonuses.scalars().all()
+
+    async def add_notify_message_id(self, bonus: Bonus, chat_id: int, message_id: int):
+        new_list = bonus.notify_messages_ids
+        new_list.append({"chat_id": chat_id, "message_id": message_id})
+        await self._session.execute(
+            update(Bonus)
+            .where(Bonus.id == bonus.id)
+            .values(notify_messages_ids=new_list)
+        )
+        await self.commit()
+
+    async def delete_notify_messages(self, bonus: Bonus):
+        await self._session.execute(
+            update(Bonus).where(Bonus.id == bonus.id).values(notify_messages_ids=[])
+        )
+        await self.commit()
+
+    async def set_given(self, bonus: Bonus, given_value: bool):
+        bonus.given = given_value
+        await self.commit()
 
     async def make_notified(self, bonus: Bonus):
         await self._session.execute(

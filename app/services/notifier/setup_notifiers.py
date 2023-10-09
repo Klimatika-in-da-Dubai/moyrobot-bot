@@ -39,7 +39,9 @@ def setup_promocode_and_bonus_notifiers() -> list[Notifier]:
 
 
 def setup_shifts_notifiers() -> list[Notifier]:
-    notifiers = [CloseOpenShiftNotifier]
+    notifiers = [
+        CloseOpenShiftNotifier,
+    ]
     return notifiers
 
 

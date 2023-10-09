@@ -1,7 +1,7 @@
 from datetime import datetime
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
 from app.core.filters.shift import isShiftClosedCB, isShiftOpenedCB

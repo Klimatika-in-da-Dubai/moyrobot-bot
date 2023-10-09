@@ -1,6 +1,6 @@
 from aiogram import Bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services.notifier.setup_notifiers import (
     setup_bonus_promo_check_notifiers,
     setup_common_notifiers,
@@ -186,8 +186,8 @@ def add_bonus_promo_check_job(
         notify,
         "cron",
         day_of_week="0-4",
-        hour="9-18",
-        minute="*",
+        hour="9-23",
+        minute="*/30",
         args=(bonus_promo_check_notifiers, bot, sessionmaker),
         name="Bonus and Promocode check notifiers",
     )

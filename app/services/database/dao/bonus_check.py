@@ -19,15 +19,16 @@ class BonusCheckDAO(BaseDAO[BonusCheck]):
         await self._session.merge(bonus_check)
         await self._session.commit()
 
-    async def get_bonus_checks_to_notify(self) -> Sequence[BonusCheck]:
+    async def get_bonus_checks_to_notify(
+        self, delta: timedelta
+    ) -> Sequence[BonusCheck]:
         result = await self._session.execute(
             select(BonusCheck).where(
                 or_(
                     BonusCheck.count_notifications == 0,
                     and_(
                         BonusCheck.checked.is_(other=False),
-                        datetime.now() - BonusCheck.last_notification
-                        >= timedelta(hours=1),
+                        datetime.now() - BonusCheck.last_notification >= delta,
                     ),
                 )
             )
@@ -41,6 +42,26 @@ class BonusCheckDAO(BaseDAO[BonusCheck]):
             .where(BonusCheck.alerted.is_(False))
         )
         return result.scalars().all()
+
+    async def add_notify_message_id(
+        self, bonus_check: BonusCheck, chat_id: int, message_id: int
+    ):
+        new_list = bonus_check.notify_messages_ids
+        new_list.append({"chat_id": chat_id, "message_id": message_id})
+        await self._session.execute(
+            update(BonusCheck)
+            .where(BonusCheck.id == bonus_check.id)
+            .values(notify_messages_ids=new_list)
+        )
+        await self.commit()
+
+    async def delete_notify_messages(self, bonus_check: BonusCheck):
+        await self._session.execute(
+            update(BonusCheck)
+            .where(BonusCheck.id == bonus_check.id)
+            .values(notify_messages_ids=[])
+        )
+        await self.commit()
 
     async def make_notified(self, bonus_check: BonusCheck) -> None:
         await self._session.execute(
