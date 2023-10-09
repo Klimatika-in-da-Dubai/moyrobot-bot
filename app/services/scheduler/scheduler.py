@@ -186,7 +186,7 @@ def add_bonus_promo_check_job(
         notify,
         "cron",
         day_of_week="0-4",
-        hour="9-23",
+        hour="9-18",
         minute="*/30",
         args=(bonus_promo_check_notifiers, bot, sessionmaker),
         name="Bonus and Promocode check notifiers",
