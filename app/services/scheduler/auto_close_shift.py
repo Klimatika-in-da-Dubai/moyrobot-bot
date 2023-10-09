@@ -3,6 +3,7 @@ from aiogram import Bot
 from aiogram.enums import ParseMode
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 from app.services.checker.shift.cashbox.checker import CashboxChecker
+from app.services.checker.shift.shift import ShiftChecker
 from app.services.database.dao.mailing import get_mailing_ids
 
 from app.services.database.dao.shift import CloseShiftDAO, OpenShiftDAO, ShiftDAO
@@ -35,6 +36,7 @@ async def auto_close_shift(bot: Bot, sessionmaker: async_sessionmaker) -> None:
 
         await add_close_shift(shift, session)
 
+        await ShiftChecker(session).check(shift)
         mailings_id = await get_mailing_ids(session, MailingType.SHIFT_NOTIFY)
         for id in mailings_id:
             try:
