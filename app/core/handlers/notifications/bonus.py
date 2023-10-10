@@ -1,4 +1,7 @@
-from aiogram import Router, F, types
+from typing import Optional
+from aiogram import Bot, Router, F, types
+from aiogram.types.inline_keyboard_markup import InlineKeyboardMarkup
+from aiogram.types.reply_keyboard_markup import ReplyKeyboardMarkup
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.base import Action
 
@@ -25,6 +28,7 @@ bonus_router = Router()
 )
 async def cb_approve_bonus_check(
     cb: types.CallbackQuery,
+    bot: Bot,
     callback_data: BonusNotificationCB,
     session: AsyncSession,
     client_session: AsyncSession,
@@ -45,14 +49,16 @@ async def cb_approve_bonus_check(
     except NoClientError:
         await cb.answer("Нет клиента с таким номером телефона", show_alert=True)
         await bonus_dao.set_given(bonus, False)
-        await cb.message.edit_reply_markup(reply_markup=get_no_client_keyboard())  # type: ignore
+
+        await edit_notifies(bot, bonus, get_no_client_keyboard())
         return
 
     cb.answer()
+
     clientbonus_dao = ClientBonusDAO(client_session)
     await clientbonus_dao.add_bonuses(bonus.phone, bonus.bonus_amount)
     await bonus_dao.set_given(bonus, True)
-    await cb.message.edit_reply_markup(reply_markup=get_approve_keyboard())  # type: ignore
+    await edit_notifies(bot, bonus, get_approve_keyboard())
 
 
 @bonus_router.callback_query(
@@ -62,6 +68,7 @@ async def cb_approve_bonus_check(
 )
 async def cb_decline_bonus_check(
     cb: types.CallbackQuery,
+    bot: Bot,
     callback_data: BonusNotificationCB,
     session: AsyncSession,
 ):
@@ -73,4 +80,15 @@ async def cb_decline_bonus_check(
         await cb.message.edit_reply_markup()  # type: ignore
         return
     await bonus_dao.set_given(bonus, False)
-    await cb.message.edit_reply_markup(reply_markup=get_decline_keyboard())  # type: ignore
+    await edit_notifies(bot, bonus, get_decline_keyboard())
+
+
+async def edit_notifies(
+    bot: Bot, bonus: Bonus, reply_markup: Optional[InlineKeyboardMarkup] = None
+):
+    for el in bonus.notify_messages_ids:
+        chat_id = el.get("chat_id")
+        message_id = el.get("message_id")
+        await bot.edit_message_reply_markup(
+            chat_id, message_id, reply_markup=reply_markup
+        )
