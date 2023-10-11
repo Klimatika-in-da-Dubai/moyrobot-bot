@@ -14,8 +14,11 @@ async def send_shift_keyboard(
 ):
     shiftdao = ShiftDAO(session)
     userdao = UserDAO(session)
-    operator_id = await get_operator_id(state)
 
+    if not await UserDAO(session).is_work_account(message.chat.id):
+        await state.update_data(operator_id=message.chat.id)
+
+    operator_id = await get_operator_id(state)
     if operator_id is not None:
         operator_name = await userdao.get_user_name_by_id(operator_id)
         await state.update_data(operator_name=operator_name)

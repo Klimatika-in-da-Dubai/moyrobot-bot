@@ -54,6 +54,28 @@ async def cb_open_groups_menu(
     AdminMenu.menu,
     isAdminCB(),
     AdminMenuCB.filter(
+        (F.action == Action.ENTER_TEXT)
+        & (F.target == AdminMenuTarget.CASHBOX_REPLENISHMENT)
+    ),
+)
+async def cb_cashbox_replenishment(
+    cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
+):
+    if not await ShiftDAO(session).is_shift_opened():
+        await cb.answer("Нельзя производить инкассацию вне смены", show_alert=True)
+        return
+
+    await cb.answer()
+    await state.set_state(AdminMenu.CashboxReplenishment.cashbox_replenishment)
+    await cb.message.edit_text(  # type: ignore
+        "Введите сумму пополнения", reply_markup=get_cancel_keyboard()
+    )
+
+
+@menu_router.callback_query(
+    AdminMenu.menu,
+    isAdminCB(),
+    AdminMenuCB.filter(
         (F.action == Action.ENTER_TEXT) & (F.target == AdminMenuTarget.MONEY_COLLECTION)
     ),
 )

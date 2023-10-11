@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing_extensions import override
 from aiogram import Bot
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.checker.shift.cashbox.income.object.cashbox_replenishment import (
+    CashboxReplenishmentIncome,
+)
 from app.services.checker.shift.cashbox.outcome.object.money_collection import (
     MoneyCollectionOutcome,
 )
@@ -44,6 +47,7 @@ class CloseOpenShiftNotifier(Notifier):
         self._openshiftdao = OpenShiftDAO(session)
         self._shiftcheckdao = ShiftCheckDAO(session)
         self._shiftdifferencedao = ShiftsDifferenceDAO(session)
+        self._cashboxrenishemntgetter = CashboxReplenishmentIncome(session)
         self._moneycollectiongetter = MoneyCollectionOutcome(session)
 
     @override
@@ -142,6 +146,9 @@ class CloseOpenShiftNotifier(Notifier):
         money_difference = await self._shiftdifferencedao.get_by_ids(
             info.closed_shift.id, info.opened_shift.id
         )
+        cashbox_replenishment = await self._cashboxrenishemntgetter.get_income(
+            info.closed_shift
+        )
         money_collection = await self._moneycollectiongetter.get_outcome(
             info.closed_shift
         )
@@ -155,6 +162,7 @@ class CloseOpenShiftNotifier(Notifier):
             "*Проверка денег*\n"
             f"Недостача за закрытую смену: "
             f"{escape_chars(str(shift_money_difference))} ₽\n"  # type: ignore
+            f"Пополнение кассы: {escape_chars(str(cashbox_replenishment))} ₽\n"
             f"Инкассация: {escape_chars(str(money_collection))} ₽\n"
             f"Итого в кассе: {escape_chars(str(shift_open.money_amount))} ₽\n"  # type: ignore
             f"Разница между сменами : {escape_chars(str(money_difference.money_difference))} ₽\n"

@@ -10,6 +10,7 @@ from app.core.states.admin import AdminMenu
 class AdminMenuTarget(IntEnum):
     NONE = auto()
     MONEY_COLLECTION = auto()
+    CASHBOX_REPLENISHMENT = auto()
     USER = auto()
     GROUP = auto()
 
@@ -35,6 +36,14 @@ def get_admin_menu_keyboard() -> types.InlineKeyboardMarkup:
             text="Группы",
             callback_data=AdminMenuCB(
                 action=Action.OPEN, target=AdminMenuTarget.GROUP
+            ).pack(),
+        )
+    )
+    builder.row(
+        types.InlineKeyboardButton(
+            text="Пополнение кассы",
+            callback_data=AdminMenuCB(
+                action=Action.ENTER_TEXT, target=AdminMenuTarget.CASHBOX_REPLENISHMENT
             ).pack(),
         )
     )
