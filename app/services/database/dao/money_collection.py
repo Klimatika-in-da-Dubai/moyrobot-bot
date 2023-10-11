@@ -1,6 +1,6 @@
 import datetime
 from typing import Sequence
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from app.services.database.dao.base import BaseDAO
 from app.services.database.models.money_collection import MoneyCollection
