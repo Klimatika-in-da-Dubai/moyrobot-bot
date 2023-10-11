@@ -1,35 +1,33 @@
 import asyncio
-from typing import Callable, Any, Awaitable, Union
+from typing import Callable, Any, Awaitable, Dict, List, Union
 
 from aiogram import BaseMiddleware
-from aiogram.types import Message
+from aiogram.types import Message, TelegramObject
+
+DEFAULT_DELAY = 0.6
 
 
 class MediaGroupMiddleware(BaseMiddleware):
-    album_data: dict = {}
+    ALBUM_DATA: Dict[str, List[Message]] = {}
 
-    def __init__(self, latency: Union[int, float] = 0.01):
-        self.latency = latency
+    def __init__(self, delay: Union[int, float] = DEFAULT_DELAY):
+        self.delay = delay
 
     async def __call__(
         self,
-        handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
-        message: Message,
-        data: dict[str, Any],
+        handler: Callable[[TelegramObject, Dict[str, Any]], Awaitable[Any]],
+        event: Message,
+        data: Dict[str, Any],
     ) -> Any:
-        if not message.media_group_id:
-            await handler(message, data)
-            return
+        if not event.media_group_id:
+            return await handler(event, data)
+
         try:
-            self.album_data[message.media_group_id].append(message)
+            self.ALBUM_DATA[event.media_group_id].append(event)
+            return  # Don't propagate the event
         except KeyError:
-            self.album_data[message.media_group_id] = [message]
-            await asyncio.sleep(self.latency)
+            self.ALBUM_DATA[event.media_group_id] = [event]
+            await asyncio.sleep(self.delay)
+            data["album"] = self.ALBUM_DATA.pop(event.media_group_id)
 
-            data["_is_last"] = True
-            data["album"] = self.album_data[message.media_group_id]
-            await handler(message, data)
-
-        if message.media_group_id and data.get("_is_last"):
-            del self.album_data[message.media_group_id]
-            del data["_is_last"]
+        return await handler(event, data)
