@@ -162,7 +162,7 @@ class CloseOpenShiftNotifier(Notifier):
             "*Проверка денег*\n"
             f"Недостача за закрытую смену: "
             f"{escape_chars(str(shift_money_difference))} ₽\n"  # type: ignore
-            f"Пополнение кассы: {escape_chars(str(cashbox_replenishment))}\n"
+            f"Пополнение кассы: {escape_chars(str(cashbox_replenishment))} ₽\n"
             f"Инкассация: {escape_chars(str(money_collection))} ₽\n"
             f"Итого в кассе: {escape_chars(str(shift_open.money_amount))} ₽\n"  # type: ignore
             f"Разница между сменами : {escape_chars(str(money_difference.money_difference))} ₽\n"
