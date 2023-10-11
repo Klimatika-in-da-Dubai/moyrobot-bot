@@ -50,3 +50,6 @@ class AdminMenu(StatesGroup):
 
     class MoneyCollection(StatesGroup):
         money_collection = State()
+
+    class CashboxReplenishment(StatesGroup):
+        cashbox_replenishment = State()

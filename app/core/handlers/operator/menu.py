@@ -63,19 +63,21 @@ async def cb_open_shift(
 async def cb_close_shift(
     cb: types.CallbackQuery, state: FSMContext, session: AsyncSession
 ):
+    if cb.message is None:
+        return
+
+    if await UserDAO(session).is_admin(cb.message.chat.id):
+        await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
+        return
+
     if not await is_shift_with_cleaning(session):
         await cb.answer(
             text="Перед закрытием смены вам необходимо сделать уборку\nСделайте уборку нажав кнопку уборка в меню оператора",
             show_alert=True,
         )
         return
+
     await cb.answer()
-
-    if cb.message is None:
-        return
-
-    if not await UserDAO(session).is_work_account(cb.message.chat.id):
-        await state.update_data(operator_id=cb.message.chat.id)
 
     await send_shift_keyboard(cb.message.edit_text, cb.message, state, session)  # type: ignore
 
