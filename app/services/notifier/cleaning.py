@@ -1,6 +1,5 @@
-from aiogram import Bot, types
+from aiogram import types
 from aiogram.enums import InputMediaType
-from sqlalchemy.ext.asyncio.session import AsyncSession
 from app.core.keyboards.operator.cleaning.approve import get_cleaning_approve_keyboard
 from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dto.cleaning import CleaningDTO
@@ -12,7 +11,7 @@ from math import ceil
 
 
 class CleaningNotifier(Notifier):
-    def __init__(self, bot, session):
+    def __init__(self, bot, session, *args):
         super().__init__(bot, session, MailingType.CLEANING, CleaningDAO(session))
         self._dao: CleaningDAO
 

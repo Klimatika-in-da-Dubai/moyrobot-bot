@@ -1,7 +1,5 @@
 from collections.abc import Sequence
 from typing_extensions import override
-from aiogram import Bot
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.notifications.promocode import get_promocode_check_keyboard
 from app.services.database.dao.promocode import PromocodeDAO
 from app.services.database.dao.promocode_check import PromocodeCheckDAO
@@ -16,7 +14,7 @@ from math import ceil
 
 
 class PromocodeNotifier(Notifier):
-    def __init__(self, bot, session) -> None:
+    def __init__(self, bot, session, *args) -> None:
         super().__init__(bot, session, MailingType.PROMOCODE, PromocodeDAO(session))
         self._dao: PromocodeDAO
 

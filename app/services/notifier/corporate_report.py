@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
-from aiogram import Bot
 from aiogram.types import FSInputFile
 from apscheduler.job import Iterable
-from sqlalchemy.ext.asyncio import AsyncSession
 import pandas as pd
 from app.services.database.dao.corporate_report import CorporateReportDAO
 from app.services.database.dao.corporation import CorporationDAO
@@ -28,7 +26,7 @@ class CorporateReportNotify:
 
 
 class CorporateReportNotifier(Notifier):
-    def __init__(self, bot, session):
+    def __init__(self, bot, session, *args):
         super().__init__(
             bot, session, MailingType.CORPORATE_REPORT, CorporateReportDAO(session)
         )
