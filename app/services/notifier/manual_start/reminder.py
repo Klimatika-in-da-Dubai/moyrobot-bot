@@ -1,7 +1,5 @@
 from datetime import timedelta
 from typing_extensions import override
-from aiogram import Bot
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.models.mailing import MailingType
 from app.services.database.models.manual_start import ManualStart
@@ -10,7 +8,7 @@ from app.utils.text import escape_chars
 
 
 class ManualStartReminder(Notifier):
-    def __init__(self, bot, session):
+    def __init__(self, bot, session, *args):
         super().__init__(
             bot,
             session,

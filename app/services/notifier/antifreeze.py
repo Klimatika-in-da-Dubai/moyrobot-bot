@@ -1,6 +1,4 @@
 from typing_extensions import override
-from aiogram import Bot
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.antifreeze import AntifreezeDAO
 from app.services.database.models.antifreeze import Antifreeze
 
@@ -10,7 +8,7 @@ from app.services.notifier.base import Notifier
 
 
 class AntifreezeNotifier(Notifier):
-    def __init__(self, bot, session) -> None:
+    def __init__(self, bot, session, *args) -> None:
         super().__init__(bot, session, MailingType.ANTIFREEZE, AntifreezeDAO(session))
         self._dao: AntifreezeDAO
 

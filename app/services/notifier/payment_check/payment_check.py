@@ -1,5 +1,3 @@
-from aiogram import Bot
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.keyboards.notifications.payment_check import (
     get_card_payment_check_keyboard,
 )
@@ -19,7 +17,7 @@ from app.utils.text import escape_chars
 
 
 class PaymentCheckNotifier(Notifier):
-    def __init__(self, bot, session):
+    def __init__(self, bot, session, *args):
         super().__init__(
             bot, session, MailingType.PAYMENT_CHECK, PaymentCheckDAO(session)
         )

@@ -29,6 +29,7 @@ def get_scheduler(
     bot: Bot,
     parser: Parser,
     sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ) -> AsyncIOScheduler:
     scheduler = AsyncIOScheduler()
     scheduler.add_job(
@@ -66,50 +67,62 @@ def get_scheduler(
         update_db,
         "interval",
         seconds=30,
-        args=(parser, sessionmaker),
+        args=(
+            parser,
+            sessionmaker,
+        ),
         name="MoyRobotDB update",
     )
-    add_common_notifiers_job(scheduler, bot, sessionmaker)
-    add_bonus_promo_job(scheduler, bot, sessionmaker)
-    add_payment_check_job(scheduler, bot, sessionmaker)
-    add_shift_notifiers_job(scheduler, bot, sessionmaker)
-    add_monthly_report_job(scheduler, bot, sessionmaker)
-    add_corporate_report_job(scheduler, bot, sessionmaker)
-    add_bonus_promo_check_job(scheduler, bot, sessionmaker)
-    add_shift_alert_job(scheduler, bot, sessionmaker)
-    add_auto_close_shift_job(scheduler, bot, sessionmaker)
-    add_request_notifiers_job(scheduler, bot, sessionmaker)
+    add_common_notifiers_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_bonus_promo_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_payment_check_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_shift_notifiers_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_monthly_report_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_corporate_report_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_bonus_promo_check_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_shift_alert_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_auto_close_shift_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
+    add_request_notifiers_job(scheduler, bot, sessionmaker, client_db_sessionmaker)
     return scheduler
 
 
 def add_common_notifiers_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     common_notifiers = setup_common_notifiers()
     scheduler.add_job(
         notify,
         "interval",
         seconds=30,
-        args=(common_notifiers, bot, sessionmaker),
+        args=(common_notifiers, bot, sessionmaker, client_db_sessionmaker),
         name="Common notifiers",
     )
 
 
 def add_bonus_promo_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     bonus_promo_notifiers = setup_promocode_and_bonus_notifiers()
     scheduler.add_job(
         notify,
         "cron",
         hour="9",
-        args=(bonus_promo_notifiers, bot, sessionmaker),
+        args=(bonus_promo_notifiers, bot, sessionmaker, client_db_sessionmaker),
         name="Bonus and Promocode notifiers",
     )
 
 
 def add_payment_check_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     payment_check_notifiers = setup_payment_check_notifiers()
     scheduler.add_job(
@@ -118,13 +131,16 @@ def add_payment_check_job(
         day_of_week="0-4",
         hour="9-18",
         minute="*",
-        args=(payment_check_notifiers, bot, sessionmaker),
+        args=(payment_check_notifiers, bot, sessionmaker, client_db_sessionmaker),
         name="Payment Chtck notifiers",
     )
 
 
 def add_request_notifiers_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     request_notifiers = setup_requests_notifiers()
     scheduler.add_job(
@@ -132,26 +148,37 @@ def add_request_notifiers_job(
         "cron",
         hour="9-22",
         minute="*",
-        args=(request_notifiers, bot, sessionmaker),
+        args=(request_notifiers, bot, sessionmaker, client_db_sessionmaker),
         name="Request notifiers",
     )
 
 
 def add_shift_notifiers_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     shift_notifiers = setup_shifts_notifiers()
     scheduler.add_job(
         notify,
         "interval",
         seconds=10,
-        args=(shift_notifiers, bot, sessionmaker),
+        args=(
+            shift_notifiers,
+            bot,
+            sessionmaker,
+            client_db_sessionmaker,
+        ),
         name="Shift notifiers",
     )
 
 
 def add_monthly_report_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     monthly_report_notifiers = setup_monthly_report_notifiers()
     scheduler.add_job(
@@ -159,13 +186,16 @@ def add_monthly_report_job(
         "cron",
         day="1,16",
         hour="12",
-        args=(monthly_report_notifiers, bot, sessionmaker),
+        args=(monthly_report_notifiers, bot, sessionmaker, client_db_sessionmaker),
         name="Monthly Report notifiers",
     )
 
 
 def add_corporate_report_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     corporate_report_notifiers = setup_corporate_report_notifiers()
     scheduler.add_job(
@@ -173,13 +203,16 @@ def add_corporate_report_job(
         "cron",
         day="1",
         hour="9",
-        args=(corporate_report_notifiers, bot, sessionmaker),
+        args=(corporate_report_notifiers, bot, sessionmaker, client_db_sessionmaker),
         name="Corporate Report notifiers",
     )
 
 
 def add_bonus_promo_check_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     bonus_promo_check_notifiers = setup_bonus_promo_check_notifiers()
     scheduler.add_job(
@@ -188,31 +221,37 @@ def add_bonus_promo_check_job(
         day_of_week="0-4",
         hour="9-18",
         minute="*/30",
-        args=(bonus_promo_check_notifiers, bot, sessionmaker),
+        args=(bonus_promo_check_notifiers, bot, sessionmaker, client_db_sessionmaker),
         name="Bonus and Promocode check notifiers",
     )
 
 
 def add_shift_alert_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     scheduler.add_job(
         notify,
         "cron",
         minute="*/15",
-        args=([ShiftNotifyNotifier], bot, sessionmaker),
+        args=([ShiftNotifyNotifier], bot, sessionmaker, client_db_sessionmaker),
         name="ShiftNotifyNotifier",
     )
 
 
 def add_auto_close_shift_job(
-    scheduler: AsyncIOScheduler, bot: Bot, sessionmaker: async_sessionmaker
+    scheduler: AsyncIOScheduler,
+    bot: Bot,
+    sessionmaker: async_sessionmaker,
+    client_db_sessionmaker: async_sessionmaker,
 ):
     scheduler.add_job(
         auto_close_shift,
         "cron",
         hour="9-12,21-23",
         minute="*/30",
-        args=(bot, sessionmaker),
+        args=(bot, sessionmaker, client_db_sessionmaker),
         name="Auto Close Shift",
     )

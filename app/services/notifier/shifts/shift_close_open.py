@@ -8,6 +8,8 @@ from app.services.checker.shift.cashbox.income.object.cashbox_replenishment impo
 from app.services.checker.shift.cashbox.outcome.object.money_collection import (
     MoneyCollectionOutcome,
 )
+from app.services.client_database.dao.feedback import FeedbackDAO
+from app.services.client_database.models.question import MEASURABLE_CATEGORY
 from app.services.database.dao.shift import CloseShiftDAO, OpenShiftDAO, ShiftDAO
 from app.services.database.dao.shift_check import ShiftCheckDAO
 from app.services.database.dao.shifts_difference import ShiftsDifferenceDAO
@@ -32,6 +34,7 @@ class CloseOpenShiftNotifier(Notifier):
         self,
         bot: Bot,
         session: AsyncSession,
+        client_database_session: AsyncSession,
     ) -> None:
         after_notifiers = [CleaningNotifier(bot, session)]
         super().__init__(
@@ -49,6 +52,7 @@ class CloseOpenShiftNotifier(Notifier):
         self._shiftdifferencedao = ShiftsDifferenceDAO(session)
         self._cashboxrenishemntgetter = CashboxReplenishmentIncome(session)
         self._moneycollectiongetter = MoneyCollectionOutcome(session)
+        self._feedbackdao = FeedbackDAO(client_database_session)
 
     @override
     async def get_objects_to_notify(self):
@@ -158,8 +162,11 @@ class CloseOpenShiftNotifier(Notifier):
         shift_money_difference = (
             0 if shift_check.money_difference > 0 else shift_check.money_difference
         )
+        rating = await self.get_average_rating(info.closed_shift)
+
         return (
             "*Проверка денег*\n"
+            f"Средний рейтинг смены: {escape_chars(rating)} ⭐️\n"
             f"Недостача за закрытую смену: "
             f"{escape_chars(str(shift_money_difference))} ₽\n"  # type: ignore
             f"Пополнение кассы: {escape_chars(str(cashbox_replenishment))} ₽\n"
@@ -211,3 +218,12 @@ class CloseOpenShiftNotifier(Notifier):
         if shift_check is None:
             raise ValueError("Shift Check is None")
         return shift_check
+
+    async def get_average_rating(self, close_shift: Shift) -> str:
+        messages = await self._feedbackdao.get_feedback_messages_between_time(
+            close_shift.open_date, close_shift.close_date, MEASURABLE_CATEGORY
+        )
+        if not messages:
+            return "Нет измеримых отзывов("
+
+        return f"{sum(map(lambda x: int(x.text), messages)) / len(messages):.1f}"

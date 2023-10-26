@@ -11,7 +11,7 @@ from app.services.database.models.mailing import MailingType
 from app.services.database.models.shift import CloseShift, Shift
 
 
-async def auto_close_shift(bot: Bot, sessionmaker: async_sessionmaker) -> None:
+async def auto_close_shift(bot: Bot, sessionmaker: async_sessionmaker, *args) -> None:
     async with sessionmaker() as session:
         shiftdao = ShiftDAO(session=session)
         shift = await shiftdao.get_last_shift()

@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import logging
-from typing import Optional, overload
+from typing import Optional
 from aiogram import Bot
 from apscheduler.job import Iterable
 
@@ -19,6 +19,7 @@ class Notifier:
         dao: Optional[BaseDAO],
         before_notifiers: Optional[Iterable["Notifier"]] = None,
         after_notifiers: Optional[Iterable["Notifier"]] = None,
+        *args
     ):
         self._bot = bot
         self._session = session

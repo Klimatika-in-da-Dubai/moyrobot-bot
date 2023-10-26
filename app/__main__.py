@@ -57,7 +57,7 @@ async def main():
     parser = get_parser(terminal_sessions)
 
     dp = Dispatcher(storage=RedisStorage.from_url(config.redis.url))
-    scheduler = get_scheduler(bot, parser, db_sessionmaker)
+    scheduler = get_scheduler(bot, parser, db_sessionmaker, client_db_sessionmaker)
     setup_routers(dp)
     setup_middlewares(dp, db_sessionmaker, client_db_sessionmaker, terminal_sessions)
     try:
