@@ -9,11 +9,7 @@ from app.services.notifier.base import Notifier
 
 
 class MoneyCollectionNotifier(Notifier):
-    def __init__(
-        self,
-        bot: Bot,
-        session: AsyncSession,
-    ):
+    def __init__(self, bot: Bot, session: AsyncSession, *args):
         super().__init__(
             bot, session, MailingType.MONEY_COLLECTION, MoneyCollectionDAO(session)
         )

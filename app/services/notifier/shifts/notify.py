@@ -1,9 +1,7 @@
 import datetime
 from datetime import time
 from enum import IntEnum, auto
-from aiogram import Bot
 from aiogram.enums import ParseMode
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.services.database.dao.shift import ShiftDAO
 from app.services.database.models.mailing import MailingType
 from app.services.notifier.base import Notifier
@@ -15,7 +13,7 @@ class ShiftNotifyType(IntEnum):
 
 
 class ShiftNotifyNotifier(Notifier):
-    def __init__(self, bot, session) -> None:
+    def __init__(self, bot, session, *args) -> None:
         super().__init__(bot, session, MailingType.SHIFT_NOTIFY, ShiftDAO(session))
         self._dao: ShiftDAO
 

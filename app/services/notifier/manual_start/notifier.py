@@ -17,7 +17,7 @@ from app.services.notifier.manual_start.senders.test import TestManualStartSende
 
 
 class ManualStartNotifier(Notifier):
-    def __init__(self, bot, session):
+    def __init__(self, bot, session, *args):
         super().__init__(
             bot, session, MailingType.MANUAL_START, ManualStartDAO(session)
         )

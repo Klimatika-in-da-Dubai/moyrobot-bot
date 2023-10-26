@@ -16,7 +16,7 @@ from app.utils.phone import format_phone
 
 
 class BonusNotifier(Notifier):
-    def __init__(self, bot, session) -> None:
+    def __init__(self, bot, session, *args) -> None:
         super().__init__(bot, session, MailingType.BONUS, BonusDAO(session))
         self._dao: BonusDAO
 
