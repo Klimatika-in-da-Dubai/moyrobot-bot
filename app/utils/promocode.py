@@ -37,7 +37,7 @@ async def get_promocode_info(
 
     phone = data.get("phone")
     wash_mode = data.get("wash_mode")
-    description = data.get("description")
+    description = data.get("promocode_description")
 
     if not (phone is None or isinstance(phone, str)):
         raise ValueError("Phone is not string")

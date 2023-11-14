@@ -86,7 +86,7 @@ async def cb_description(
 async def message_description(
     message: types.Message, state: FSMContext, session: AsyncSession
 ):
-    await state.update_data(description=message.text)
+    await state.update_data(refund_description=message.text)
     await send_refund_keyboard(message.answer, state, session)
 
 
@@ -207,7 +207,7 @@ async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSes
 
     refund_dao = RefundDAO(session)
     await refund_dao.add_refund(refund)
-    await state.clear()
+    await clear_refund_data(state)
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -218,7 +218,7 @@ async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSes
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
-    await state.clear()
+    await clear_refund_data(state)
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -252,3 +252,17 @@ async def cb_cancel_media(
     await cb.answer()
     await cb.message.delete()  # type: ignore
     await send_refund_keyboard(cb.message.answer, state, session)  # type: ignore
+
+
+async def clear_refund_data(state: FSMContext):
+    not_none_colums = [
+        "payment_device",
+        "payment_method",
+        "refund_description",
+        "statement_photo_file_id",
+        "money_on_card",
+        "consumable_photo_file_id",
+        "give_money",
+    ]
+    for column in not_none_colums:
+        await state.update_data({column: None})

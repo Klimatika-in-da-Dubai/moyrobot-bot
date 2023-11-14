@@ -121,5 +121,4 @@ async def cb_corporation_manual_start(
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
-    await state.clear()
     await send_manual_starts_keyboard(cb.message.edit_text, state, session)  # type: ignore

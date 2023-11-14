@@ -89,7 +89,7 @@ async def cb_promocode_description(
 async def message_promocode_description(
     message: types.Message, state: FSMContext, session: AsyncSession
 ):
-    await state.update_data(description=message.text)
+    await state.update_data(promocode_description=message.text)
     await send_promocode_keyboard(message.answer, state, session)
 
 
@@ -100,8 +100,6 @@ async def message_promocode_description(
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
-    await state.clear()
-
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -122,7 +120,7 @@ async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSes
     promocode = Promocode(phone=phone, wash_mode=wash_mode, description=description)
     await promocodedao.add_promocode(promocode)
 
-    await state.clear()
+    await clear_promocode_data(state)
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -136,3 +134,9 @@ async def cb_cancel_enter_text(
 ):
     await cb.answer()
     await send_promocode_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+async def clear_promocode_data(state: FSMContext):
+    await state.update_data(phone=None)
+    await state.update_data(wash_mode=None)
+    await state.update_data(promocode_description=None)
