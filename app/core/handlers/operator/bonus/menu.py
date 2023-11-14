@@ -104,7 +104,7 @@ async def cb_bonus_description(
 async def message_bonus_description(
     message: types.Message, state: FSMContext, session: AsyncSession
 ):
-    await state.update_data(description=message.text)
+    await state.update_data(bonus_description=message.text)
     await send_bonus_keyboard(message.answer, state, session)
 
 
@@ -115,7 +115,6 @@ async def message_bonus_description(
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
-    await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -135,7 +134,7 @@ async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSes
     bonus = Bonus(phone=phone, bonus_amount=bonus_amount, description=description)
 
     await bonusdao.add_bonus(bonus)
-    await state.clear()
+    await clear_bonus_data(state)
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -153,3 +152,9 @@ async def cb_cancel_enter_text(
 ):
     await cb.answer()
     await send_bonus_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+async def clear_bonus_data(state: FSMContext):
+    await state.update_data(phone=None)
+    await state.update_data(bonus_amount=None)
+    await state.update_data(bonus_description=None)

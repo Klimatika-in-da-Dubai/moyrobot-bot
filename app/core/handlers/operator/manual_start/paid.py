@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.filters.operator import isOperatorCB
+from app.core.handlers.operator.manual_start.utils import clear_manual_start_data
 from app.core.keyboards.base import Action, YesNoCB, YesNoTarget, get_yes_no_keyboard
 from app.core.keyboards.operator.bonus.menu import send_bonus_keyboard
 from app.core.keyboards.operator.manual_start.type import (
@@ -162,7 +163,7 @@ async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSes
         return
 
     await table_add_paid_manual_start(state, session)
-    await state.clear()
+    await clear_manual_start_data(state)
     await cb.message.edit_text(  # type: ignore
         "Хотите начислить бонусы", reply_markup=get_yes_no_keyboard()
     )

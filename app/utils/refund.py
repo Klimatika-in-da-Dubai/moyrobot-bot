@@ -13,7 +13,6 @@ async def get_refund(state: FSMContext) -> Refund:
     columns = [
         "payment_device",
         "payment_method",
-        "description",
         "statement_photo_file_id",
         "consumable_photo_file_id",
     ]
@@ -22,7 +21,7 @@ async def get_refund(state: FSMContext) -> Refund:
         value = data.get(el)
         if value is not None:
             refund.__setattr__(el, value)
-
+    refund.__setattr__("description", data.get("refund_description"))
     return refund
 
 
@@ -40,7 +39,7 @@ async def check_refund_report(state: FSMContext) -> bool:
     not_none_colums = [
         "payment_device",
         "payment_method",
-        "description",
+        "refund_description",
         "statement_photo_file_id",
     ]
 

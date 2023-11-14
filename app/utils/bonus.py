@@ -11,7 +11,7 @@ async def get_bonus_info(
 
     phone = data.get("phone")
     bonus_amount = data.get("bonus_amount")
-    description = data.get("description")
+    description = data.get("bonus_description")
 
     if not (phone is None or isinstance(phone, str)):
         raise ValueError("phone is not correct type")

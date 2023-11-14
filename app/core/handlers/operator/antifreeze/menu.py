@@ -101,7 +101,6 @@ async def message_payment_amount(
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
-    await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -123,7 +122,7 @@ async def cb_enter(cb: types.CallbackQuery, state: FSMContext, session: AsyncSes
     )
 
     await antifreezedao.add_bonus(antifreeze)
-    await state.clear()
+    await clear_antifreeze_data(state)
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
@@ -139,3 +138,8 @@ async def cb_cancel_enter_text(
 ):
     await cb.answer()
     await send_antifreeze_keyboard(cb.message.edit_text, state, session)  # type: ignore
+
+
+async def clear_antifreeze_data(state: FSMContext):
+    await state.update_data(payment_method=None)
+    await state.update_data(payment_amount=None)
