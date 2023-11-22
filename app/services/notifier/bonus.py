@@ -47,7 +47,7 @@ class BonusNotifier(Notifier):
 
 
 class BonusCheckNotifier(Notifier):
-    def __init__(self, bot, session) -> None:
+    def __init__(self, bot, session, *args) -> None:
         super().__init__(bot, session, MailingType.BONUS_CHECK, BonusCheckDAO(session))
         self._dao: BonusCheckDAO
         self._bonusdao = BonusDAO(session)
