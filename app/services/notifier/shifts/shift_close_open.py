@@ -140,7 +140,7 @@ class CloseOpenShiftNotifier(Notifier):
 
         antifreeze_sentence = ""
         if shift_info.antifreeze_count != 0:
-            antifreeze_sentence = f"Антифриз: {shift_info.antifreeze_count}\n"
+            antifreeze_sentence = f"Незамерзайка: {shift_info.antifreeze_count}\n"
 
         return f"ФИО: {names_text}\n" f"Касса: {money_text} ₽\n" + antifreeze_sentence
 
