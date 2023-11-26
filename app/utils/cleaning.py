@@ -58,7 +58,14 @@ async def add_cleaning_to_state(state: FSMContext) -> None:
                     Work(name="Против направления движения"),
                 ],
             ),
-            Place(name="Территория 1", works=[Work(name="Территория у ворот")]),
+            Place(
+                name="Территория 1",
+                works=[
+                    Work(name="Территория у ворот"),
+                    Work(name="Асфальт у бокса 1"),
+                    Work(name="Асфальт у бокса 2"),
+                ],
+            ),
             Place(
                 name="Территория 2",
                 works=[
@@ -70,7 +77,10 @@ async def add_cleaning_to_state(state: FSMContext) -> None:
             ),
             Place(
                 name="Операторская",
-                works=[Work(name="Общее фото помещения"), Work(name="Фото стола")],
+                works=[
+                    Work(name="Общее фото помещения"),
+                    Work(name="Фото стола"),
+                ],
             ),
             Place(
                 name="Техническое помещение",

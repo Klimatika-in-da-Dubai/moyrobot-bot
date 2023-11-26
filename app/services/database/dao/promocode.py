@@ -27,6 +27,7 @@ class PromocodeDAO(BaseDAO[Promocode]):
             select(Promocode)
             .filter(Promocode.date.between(begin, end))
             .where(Promocode.notified == False)  # noqa: E712
+            .order_by(Promocode.date)
         )
         return bonuses.scalars().all()
 
@@ -34,7 +35,9 @@ class PromocodeDAO(BaseDAO[Promocode]):
         self, begin: datetime.datetime, end: datetime.datetime
     ) -> Sequence[Promocode]:
         bonuses = await self._session.execute(
-            select(Promocode).filter(Promocode.date.between(begin, end))
+            select(Promocode)
+            .filter(Promocode.date.between(begin, end))
+            .order_by(Promocode.date)
         )
         return bonuses.scalars().all()
 
