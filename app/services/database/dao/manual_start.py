@@ -163,6 +163,7 @@ class ManualStartDAO(BaseDAO[ManualStart]):
             .join(ManualStart)
             .where(ManualStart.type == type)
             .where(ManualStart.date.between(begin, end))
+            .order_by(ManualStart.date)
         )
 
         return result.scalars().all()
