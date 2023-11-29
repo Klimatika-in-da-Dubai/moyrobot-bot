@@ -10,7 +10,6 @@ from app.services.database.models.manual_start import (
     PaidManualStart,
 )
 from app.services.database.models.payment_check import PaymentCheck
-from app.services.database.models.utils import PaymentMethod
 from app.services.notifier.base import Notifier
 from app.services.notifier.utils import get_manual_start_mode_text
 from app.utils.text import escape_chars
@@ -31,7 +30,7 @@ class PaymentCheckNotifier(Notifier):
         await self._dao.make_notified(payment_check)
 
     async def get_text(self, payment_check: PaymentCheck):
-        card_manual_starts = await self.get_card_manual_starts(payment_check)
+        card_manual_starts = await self.get_paid_manual_starts(payment_check)
 
         date = payment_check.start_check.strftime("%d.%m.%Y")
         text = f"Ручные запуски, оплата через эквайринг картой\nЗа {escape_chars(date)}\n\n"
@@ -54,15 +53,13 @@ class PaymentCheckNotifier(Notifier):
             )
         return text
 
-    async def get_card_manual_starts(
+    async def get_paid_manual_starts(
         self, payment_check: PaymentCheck
     ) -> list[PaidManualStart]:
         manual_starts = await self._manual_start_dao.get_typed_between_time(
             ManualStartType.PAID, payment_check.start_check, payment_check.end_check
         )
-        return list(
-            filter(lambda x: x.payment_method is PaymentMethod.CARD, manual_starts)
-        )
+        return list(manual_starts)
 
     async def send_notify(self, id: int, payment_check: PaymentCheck):
         text = await self.get_text(payment_check)
