@@ -219,7 +219,6 @@ async def cb_napkins_check(
 )
 async def cb_back(cb: types.CallbackQuery, state: FSMContext, session: AsyncSession):
     await cb.answer()
-    await state.clear()
     await send_operator_menu_keyboard(cb.message.edit_text, state, session)  # type: ignore
 
 
