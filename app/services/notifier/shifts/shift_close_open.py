@@ -9,7 +9,7 @@ from app.services.checker.shift.cashbox.outcome.object.money_collection import (
     MoneyCollectionOutcome,
 )
 from app.services.client_database.dao.feedback import FeedbackDAO
-from app.services.client_database.models.question import MEASURABLE_CATEGORY
+from app.services.client_database.models.question import CategoryEnum
 from app.services.database.dao.shift import CloseShiftDAO, OpenShiftDAO, ShiftDAO
 from app.services.database.dao.shift_check import ShiftCheckDAO
 from app.services.database.dao.shifts_difference import ShiftsDifferenceDAO
@@ -221,7 +221,9 @@ class CloseOpenShiftNotifier(Notifier):
 
     async def get_average_rating(self, close_shift: Shift) -> str:
         messages = await self._feedbackdao.get_feedback_messages_between_time(
-            close_shift.open_date, close_shift.close_date, MEASURABLE_CATEGORY
+            close_shift.open_date,
+            close_shift.close_date,
+            CategoryEnum.MEASURABLE_CATEGORY,
         )
         if not messages:
             return "Нет измеримых отзывов("

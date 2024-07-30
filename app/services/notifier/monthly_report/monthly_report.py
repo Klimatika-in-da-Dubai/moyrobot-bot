@@ -3,6 +3,7 @@ from aiogram.types import FSInputFile
 import os
 import pandas as pd
 
+from app.services.client_database.dao.feedback import FeedbackDAO
 from app.services.database.dao.cleaning import CleaningDAO
 from app.services.database.dao.manual_start import ManualStartDAO
 from app.services.database.dao.shift import CloseShiftDAO, OpenShiftDAO, ShiftDAO
@@ -20,7 +21,7 @@ from app.utils.calendar_names import month_name
 
 
 class MonthlyReportNotifier(Notifier):
-    def __init__(self, bot, session, *args):
+    def __init__(self, bot, session, client_database_session, *args):
         super().__init__(bot, session, MailingType.MONTHLY_REPORT, None)
         self._shiftdao = ShiftDAO(session)
         self._userdao = UserDAO(session)
@@ -30,6 +31,7 @@ class MonthlyReportNotifier(Notifier):
         self._openshiftdao = OpenShiftDAO(session)
         self._closeshiftdao = CloseShiftDAO(session)
         self._cleaningdao = CleaningDAO(session)
+        self._feedbackdao = FeedbackDAO(client_database_session)
 
     async def get_objects_to_notify(self) -> list:
         shifts = await self._shiftdao.get_monthly_unreported()
@@ -60,6 +62,10 @@ class MonthlyReportNotifier(Notifier):
         cleaning_fine = await self.get_fine_for_cleaning(shift, salary)
         fine = 2 * manual_starts_fine + cleaning_fine
 
+        rating_quality = await self.get_rating_quality(shift)
+        rating_employee = await self.get_rating_employee(shift)
+        rating_cleanness = await self.get_rating_cleanness(shift)
+
         if money_check_difference < 0:
             fine += 2 * money_check_difference
         info = {}
@@ -77,7 +83,28 @@ class MonthlyReportNotifier(Notifier):
         info["Уборка"] = cleaning_fine
         info["Штраф"] = fine
         info["Итого"] = salary + fine
+        info["Рейтинг Качество"] = rating_quality
+        info["Рейтинг Сотрудник"] = rating_employee
+        info["Рейтинг Чистота"] = rating_cleanness
         return info
+
+    async def get_rating_quality(self, shift: Shift) -> str:
+        return await self.get_avearge_rating(shift, 39)
+
+    async def get_rating_employee(self, shift: Shift) -> str:
+        return await self.get_avearge_rating(shift, 40)
+
+    async def get_rating_cleanness(self, shift: Shift) -> str:
+        return await self.get_avearge_rating(shift, 41)
+
+    async def get_avearge_rating(self, shift: Shift, question_id: int) -> str:
+        messages = await self._feedbackdao.get_feedback_messages_by_question_id(
+            shift.open_date, shift.close_date, question_id
+        )
+        if not messages:
+            return "Нет отзывов"
+
+        return f"{sum(map(lambda x: int(x.text), messages)) / len(messages):.1f}"
 
     def get_shift_type(self, shift: Shift) -> str:
         return "День" if shift.open_date.time() <= shift.close_date.time() else "Ночь"
