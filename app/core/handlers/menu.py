@@ -1,6 +1,7 @@
 from typing import Sequence
 
 from aiogram import Router, types, F
+import aiogram
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession, AsyncSession
@@ -15,6 +16,7 @@ from app.core.states.admin import AdminMenu
 from app.core.states.menu import MainMenu
 from app.services.database.dao.user import UserDAO
 from app.services.database.models.user import Role
+from app.services.notifier.monthly_report.monthly_report import MonthlyReportNotifier
 
 menu_router = Router(name="menu-router")
 
@@ -102,3 +104,14 @@ async def cb_cancel_get_operator_request(
     await send_menu_keyboard(
         cb.message.edit_text, cb.message, state, session  # type: ignore
     )
+
+
+@menu_router.message(Command(commands=["monthly_report"]))
+async def cmd_start(
+    message: types.Message,
+    state: FSMContext,
+    session: AsyncSession,
+    client_session: AsyncSession,
+    bot: aiogram.Bot,
+):
+    await MonthlyReportNotifier(bot, session, client_session).notify()

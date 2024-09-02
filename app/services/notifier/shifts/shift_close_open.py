@@ -223,7 +223,7 @@ class CloseOpenShiftNotifier(Notifier):
         messages = await self._feedbackdao.get_feedback_messages_between_time(
             close_shift.open_date,
             close_shift.close_date,
-            CategoryEnum.MEASURABLE_CATEGORY,
+            CategoryEnum.MEASURABLE,
         )
         if not messages:
             return "Нет измеримых отзывов("
